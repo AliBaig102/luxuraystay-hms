@@ -1,19 +1,10 @@
 import { Router } from 'express';
 
 // User routes
-export const userRoutes = Router();
-userRoutes.get('/', (req, res) => {
-  res.json({ message: 'User routes working' });
-});
+export const userRoutes: Router = Router();
 
 // Room routes
-export const roomRoutes = Router();
-roomRoutes.get('/', (req, res) => {
-  res.json({ message: 'Room routes working' });
-});
+export const roomRoutes: Router = Router();
 
 // Booking routes
-export const bookingRoutes = Router();
-bookingRoutes.get('/', (req, res) => {
-  res.json({ message: 'Booking routes working' });
-});
+export const bookingRoutes: Router = Router();

@@ -37,6 +37,7 @@ export default [
         'prefer-const': 'error',
         'no-var': 'error',
         'no-undef': 'off',
+        '@typescript-eslint/restrict-template-expressions': 'off',
       },
     },
   {

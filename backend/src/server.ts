@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
+import { logger } from './utils';
 
 // Load environment variables
 dotenv.config();
@@ -43,9 +44,9 @@ export function createApp(): express.Application {
  */
 export function startServer(app: express.Application, _port?: number): void {
   app.listen(PORT, () => {
-    console.log(`🚀 Server is running on port ${PORT}`);
-    console.log(`📱 Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`🔗 Health check: http://localhost:${PORT}/health`);
+    logger.info(`🚀 Server is running on port ${PORT}`);
+    logger.info(`📱 Environment: ${process.env.NODE_ENV || 'development'}`);
+    logger.info(`🔗 Health check: http://localhost:${PORT}/health`);
   });
 }
 
