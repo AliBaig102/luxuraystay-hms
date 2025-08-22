@@ -24,16 +24,14 @@ export function createApp(): express.Application {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
-
-
   // Health check endpoint
   app.get('/health', (req, res) => {
-    res.status(200).json({ 
-      status: true, 
+    res.status(200).json({
+      status: true,
       timestamp: new Date().toISOString(),
       message: `${PROJECT_NAME} API is running`,
       version: PROJECT_VERSION,
-      environment: process.env.NODE_ENV || 'development'
+      environment: process.env.NODE_ENV || 'development',
     });
   });
 
@@ -43,7 +41,7 @@ export function createApp(): express.Application {
 /**
  * Start the server
  */
-export function startServer(app: express.Application, port?: number): void {  
+export function startServer(app: express.Application, _port?: number): void {
   app.listen(PORT, () => {
     console.log(`🚀 Server is running on port ${PORT}`);
     console.log(`📱 Environment: ${process.env.NODE_ENV || 'development'}`);

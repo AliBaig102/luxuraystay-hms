@@ -22,6 +22,8 @@ src/
 - **TypeScript**: Full type safety and modern JavaScript features
 - **Express.js**: Fast, unopinionated web framework
 - **Modular Design**: Separated server configuration for better maintainability
+- **Code Quality**: ESLint with TypeScript support for code linting
+- **Code Formatting**: Prettier for consistent code style
 - **Security**: Helmet.js for security headers
 - **CORS**: Cross-origin resource sharing support
 - **Logging**: Morgan for HTTP request logging
@@ -59,6 +61,10 @@ src/
 - `npm run dev` - Start the development server with hot reload
 - `npm run watch` - Start with file watching
 - `npm test` - Run tests
+- `npm run lint` - Run ESLint to check code quality
+- `npm run lint:fix` - Run ESLint with auto-fix
+- `npm run format` - Format code with Prettier
+- `npm run format:check` - Check if code is properly formatted
 
 ## API Endpoints
 
@@ -82,6 +88,12 @@ The application follows a modular architecture:
 - `server.ts`: Contains server configuration, middleware setup, and route registration
 - `index.ts`: Main entry point that starts the server
 - Routes and middleware are organized in their respective directories for better maintainability
+
+### Code Quality Tools
+
+- **ESLint**: Configured with TypeScript support and strict rules for code quality
+- **Prettier**: Ensures consistent code formatting across the project
+- **TypeScript**: Strict type checking and modern JavaScript features
 
 ## License
 
