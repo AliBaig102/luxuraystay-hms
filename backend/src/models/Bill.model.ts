@@ -6,7 +6,12 @@ import {
   ServiceStatus,
 } from '../types/models';
 
-export interface BillDocument extends Bill, Document {}
+export interface BillDocument extends Bill, Document {
+  additionalServicesTotal: number;
+  subtotal: number;
+  grandTotal: number;
+  isOverdue: boolean;
+}
 
 const additionalServiceSchema = new Schema(
   {
@@ -50,7 +55,7 @@ const additionalServiceSchema = new Schema(
   }
 );
 
-const billSchema = new Schema<BillDocument>(
+const billSchema = new Schema(
   {
     reservationId: {
       type: Schema.Types.ObjectId,
