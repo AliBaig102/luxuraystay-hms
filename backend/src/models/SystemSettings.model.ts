@@ -1,7 +1,10 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import { SystemSettings, SettingCategory } from '../types/models';
 
-export interface SystemSettingsDocument extends SystemSettings, Document {}
+export interface SystemSettingsDocument extends SystemSettings, Document {
+  settingType: string;
+  parsedValue: any;
+}
 
 const systemSettingsSchema = new Schema<SystemSettingsDocument>(
   {

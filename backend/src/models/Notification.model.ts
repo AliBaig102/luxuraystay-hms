@@ -1,9 +1,13 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import { Notification, NotificationType, Priority } from '../types/models';
 
-export interface NotificationDocument extends Notification, Document {}
+export interface NotificationDocument extends Notification, Document {
+  age: number;
+  isUrgent: boolean;
+  timeBasedPriority: number;
+}
 
-const notificationSchema = new Schema<NotificationDocument>(
+const notificationSchema = new Schema(
   {
     recipientId: {
       type: Schema.Types.ObjectId,
@@ -72,13 +76,18 @@ notificationSchema.index({ isRead: 1, createdAt: 1 });
 
 // Virtual for notification age
 notificationSchema.virtual('age').get(function () {
-  const diffTime = Math.abs(new Date().getTime() - this.createdAt.getTime());
+  const diffTime = Math.abs(
+    new Date().getTime() - (this as any).createdAt.getTime()
+  );
   return Math.ceil(diffTime / (1000 * 60)); // Age in minutes
 });
 
 // Virtual for urgency indicator
 notificationSchema.virtual('isUrgent').get(function () {
-  return this.priority === Priority.URGENT || this.priority === Priority.HIGH;
+  return (
+    (this as any).priority === Priority.URGENT ||
+    (this as any).priority === Priority.HIGH
+  );
 });
 
 // Virtual for time-based priority
@@ -86,7 +95,7 @@ notificationSchema.virtual('timeBasedPriority').get(function () {
   let score = 0;
 
   // Base priority score
-  switch (this.priority) {
+  switch ((this as any).priority) {
     case Priority.URGENT:
       score += 10;
       break;
@@ -102,12 +111,12 @@ notificationSchema.virtual('timeBasedPriority').get(function () {
   }
 
   // Unread bonus
-  if (!this.isRead) {
+  if (!(this as any).isRead) {
     score += 5;
   }
 
   // Age penalty (older notifications get lower score)
-  const ageInHours = this.age / 60;
+  const ageInHours = (this as any).age / 60;
   score -= Math.min(ageInHours, 24); // Cap penalty at 24 hours
 
   return Math.max(score, 1); // Minimum score of 1

@@ -7,7 +7,7 @@ import {
 
 export interface ReservationDocument extends Reservation, Document {}
 
-const reservationSchema = new Schema<ReservationDocument>(
+const reservationSchema = new Schema(
   {
     guestId: {
       type: Schema.Types.ObjectId,

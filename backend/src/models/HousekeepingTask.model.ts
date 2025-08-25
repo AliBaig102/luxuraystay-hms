@@ -6,9 +6,13 @@ import {
   Priority,
 } from '../types/models';
 
-export interface HousekeepingTaskDocument extends HousekeepingTask, Document {}
+export interface HousekeepingTaskDocument extends HousekeepingTask, Document {
+  duration: number;
+  isOverdue: boolean;
+  completionTime: number | null;
+}
 
-const housekeepingTaskSchema = new Schema<HousekeepingTaskDocument>(
+const housekeepingTaskSchema = new Schema(
   {
     roomId: {
       type: Schema.Types.ObjectId,
@@ -73,9 +77,10 @@ housekeepingTaskSchema.index({ priority: 1, scheduledDate: 1 });
 
 // Virtual for task duration
 housekeepingTaskSchema.virtual('duration').get(function () {
-  if (this.scheduledDate && this.completedDate) {
+  if ((this as any).scheduledDate && (this as any).completedDate) {
     const diffTime = Math.abs(
-      this.completedDate.getTime() - this.scheduledDate.getTime()
+      (this as any).completedDate.getTime() -
+        (this as any).scheduledDate.getTime()
     );
     return Math.ceil(diffTime / (1000 * 60 * 60)); // Duration in hours
   }
@@ -84,14 +89,18 @@ housekeepingTaskSchema.virtual('duration').get(function () {
 
 // Virtual for overdue status
 housekeepingTaskSchema.virtual('isOverdue').get(function () {
-  return this.status === TaskStatus.PENDING && new Date() > this.scheduledDate;
+  return (
+    (this as any).status === TaskStatus.PENDING &&
+    new Date() > (this as any).scheduledDate
+  );
 });
 
 // Virtual for completion time
 housekeepingTaskSchema.virtual('completionTime').get(function () {
-  if (this.scheduledDate && this.completedDate) {
+  if ((this as any).scheduledDate && (this as any).completedDate) {
     const diffTime =
-      this.completedDate.getTime() - this.scheduledDate.getTime();
+      (this as any).completedDate.getTime() -
+      (this as any).scheduledDate.getTime();
     return Math.ceil(diffTime / (1000 * 60)); // Time in minutes
   }
   return null;

@@ -6,9 +6,14 @@ import {
   ServiceStatus,
 } from '../types/models';
 
-export interface ServiceRequestDocument extends ServiceRequest, Document {}
+export interface ServiceRequestDocument extends ServiceRequest, Document {
+  age: number;
+  completionTime: number | null;
+  isOverdue: boolean;
+  urgencyScore: number;
+}
 
-const serviceRequestSchema = new Schema<ServiceRequestDocument>(
+const serviceRequestSchema = new Schema(
   {
     guestId: {
       type: Schema.Types.ObjectId,
@@ -86,16 +91,17 @@ serviceRequestSchema.index({ priority: 1, requestedDate: 1 });
 // Virtual for request age
 serviceRequestSchema.virtual('age').get(function () {
   const diffTime = Math.abs(
-    new Date().getTime() - this.requestedDate.getTime()
+    new Date().getTime() - (this as any).requestedDate.getTime()
   );
   return Math.ceil(diffTime / (1000 * 60 * 60)); // Age in hours
 });
 
 // Virtual for completion time
 serviceRequestSchema.virtual('completionTime').get(function () {
-  if (this.requestedDate && this.completedDate) {
+  if ((this as any).requestedDate && (this as any).completedDate) {
     const diffTime =
-      this.completedDate.getTime() - this.requestedDate.getTime();
+      (this as any).completedDate.getTime() -
+      (this as any).requestedDate.getTime();
     return Math.ceil(diffTime / (1000 * 60)); // Time in minutes
   }
   return null;
@@ -104,11 +110,11 @@ serviceRequestSchema.virtual('completionTime').get(function () {
 // Virtual for overdue status
 serviceRequestSchema.virtual('isOverdue').get(function () {
   if (
-    this.status === ServiceStatus.REQUESTED ||
-    this.status === ServiceStatus.IN_PROGRESS
+    (this as any).status === ServiceStatus.REQUESTED ||
+    (this as any).status === ServiceStatus.IN_PROGRESS
   ) {
-    const age = this.age;
-    switch (this.priority) {
+    const age = (this as any).age;
+    switch ((this as any).priority) {
       case Priority.URGENT:
         return age > 2; // 2 hours for urgent
       case Priority.HIGH:
@@ -129,7 +135,8 @@ serviceRequestSchema.virtual('urgencyScore').get(function () {
   let score = 0;
 
   // Priority score
-  switch (this.priority) {
+  const priority = (this as any).priority;
+  switch (priority) {
     case Priority.URGENT:
       score += 10;
       break;
@@ -145,7 +152,7 @@ serviceRequestSchema.virtual('urgencyScore').get(function () {
   }
 
   // Age score (older requests get higher score)
-  score += Math.min(this.age, 48); // Cap at 48 hours
+  score += Math.min((this as any).age, 48); // Cap at 48 hours
 
   return score;
 });

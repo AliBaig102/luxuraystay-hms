@@ -8,9 +8,14 @@ import {
 
 export interface MaintenanceRequestDocument
   extends MaintenanceRequest,
-    Document {}
+    Document {
+  age: number;
+  isOverdue: boolean;
+  completionTime: number | null;
+  urgencyScore: number;
+}
 
-const maintenanceRequestSchema = new Schema<MaintenanceRequestDocument>(
+const maintenanceRequestSchema = new Schema(
   {
     roomId: {
       type: Schema.Types.ObjectId,
@@ -87,23 +92,29 @@ maintenanceRequestSchema.index({ priority: 1, createdAt: 1 });
 
 // Virtual for request age
 maintenanceRequestSchema.virtual('age').get(function () {
-  const diffTime = Math.abs(new Date().getTime() - this.createdAt.getTime());
+  const diffTime = Math.abs(
+    new Date().getTime() - (this as any).createdAt.getTime()
+  );
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Age in days
 });
 
 // Virtual for overdue status
 maintenanceRequestSchema.virtual('isOverdue').get(function () {
-  if (this.estimatedCompletionDate && this.status !== TaskStatus.COMPLETED) {
-    return new Date() > this.estimatedCompletionDate;
+  if (
+    (this as any).estimatedCompletionDate &&
+    (this as any).status !== TaskStatus.COMPLETED
+  ) {
+    return new Date() > (this as any).estimatedCompletionDate;
   }
   return false;
 });
 
 // Virtual for completion time
 maintenanceRequestSchema.virtual('completionTime').get(function () {
-  if (this.createdAt && this.actualCompletionDate) {
+  if ((this as any).createdAt && (this as any).actualCompletionDate) {
     const diffTime =
-      this.actualCompletionDate.getTime() - this.createdAt.getTime();
+      (this as any).actualCompletionDate.getTime() -
+      (this as any).createdAt.getTime();
     return Math.ceil(diffTime / (1000 * 60 * 60)); // Time in hours
   }
   return null;
@@ -114,7 +125,7 @@ maintenanceRequestSchema.virtual('urgencyScore').get(function () {
   let score = 0;
 
   // Priority score
-  switch (this.priority) {
+  switch ((this as any).priority) {
     case Priority.URGENT:
       score += 10;
       break;
@@ -130,7 +141,7 @@ maintenanceRequestSchema.virtual('urgencyScore').get(function () {
   }
 
   // Age score (older requests get higher score)
-  score += Math.min(this.age, 30);
+  score += Math.min((this as any).age, 30);
 
   return score;
 });

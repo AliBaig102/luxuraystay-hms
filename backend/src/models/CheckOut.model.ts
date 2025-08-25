@@ -1,9 +1,12 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import { CheckOut, PaymentStatus } from '../types/models';
 
-export interface CheckOutDocument extends CheckOut, Document {}
+export interface CheckOutDocument extends CheckOut, Document {
+  checkoutEfficiency: string;
+  satisfactionLevel: string;
+}
 
-const checkOutSchema = new Schema<CheckOutDocument>(
+const checkOutSchema = new Schema(
   {
     checkInId: {
       type: Schema.Types.ObjectId,
@@ -81,10 +84,10 @@ checkOutSchema.virtual('checkoutEfficiency').get(function () {
 
 // Virtual for guest satisfaction
 checkOutSchema.virtual('satisfactionLevel').get(function () {
-  if (!this.rating) return 'not_rated';
+  if (!(this as any).rating) return 'not_rated';
 
-  if (this.rating >= 4) return 'high';
-  if (this.rating >= 3) return 'medium';
+  if ((this as any).rating >= 4) return 'high';
+  if ((this as any).rating >= 3) return 'medium';
   return 'low';
 });
 

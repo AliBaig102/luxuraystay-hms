@@ -1,9 +1,13 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import { Feedback, FeedbackCategory } from '../types/models';
 
-export interface FeedbackDocument extends Feedback, Document {}
+export interface FeedbackDocument extends Feedback, Document {
+  ratingText: string;
+  hasResponse: boolean;
+  responseTime: number | null;
+}
 
-const feedbackSchema = new Schema<FeedbackDocument>(
+const feedbackSchema = new Schema(
   {
     guestId: {
       type: Schema.Types.ObjectId,
@@ -74,7 +78,7 @@ feedbackSchema.index({ guestId: 1, createdAt: 1 });
 
 // Virtual for rating text
 feedbackSchema.virtual('ratingText').get(function () {
-  switch (this.rating) {
+  switch ((this as any).rating) {
     case 1:
       return 'Poor';
     case 2:
@@ -92,13 +96,18 @@ feedbackSchema.virtual('ratingText').get(function () {
 
 // Virtual for response status
 feedbackSchema.virtual('hasResponse').get(function () {
-  return !!(this.response && this.respondedBy && this.responseDate);
+  return !!(
+    (this as any).response &&
+    (this as any).respondedBy &&
+    (this as any).responseDate
+  );
 });
 
 // Virtual for response time
 feedbackSchema.virtual('responseTime').get(function () {
-  if (this.createdAt && this.responseDate) {
-    const diffTime = this.responseDate.getTime() - this.createdAt.getTime();
+  if ((this as any).createdAt && (this as any).responseDate) {
+    const diffTime =
+      (this as any).responseDate.getTime() - (this as any).createdAt.getTime();
     return Math.ceil(diffTime / (1000 * 60 * 60)); // Time in hours
   }
   return null;

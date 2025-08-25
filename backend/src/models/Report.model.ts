@@ -1,9 +1,14 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import { Report, ReportType, ReportFormat } from '../types/models';
 
-export interface ReportDocument extends Report, Document {}
+export interface ReportDocument extends Report, Document {
+  age: number;
+  isExpired: boolean;
+  size: number;
+  status: string;
+}
 
-const reportSchema = new Schema<ReportDocument>(
+const reportSchema = new Schema(
   {
     reportType: {
       type: String,
@@ -57,22 +62,20 @@ reportSchema.index({ generatedBy: 1, reportType: 1 });
 reportSchema.index({ format: 1, generatedDate: 1 });
 
 // TTL index for automatic cleanup of expired reports
-if (reportSchema.indexes().some(index => index.expiresAt)) {
-  reportSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
-}
+reportSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 // Virtual for report age
 reportSchema.virtual('age').get(function () {
   const diffTime = Math.abs(
-    new Date().getTime() - this.generatedDate.getTime()
+    new Date().getTime() - (this as any).generatedDate.getTime()
   );
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Age in days
 });
 
 // Virtual for expiration status
 reportSchema.virtual('isExpired').get(function () {
-  if (this.expiresAt) {
-    return new Date() > this.expiresAt;
+  if ((this as any).expiresAt) {
+    return new Date() > (this as any).expiresAt;
   }
   return false;
 });
@@ -80,7 +83,7 @@ reportSchema.virtual('isExpired').get(function () {
 // Virtual for report size (approximate)
 reportSchema.virtual('size').get(function () {
   try {
-    const dataString = JSON.stringify(this.data);
+    const dataString = JSON.stringify((this as any).data);
     return dataString.length;
   } catch {
     return 0;
@@ -89,11 +92,11 @@ reportSchema.virtual('size').get(function () {
 
 // Virtual for report status
 reportSchema.virtual('status').get(function () {
-  if (this.isExpired) {
+  if ((this as any).isExpired) {
     return 'expired';
   }
 
-  const age = this.age;
+  const age = (this as any).age;
   if (age > 30) {
     return 'old';
   } else if (age > 7) {
