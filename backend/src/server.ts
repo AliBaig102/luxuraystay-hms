@@ -3,11 +3,15 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
-import { logger } from './utils';
-import { generalLimiter, healthCheckLimiter } from './config';
-
 // Load environment variables
 dotenv.config();
+
+import { logger } from './utils';
+import {
+  generalLimiter,
+  healthCheckLimiter,
+  databaseConnection,
+} from './config';
 
 const PROJECT_VERSION = process.env.PROJECT_VERSION || 'v1';
 const PROJECT_NAME = process.env.PROJECT_NAME || 'LuxuryStay HMS';
@@ -46,12 +50,24 @@ export function createApp(): express.Application {
 /**
  * Start the server
  */
-export function startServer(app: express.Application, _port?: number): void {
-  app.listen(PORT, () => {
-    logger.info(`🚀 Server is running on port ${PORT}`);
-    logger.info(`📱 Environment: ${process.env.NODE_ENV || 'development'}`);
-    logger.info(`🔗 Health check: http://localhost:${PORT}/health`);
-  });
+export async function startServer(
+  app: express.Application,
+  _port?: number
+): Promise<void> {
+  try {
+    // Initialize database connection
+    await databaseConnection.connect();
+
+    app.listen(PORT, () => {
+      logger.info(`🚀 Server is running on port ${PORT}`);
+      logger.info(`📱 Environment: ${process.env.NODE_ENV || 'development'}`);
+      logger.info(`🔗 Health check: http://localhost:${PORT}/health`);
+      logger.info(`🗄️  Database: Connected`);
+    });
+  } catch (error) {
+    logger.error('Failed to start server:', error);
+    process.exit(1);
+  }
 }
 
 /**
