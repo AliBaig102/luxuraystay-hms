@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import { logger } from './utils';
+import { generalLimiter, healthCheckLimiter } from './config';
 
 // Load environment variables
 dotenv.config();
@@ -18,15 +19,18 @@ const PORT = process.env.PORT || 4000;
 export function createApp(): express.Application {
   const app = express();
 
-  // Middleware
+  // Security and basic middleware
   app.use(helmet());
   app.use(cors());
   app.use(morgan('combined'));
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
-  // Health check endpoint
-  app.get('/health', (req, res) => {
+  // Apply global rate limiting to all routes
+  app.use(generalLimiter);
+
+  // Health check endpoint with specific rate limiting
+  app.get('/health', healthCheckLimiter, (req, res) => {
     res.status(200).json({
       status: true,
       timestamp: new Date().toISOString(),
