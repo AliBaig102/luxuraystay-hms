@@ -12,7 +12,7 @@ import {
   healthCheckLimiter,
   databaseConnection,
 } from './config';
-import { testRoutes } from './routes';
+import { testRoutes, roomRoutes, userRoutes } from './routes';
 
 const PROJECT_VERSION = process.env.PROJECT_VERSION || 'v1';
 const PROJECT_NAME = process.env.PROJECT_NAME || 'LuxuryStay HMS';
@@ -36,6 +36,8 @@ export function createApp(): express.Application {
 
   // Endpoints
   app.use(`/api/${PROJECT_VERSION}/tests`, testRoutes);
+  app.use(`/api/${PROJECT_VERSION}/users`, userRoutes);
+  app.use(`/api/${PROJECT_VERSION}/rooms`, roomRoutes);
 
   // Health check endpoint with specific rate limiting
   app.get('/health', healthCheckLimiter, (req, res) => {
