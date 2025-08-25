@@ -12,6 +12,7 @@ import {
   healthCheckLimiter,
   databaseConnection,
 } from './config';
+import { testRoutes } from './routes';
 
 const PROJECT_VERSION = process.env.PROJECT_VERSION || 'v1';
 const PROJECT_NAME = process.env.PROJECT_NAME || 'LuxuryStay HMS';
@@ -32,6 +33,9 @@ export function createApp(): express.Application {
 
   // Apply global rate limiting to all routes
   app.use(generalLimiter);
+
+  // Endpoints
+  app.use(`/api/${PROJECT_VERSION}/tests`, testRoutes);
 
   // Health check endpoint with specific rate limiting
   app.get('/health', healthCheckLimiter, (req, res) => {

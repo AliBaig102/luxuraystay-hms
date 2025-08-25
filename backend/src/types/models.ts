@@ -4,6 +4,12 @@ export interface BaseModel {
   updatedAt: Date;
 }
 
+// Test Model
+export interface Test extends BaseModel {
+  firstName: string;
+  lastName: string;
+}
+
 // User Management Types
 export interface User extends BaseModel {
   email: string;
