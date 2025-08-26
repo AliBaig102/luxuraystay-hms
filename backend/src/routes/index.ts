@@ -6,6 +6,7 @@ import { billRoutes } from './bill.routes';
 import { checkInRoutes } from './checkin.routes';
 import { checkOutRoutes } from './checkout.routes';
 import { serviceRequestRoutes } from './servicerequest.routes';
+import { housekeepingTaskRoutes } from './housekeepingtask.routes';
 
 export {
   testRoutes,
@@ -16,4 +17,5 @@ export {
   checkInRoutes,
   checkOutRoutes,
   serviceRequestRoutes,
+  housekeepingTaskRoutes,
 };
