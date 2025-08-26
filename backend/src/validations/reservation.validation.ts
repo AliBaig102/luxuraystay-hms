@@ -140,6 +140,16 @@ export const reservationCancellationSchema = z.object({
   notes: z.string().max(500, 'Notes cannot exceed 500 characters').optional(),
 });
 
+// Reservation Deletion Schema
+export const reservationDeletionSchema = z.object({
+  reservationId: z.string().min(1, 'Reservation ID is required'),
+  deletionReason: z
+    .string()
+    .min(1, 'Deletion reason is required')
+    .max(500, 'Deletion reason cannot exceed 500 characters'),
+  notes: z.string().max(500, 'Notes cannot exceed 500 characters').optional(),
+});
+
 // Export all schemas
 export const reservationValidationSchemas = {
   reservation: reservationSchema,
@@ -149,4 +159,5 @@ export const reservationValidationSchemas = {
   reservationAvailability: reservationAvailabilitySchema,
   reservationConfirmation: reservationConfirmationSchema,
   reservationCancellation: reservationCancellationSchema,
+  deleteReservation: reservationDeletionSchema,
 };
