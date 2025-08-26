@@ -44,15 +44,15 @@ export const checkOutUpdateSchema = checkOutSchema.partial().omit({
 export const checkOutSearchSchema = z.object({
   query: z
     .string()
-    .min(1, 'Search query is required')
-    .max(100, 'Search query cannot exceed 100 characters'),
+    .max(100, 'Search query cannot exceed 100 characters')
+    .optional(),
   status: checkOutStatusSchema.optional(),
   guestId: z.string().optional(),
   roomId: z.string().optional(),
   startDate: z.date().optional(),
   endDate: z.date().optional(),
-  page: z.number().int().min(1, 'Page must be at least 1').default(1),
-  limit: z
+  page: z.coerce.number().int().min(1, 'Page must be at least 1').default(1),
+  limit: z.coerce
     .number()
     .int()
     .min(1, 'Limit must be at least 1')
@@ -73,8 +73,8 @@ export const checkOutFilterSchema = z.object({
   endDate: z.date().optional(),
   lateCheckOut: z.boolean().optional(),
   isActive: z.boolean().optional(),
-  page: z.number().int().min(1, 'Page must be at least 1').default(1),
-  limit: z
+  page: z.coerce.number().int().min(1, 'Page must be at least 1').default(1),
+  limit: z.coerce
     .number()
     .int()
     .min(1, 'Limit must be at least 1')

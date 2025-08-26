@@ -18,6 +18,9 @@ import {
   userRoutes,
   reservationRoutes,
   billRoutes,
+  checkInRoutes,
+  checkOutRoutes,
+  serviceRequestRoutes,
 } from './routes';
 
 const PROJECT_VERSION = process.env.PROJECT_VERSION || 'v1';
@@ -46,6 +49,9 @@ export function createApp(): express.Application {
   app.use(`/api/${PROJECT_VERSION}/rooms`, roomRoutes);
   app.use(`/api/${PROJECT_VERSION}/reservations`, reservationRoutes);
   app.use(`/api/${PROJECT_VERSION}/bills`, billRoutes);
+  app.use(`/api/${PROJECT_VERSION}/checkins`, checkInRoutes);
+  app.use(`/api/${PROJECT_VERSION}/checkouts`, checkOutRoutes);
+  app.use(`/api/${PROJECT_VERSION}/service-requests`, serviceRequestRoutes);
 
   // Health check endpoint with specific rate limiting
   app.get('/health', healthCheckLimiter, (req, res) => {

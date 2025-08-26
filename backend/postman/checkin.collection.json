@@ -1,0 +1,474 @@
+{
+  "info": {
+    "_postman_id": "checkin-management-api",
+    "name": "Check-in Management API",
+    "description": "Comprehensive collection for Check-in Management endpoints in LuxuryStay HMS",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "luxuraystay-hms"
+  },
+  "item": [
+    {
+      "name": "Get All Check-ins",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{BASE_URL}}/api/v1/checkins?page=1&limit=10&query=&sortBy=checkInTime&sortOrder=desc",
+          "host": ["{{BASE_URL}}"],
+          "path": ["api", "v1", "checkins"],
+          "query": [
+            {
+              "key": "page",
+              "value": "1",
+              "description": "Page number (default: 1)"
+            },
+            {
+              "key": "limit",
+              "value": "10",
+              "description": "Number of items per page (default: 10, max: 100)"
+            },
+            {
+              "key": "query",
+              "value": "",
+              "description": "Search query for room number or special instructions",
+              "disabled": true
+            },
+            {
+              "key": "sortBy",
+              "value": "checkInTime",
+              "description": "Sort by field (checkInTime, assignedRoomNumber, createdAt)"
+            },
+            {
+              "key": "sortOrder",
+              "value": "desc",
+              "description": "Sort order (asc, desc)"
+            },
+            {
+              "key": "status",
+              "value": "",
+              "description": "Filter by status (pending, completed, cancelled)",
+              "disabled": true
+            },
+            {
+              "key": "roomId",
+              "value": "",
+              "description": "Filter by room ID",
+              "disabled": true
+            },
+            {
+              "key": "guestId",
+              "value": "",
+              "description": "Filter by guest ID",
+              "disabled": true
+            },
+            {
+              "key": "dateFrom",
+              "value": "",
+              "description": "Filter check-ins from date (YYYY-MM-DD)",
+              "disabled": true
+            },
+            {
+              "key": "dateTo",
+              "value": "",
+              "description": "Filter check-ins to date (YYYY-MM-DD)",
+              "disabled": true
+            }
+          ]
+        },
+        "description": "Retrieve all check-ins with pagination, search, and filtering options"
+      },
+      "response": [
+        {
+          "name": "Success Response",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/checkins?page=1&limit=10",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "checkins"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n  \"success\": true,\n  \"message\": \"Check-ins fetched successfully\",\n  \"data\": [\n    {\n      \"_id\": \"507f1f77bcf86cd799439013\",\n      \"reservationId\": {\n        \"_id\": \"507f1f77bcf86cd799439012\",\n        \"guestName\": \"John Doe\",\n        \"checkInDate\": \"2024-01-15T00:00:00.000Z\",\n        \"checkOutDate\": \"2024-01-18T00:00:00.000Z\"\n      },\n      \"roomId\": {\n        \"_id\": \"507f1f77bcf86cd799439011\",\n        \"roomNumber\": \"101\",\n        \"roomType\": \"deluxe\"\n      },\n      \"guestId\": {\n        \"_id\": \"507f1f77bcf86cd799439010\",\n        \"firstName\": \"John\",\n        \"lastName\": \"Doe\",\n        \"email\": \"john.doe@example.com\",\n        \"phone\": \"+1234567890\"\n      },\n      \"checkInTime\": \"2024-01-15T14:00:00.000Z\",\n      \"assignedRoomNumber\": \"101\",\n      \"keyIssued\": true,\n      \"welcomePackDelivered\": true,\n      \"specialInstructions\": \"Late arrival\",\n      \"status\": \"completed\",\n      \"createdAt\": \"2024-01-15T10:30:00.000Z\",\n      \"updatedAt\": \"2024-01-15T14:00:00.000Z\"\n    }\n  ],\n  \"meta\": {\n    \"pagination\": {\n      \"currentPage\": 1,\n      \"totalPages\": 5,\n      \"totalItems\": 50,\n      \"itemsPerPage\": 10,\n      \"hasNextPage\": true,\n      \"hasPrevPage\": false\n    }\n  }\n}"
+        }
+      ]
+    },
+    {
+      "name": "Get Check-in by ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{BASE_URL}}/api/v1/checkins/{{CHECKIN_ID}}",
+          "host": ["{{BASE_URL}}"],
+          "path": ["api", "v1", "checkins", "{{CHECKIN_ID}}"]
+        },
+        "description": "Retrieve a specific check-in by its MongoDB ObjectId"
+      },
+      "response": [
+        {
+          "name": "Success Response",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/checkins/507f1f77bcf86cd799439013",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "checkins", "507f1f77bcf86cd799439013"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n  \"success\": true,\n  \"message\": \"Check-in fetched successfully\",\n  \"data\": {\n    \"_id\": \"507f1f77bcf86cd799439013\",\n    \"reservationId\": {\n      \"_id\": \"507f1f77bcf86cd799439012\",\n      \"guestName\": \"John Doe\",\n      \"checkInDate\": \"2024-01-15T00:00:00.000Z\",\n      \"checkOutDate\": \"2024-01-18T00:00:00.000Z\",\n      \"totalAmount\": 1200\n    },\n    \"roomId\": {\n      \"_id\": \"507f1f77bcf86cd799439011\",\n      \"roomNumber\": \"101\",\n      \"roomType\": \"deluxe\",\n      \"floor\": 1,\n      \"amenities\": [\"WiFi\", \"TV\", \"AC\"]\n    },\n    \"guestId\": {\n      \"_id\": \"507f1f77bcf86cd799439010\",\n      \"firstName\": \"John\",\n      \"lastName\": \"Doe\",\n      \"email\": \"john.doe@example.com\",\n      \"phone\": \"+1234567890\"\n    },\n    \"checkInTime\": \"2024-01-15T14:00:00.000Z\",\n    \"assignedRoomNumber\": \"101\",\n    \"keyIssued\": true,\n    \"welcomePackDelivered\": true,\n    \"specialInstructions\": \"Late arrival\",\n    \"status\": \"completed\",\n    \"createdAt\": \"2024-01-15T10:30:00.000Z\",\n    \"updatedAt\": \"2024-01-15T14:00:00.000Z\",\n    \"stayDuration\": 3,\n    \"isCheckedOut\": false,\n    \"isActiveStay\": true\n  }\n}"
+        }
+      ]
+    },
+    {
+      "name": "Create Check-in",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"reservationId\": \"507f1f77bcf86cd799439012\",\n  \"roomId\": \"507f1f77bcf86cd799439011\",\n  \"guestId\": \"507f1f77bcf86cd799439010\",\n  \"assignedRoomNumber\": \"101\",\n  \"specialInstructions\": \"Guest requested late check-in\",\n  \"keyIssued\": false,\n  \"welcomePackDelivered\": false\n}"
+        },
+        "url": {
+          "raw": "{{BASE_URL}}/api/v1/checkins",
+          "host": ["{{BASE_URL}}"],
+          "path": ["api", "v1", "checkins"]
+        },
+        "description": "Create a new check-in record for a reservation"
+      },
+      "response": [
+        {
+          "name": "Success Response",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reservationId\": \"507f1f77bcf86cd799439012\",\n  \"roomId\": \"507f1f77bcf86cd799439011\",\n  \"guestId\": \"507f1f77bcf86cd799439010\",\n  \"assignedRoomNumber\": \"101\",\n  \"specialInstructions\": \"Guest requested late check-in\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/checkins",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "checkins"]
+            }
+          },
+          "status": "Created",
+          "code": 201,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n  \"success\": true,\n  \"message\": \"Check-in created successfully\",\n  \"data\": {\n    \"_id\": \"507f1f77bcf86cd799439013\",\n    \"reservationId\": \"507f1f77bcf86cd799439012\",\n    \"roomId\": \"507f1f77bcf86cd799439011\",\n    \"guestId\": \"507f1f77bcf86cd799439010\",\n    \"assignedRoomNumber\": \"101\",\n    \"specialInstructions\": \"Guest requested late check-in\",\n    \"keyIssued\": false,\n    \"welcomePackDelivered\": false,\n    \"status\": \"pending\",\n    \"createdAt\": \"2024-01-15T10:30:00.000Z\",\n    \"updatedAt\": \"2024-01-15T10:30:00.000Z\"\n  }\n}"
+        }
+      ]
+    },
+    {
+      "name": "Update Check-in",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"assignedRoomNumber\": \"102\",\n  \"specialInstructions\": \"Room changed due to guest preference\",\n  \"keyIssued\": true,\n  \"welcomePackDelivered\": true\n}"
+        },
+        "url": {
+          "raw": "{{BASE_URL}}/api/v1/checkins/{{CHECKIN_ID}}",
+          "host": ["{{BASE_URL}}"],
+          "path": ["api", "v1", "checkins", "{{CHECKIN_ID}}"]
+        },
+        "description": "Update an existing check-in record"
+      },
+      "response": [
+        {
+          "name": "Success Response",
+          "originalRequest": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"assignedRoomNumber\": \"102\",\n  \"keyIssued\": true\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/checkins/507f1f77bcf86cd799439013",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "checkins", "507f1f77bcf86cd799439013"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n  \"success\": true,\n  \"message\": \"Check-in updated successfully\",\n  \"data\": {\n    \"_id\": \"507f1f77bcf86cd799439013\",\n    \"reservationId\": {\n      \"_id\": \"507f1f77bcf86cd799439012\",\n      \"guestName\": \"John Doe\",\n      \"checkInDate\": \"2024-01-15T00:00:00.000Z\",\n      \"checkOutDate\": \"2024-01-18T00:00:00.000Z\"\n    },\n    \"roomId\": {\n      \"_id\": \"507f1f77bcf86cd799439011\",\n      \"roomNumber\": \"101\",\n      \"roomType\": \"deluxe\"\n    },\n    \"guestId\": {\n      \"_id\": \"507f1f77bcf86cd799439010\",\n      \"firstName\": \"John\",\n      \"lastName\": \"Doe\",\n      \"email\": \"john.doe@example.com\",\n      \"phone\": \"+1234567890\"\n    },\n    \"assignedRoomNumber\": \"102\",\n    \"keyIssued\": true,\n    \"welcomePackDelivered\": true,\n    \"specialInstructions\": \"Room changed due to guest preference\",\n    \"status\": \"pending\",\n    \"createdAt\": \"2024-01-15T10:30:00.000Z\",\n    \"updatedAt\": \"2024-01-15T12:00:00.000Z\"\n  }\n}"
+        }
+      ]
+    },
+    {
+      "name": "Delete Check-in",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{BASE_URL}}/api/v1/checkins/{{CHECKIN_ID}}",
+          "host": ["{{BASE_URL}}"],
+          "path": ["api", "v1", "checkins", "{{CHECKIN_ID}}"]
+        },
+        "description": "Delete a check-in record by ID"
+      },
+      "response": [
+        {
+          "name": "Success Response",
+          "originalRequest": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/checkins/507f1f77bcf86cd799439013",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "checkins", "507f1f77bcf86cd799439013"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n  \"success\": true,\n  \"message\": \"Check-in deleted successfully\",\n  \"data\": {\n    \"_id\": \"507f1f77bcf86cd799439013\",\n    \"reservationId\": \"507f1f77bcf86cd799439012\",\n    \"roomId\": \"507f1f77bcf86cd799439011\",\n    \"guestId\": \"507f1f77bcf86cd799439010\",\n    \"assignedRoomNumber\": \"101\",\n    \"keyIssued\": true,\n    \"welcomePackDelivered\": true,\n    \"status\": \"pending\",\n    \"createdAt\": \"2024-01-15T10:30:00.000Z\",\n    \"updatedAt\": \"2024-01-15T12:00:00.000Z\"\n  }\n}"
+        }
+      ]
+    },
+    {
+      "name": "Complete Check-in",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"checkInTime\": \"2024-01-15T14:00:00.000Z\",\n  \"keyIssued\": true,\n  \"welcomePackDelivered\": true,\n  \"specialInstructions\": \"Guest checked in successfully\"\n}"
+        },
+        "url": {
+          "raw": "{{BASE_URL}}/api/v1/checkins/{{CHECKIN_ID}}/complete",
+          "host": ["{{BASE_URL}}"],
+          "path": ["api", "v1", "checkins", "{{CHECKIN_ID}}", "complete"]
+        },
+        "description": "Complete the check-in process for a guest"
+      },
+      "response": [
+        {
+          "name": "Success Response",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"checkInTime\": \"2024-01-15T14:00:00.000Z\",\n  \"keyIssued\": true,\n  \"welcomePackDelivered\": true\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/checkins/507f1f77bcf86cd799439013/complete",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "checkins", "507f1f77bcf86cd799439013", "complete"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n  \"success\": true,\n  \"message\": \"Check-in completed successfully\",\n  \"data\": {\n    \"_id\": \"507f1f77bcf86cd799439013\",\n    \"reservationId\": {\n      \"_id\": \"507f1f77bcf86cd799439012\",\n      \"guestName\": \"John Doe\",\n      \"checkInDate\": \"2024-01-15T00:00:00.000Z\",\n      \"checkOutDate\": \"2024-01-18T00:00:00.000Z\"\n    },\n    \"roomId\": {\n      \"_id\": \"507f1f77bcf86cd799439011\",\n      \"roomNumber\": \"101\",\n      \"roomType\": \"deluxe\"\n    },\n    \"guestId\": {\n      \"_id\": \"507f1f77bcf86cd799439010\",\n      \"firstName\": \"John\",\n      \"lastName\": \"Doe\",\n      \"email\": \"john.doe@example.com\",\n      \"phone\": \"+1234567890\"\n    },\n    \"checkInTime\": \"2024-01-15T14:00:00.000Z\",\n    \"assignedRoomNumber\": \"101\",\n    \"keyIssued\": true,\n    \"welcomePackDelivered\": true,\n    \"specialInstructions\": \"Guest checked in successfully\",\n    \"status\": \"completed\",\n    \"createdAt\": \"2024-01-15T10:30:00.000Z\",\n    \"updatedAt\": \"2024-01-15T14:00:00.000Z\"\n  }\n}"
+        }
+      ]
+    },
+    {
+      "name": "Get Check-in Statistics",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{BASE_URL}}/api/v1/checkins/stats",
+          "host": ["{{BASE_URL}}"],
+          "path": ["api", "v1", "checkins", "stats"]
+        },
+        "description": "Get check-in statistics including total, today's, pending, and completed check-ins"
+      },
+      "response": [
+        {
+          "name": "Success Response",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/checkins/stats",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "checkins", "stats"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n  \"success\": true,\n  \"message\": \"Check-in statistics fetched successfully\",\n  \"data\": {\n    \"totalCheckIns\": 150,\n    \"todayCheckIns\": 12,\n    \"pendingCheckIns\": 8,\n    \"completedCheckIns\": 142\n  }\n}"
+        }
+      ]
+    },
+    {
+      "name": "Get Active Check-ins",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{BASE_URL}}/api/v1/checkins/active",
+          "host": ["{{BASE_URL}}"],
+          "path": ["api", "v1", "checkins", "active"]
+        },
+        "description": "Get all active check-ins (checked in but not checked out)"
+      },
+      "response": [
+        {
+          "name": "Success Response",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/checkins/active",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "checkins", "active"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n  \"success\": true,\n  \"message\": \"Active check-ins fetched successfully\",\n  \"data\": [\n    {\n      \"_id\": \"507f1f77bcf86cd799439013\",\n      \"reservationId\": {\n        \"_id\": \"507f1f77bcf86cd799439012\",\n        \"guestName\": \"John Doe\",\n        \"checkInDate\": \"2024-01-15T00:00:00.000Z\",\n        \"checkOutDate\": \"2024-01-18T00:00:00.000Z\"\n      },\n      \"roomId\": {\n        \"_id\": \"507f1f77bcf86cd799439011\",\n        \"roomNumber\": \"101\",\n        \"roomType\": \"deluxe\"\n      },\n      \"guestId\": {\n        \"_id\": \"507f1f77bcf86cd799439010\",\n        \"firstName\": \"John\",\n        \"lastName\": \"Doe\",\n        \"email\": \"john.doe@example.com\",\n        \"phone\": \"+1234567890\"\n      },\n      \"checkInTime\": \"2024-01-15T14:00:00.000Z\",\n      \"assignedRoomNumber\": \"101\",\n      \"keyIssued\": true,\n      \"welcomePackDelivered\": true,\n      \"status\": \"completed\",\n      \"createdAt\": \"2024-01-15T10:30:00.000Z\",\n      \"updatedAt\": \"2024-01-15T14:00:00.000Z\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "BASE_URL",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "CHECKIN_ID",
+      "value": "507f1f77bcf86cd799439013",
+      "type": "string"
+    }
+  ]
+}
