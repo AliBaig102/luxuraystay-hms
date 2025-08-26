@@ -7,6 +7,8 @@ import { checkInRoutes } from './checkin.routes';
 import { checkOutRoutes } from './checkout.routes';
 import { serviceRequestRoutes } from './servicerequest.routes';
 import { housekeepingTaskRoutes } from './housekeepingtask.routes';
+import { maintenanceRequestRoutes } from './maintenancerequest.routes';
+import { feedbackRoutes } from './feedback.routes';
 
 export {
   testRoutes,
@@ -18,4 +20,6 @@ export {
   checkOutRoutes,
   serviceRequestRoutes,
   housekeepingTaskRoutes,
+  maintenanceRequestRoutes,
+  feedbackRoutes,
 };

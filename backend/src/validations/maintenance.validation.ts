@@ -56,12 +56,9 @@ export const maintenanceRequestSchema = z.object({
     .min(1, 'Estimated duration must be at least 1 hour')
     .max(720, 'Estimated duration cannot exceed 720 hours (30 days)')
     .optional(),
-  scheduledDate: z
-    .date()
-    .min(new Date(), 'Scheduled date must be in the future')
-    .optional(),
-  actualStartTime: z.date().optional(),
-  actualEndTime: z.date().optional(),
+  scheduledDate: z.string().datetime('Invalid date format').optional(),
+  actualStartTime: z.string().datetime('Invalid date format').optional(),
+  actualEndTime: z.string().datetime('Invalid date format').optional(),
   notes: z.string().max(1000, 'Notes cannot exceed 1000 characters').optional(),
   isActive: z.boolean().default(true),
 });
@@ -86,8 +83,8 @@ export const maintenanceRequestSearchSchema = z.object({
   assignedTo: z.string().optional(),
   roomId: z.string().optional(),
   reportedBy: z.string().optional(),
-  startDate: z.date().optional(),
-  endDate: z.date().optional(),
+  startDate: z.string().datetime('Invalid date format').optional(),
+  endDate: z.string().datetime('Invalid date format').optional(),
   page: z.number().int().min(1, 'Page must be at least 1').default(1),
   limit: z
     .number()
@@ -129,10 +126,7 @@ export const maintenanceRequestFilterSchema = z.object({
 export const maintenanceAssignmentSchema = z.object({
   requestId: z.string().min(1, 'Request ID is required'),
   assignedTo: z.string().min(1, 'Assigned staff ID is required'),
-  scheduledDate: z
-    .date()
-    .min(new Date(), 'Scheduled date must be in the future')
-    .optional(),
+  scheduledDate: z.string().datetime('Invalid date format').optional(),
   notes: z.string().max(500, 'Notes cannot exceed 500 characters').optional(),
 });
 
@@ -146,9 +140,7 @@ export const maintenanceStatusUpdateSchema = z.object({
 // Maintenance Completion Schema
 export const maintenanceCompletionSchema = z.object({
   requestId: z.string().min(1, 'Request ID is required'),
-  actualEndTime: z
-    .date()
-    .min(new Date(), 'Actual end time must be in the future'),
+  actualEndTime: z.string().datetime('Invalid date format').optional(),
   actualCost: z
     .number()
     .min(0, 'Actual cost cannot be negative')

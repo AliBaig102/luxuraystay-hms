@@ -1,0 +1,627 @@
+{
+  "info": {
+    "_postman_id": "maintenance-request-api",
+    "name": "Maintenance Request Management API",
+    "description": "Comprehensive API collection for managing maintenance requests in the Luxuray Stay HMS system. This collection includes all CRUD operations, technician assignment, status updates, completion workflows, search/filtering, and statistics endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "luxuraystay-hms"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
+        },
+        "description": "Check if the API server is running and healthy."
+      },
+      "response": [
+        {
+          "name": "Success",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n  \"status\": \"OK\",\n  \"message\": \"API is running\",\n  \"timestamp\": \"2024-01-20T10:00:00.000Z\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Management Operations",
+      "item": [
+        {
+          "name": "Assign Technician",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"requestId\": \"{{requestId}}\",\n  \"assignedTo\": \"507f1f77bcf86cd799439013\",\n  \"scheduledDate\": \"2024-01-21T09:00:00.000Z\",\n  \"notes\": \"Assigned to senior electrician John Doe\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{version}}/maintenance-requests/assign",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{version}}", "maintenance-requests", "assign"]
+            },
+            "description": "Assign a technician to a maintenance request."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+      ]
+    },
+    {
+      "name": "Search & Analytics",
+      "item": [
+        {
+          "name": "Search Maintenance Requests",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{version}}/maintenance-requests/search?query=light&status=pending&priority=high&page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{version}}", "maintenance-requests", "search"],
+              "query": [
+                {
+                  "key": "query",
+                  "value": "light",
+                  "description": "Search term for description or title"
+                },
+                {
+                  "key": "status",
+                  "value": "pending",
+                  "description": "Filter by status (pending, assigned, in_progress, completed, cancelled)"
+                },
+                {
+                  "key": "priority",
+                  "value": "high",
+                  "description": "Filter by priority (low, medium, high, urgent)"
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number for pagination"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Number of items per page"
+                }
+              ]
+            },
+            "description": "Search and filter maintenance requests with pagination."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/{{version}}/maintenance-requests/search?query=light&status=pending&priority=high&page=1&limit=10",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "{{version}}", "maintenance-requests", "search"],
+                  "query": [
+                    {
+                      "key": "query",
+                      "value": "light"
+                    },
+                    {
+                      "key": "status",
+                      "value": "pending"
+                    },
+                    {
+                      "key": "priority",
+                      "value": "high"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Maintenance requests retrieved successfully\",\n  \"data\": {\n    \"requests\": [\n      {\n        \"_id\": \"68aded384dfe2dbc07200adb\",\n        \"title\": \"Light fixture repair\",\n        \"description\": \"Broken light fixture in room 101\",\n        \"priority\": \"high\",\n        \"status\": \"pending\",\n        \"roomNumber\": \"101\",\n        \"category\": \"electrical\",\n        \"createdAt\": \"2024-01-20T10:00:00.000Z\"\n      }\n    ],\n    \"pagination\": {\n      \"currentPage\": 1,\n      \"totalPages\": 1,\n      \"totalItems\": 1,\n      \"itemsPerPage\": 10\n    }\n  },\n  \"timestamp\": \"2024-01-20T10:00:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Statistics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{version}}/maintenance-requests/statistics?startDate=2024-01-01&endDate=2024-01-31",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{version}}", "maintenance-requests", "statistics"],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "2024-01-01",
+                  "description": "Start date for statistics (optional)"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2024-01-31",
+                  "description": "End date for statistics (optional)"
+                }
+              ]
+            },
+            "description": "Get maintenance request statistics and analytics."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/{{version}}/maintenance-requests/statistics?startDate=2024-01-01&endDate=2024-01-31",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "{{version}}", "maintenance-requests", "statistics"],
+                  "query": [
+                    {
+                      "key": "startDate",
+                      "value": "2024-01-01"
+                    },
+                    {
+                      "key": "endDate",
+                      "value": "2024-01-31"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Statistics retrieved successfully\",\n  \"data\": {\n    \"totalRequests\": 150,\n    \"statusBreakdown\": {\n      \"pending\": 25,\n      \"assigned\": 30,\n      \"in_progress\": 40,\n      \"completed\": 50,\n      \"cancelled\": 5\n    },\n    \"priorityBreakdown\": {\n      \"low\": 40,\n      \"medium\": 60,\n      \"high\": 35,\n      \"urgent\": 15\n    },\n    \"categoryBreakdown\": {\n      \"electrical\": 45,\n      \"plumbing\": 35,\n      \"hvac\": 30,\n      \"general\": 25,\n      \"cleaning\": 15\n    },\n    \"averageCompletionTime\": 2.5,\n    \"totalCost\": 15750.00,\n    \"averageCost\": 105.00\n  },\n  \"timestamp\": \"2024-01-20T10:00:00.000Z\"\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"requestId\": \"68aded384dfe2dbc07200adb\",\n  \"assignedTo\": \"507f1f77bcf86cd799439013\",\n  \"scheduledDate\": \"2024-01-21T09:00:00.000Z\",\n  \"notes\": \"Assigned to senior electrician John Doe\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/{{version}}/maintenance-requests/assign",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "{{version}}", "maintenance-requests", "assign"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Technician assigned successfully\",\n  \"data\": {\n    \"_id\": \"68aded384dfe2dbc07200adb\",\n    \"assignedTo\": \"507f1f77bcf86cd799439013\",\n    \"status\": \"assigned\",\n    \"scheduledDate\": \"2024-01-21T09:00:00.000Z\",\n    \"updatedAt\": \"2024-01-20T11:00:00.000Z\"\n  },\n  \"timestamp\": \"2024-01-20T11:00:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"requestId\": \"{{requestId}}\",\n  \"status\": \"in_progress\",\n  \"notes\": \"Technician has started working on the light fixture\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{version}}/maintenance-requests/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{version}}", "maintenance-requests", "status"]
+            },
+            "description": "Update the status of a maintenance request."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"requestId\": \"68aded384dfe2dbc07200adb\",\n  \"status\": \"in_progress\",\n  \"notes\": \"Technician has started working on the light fixture\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/{{version}}/maintenance-requests/status",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "{{version}}", "maintenance-requests", "status"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Status updated successfully\",\n  \"data\": {\n    \"_id\": \"68aded384dfe2dbc07200adb\",\n    \"status\": \"in_progress\",\n    \"updatedAt\": \"2024-01-20T11:30:00.000Z\"\n  },\n  \"timestamp\": \"2024-01-20T11:30:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Complete Maintenance Request",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"requestId\": \"{{requestId}}\",\n  \"actualEndTime\": \"2024-01-20T15:30:00.000Z\",\n  \"actualCost\": 120,\n  \"completionNotes\": \"Light fixture replaced successfully. New LED bulb installed.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{version}}/maintenance-requests/{{requestId}}/complete",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{version}}", "maintenance-requests", "{{requestId}}", "complete"]
+            },
+            "description": "Mark a maintenance request as completed with completion details."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"requestId\": \"68aded384dfe2dbc07200adb\",\n  \"actualEndTime\": \"2024-01-20T15:30:00.000Z\",\n  \"actualCost\": 120,\n  \"completionNotes\": \"Light fixture replaced successfully. New LED bulb installed.\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/{{version}}/maintenance-requests/68aded384dfe2dbc07200adb/complete",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "{{version}}", "maintenance-requests", "68aded384dfe2dbc07200adb", "complete"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Maintenance request completed successfully\",\n  \"data\": {\n    \"_id\": \"68aded384dfe2dbc07200adb\",\n    \"status\": \"completed\",\n    \"actualEndTime\": \"2024-01-20T15:30:00.000Z\",\n    \"actualCost\": 120,\n    \"completionNotes\": \"Light fixture replaced successfully. New LED bulb installed.\",\n    \"updatedAt\": \"2024-01-20T15:30:00.000Z\"\n  },\n  \"timestamp\": \"2024-01-20T15:30:00.000Z\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "CRUD Operations",
+      "item": [
+        {
+          "name": "Create Maintenance Request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roomId\": \"507f1f77bcf86cd799439011\",\n  \"reportedBy\": \"507f1f77bcf86cd799439012\",\n  \"category\": \"electrical\",\n  \"priority\": \"high\",\n  \"description\": \"The main light fixture in the room is not working\",\n  \"scheduledDate\": \"2024-01-21T10:00:00.000Z\",\n  \"notes\": \"Guest reported the issue during check-in\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{version}}/maintenance-requests",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{version}}", "maintenance-requests"]
+            },
+            "description": "Create a new maintenance request with all required details."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"roomId\": \"507f1f77bcf86cd799439011\",\n  \"reportedBy\": \"507f1f77bcf86cd799439012\",\n  \"category\": \"electrical\",\n  \"priority\": \"high\",\n  \"description\": \"The main light fixture in the room is not working\",\n  \"scheduledDate\": \"2024-01-21T10:00:00.000Z\",\n  \"notes\": \"Guest reported the issue during check-in\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/{{version}}/maintenance-requests",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "{{version}}", "maintenance-requests"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Maintenance request created successfully\",\n  \"data\": {\n    \"_id\": \"68aded384dfe2dbc07200adb\",\n    \"roomId\": \"507f1f77bcf86cd799439011\",\n    \"reportedBy\": \"507f1f77bcf86cd799439012\",\n    \"category\": \"electrical\",\n    \"priority\": \"high\",\n    \"status\": \"pending\",\n    \"description\": \"The main light fixture in the room is not working\",\n    \"scheduledDate\": \"2024-01-21T10:00:00.000Z\",\n    \"notes\": \"Guest reported the issue during check-in\",\n    \"isActive\": true,\n    \"createdAt\": \"2024-01-20T10:00:00.000Z\",\n    \"updatedAt\": \"2024-01-20T10:00:00.000Z\"\n  },\n  \"timestamp\": \"2024-01-20T10:00:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get All Maintenance Requests",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{version}}/maintenance-requests?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{version}}", "maintenance-requests"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number for pagination"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Number of items per page"
+                }
+              ]
+            },
+            "description": "Retrieve all maintenance requests with pagination support."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/{{version}}/maintenance-requests?page=1&limit=10",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "{{version}}", "maintenance-requests"],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Maintenance requests retrieved successfully\",\n  \"data\": {\n    \"requests\": [\n      {\n        \"_id\": \"68aded384dfe2dbc07200adb\",\n        \"roomId\": \"507f1f77bcf86cd799439011\",\n        \"reportedBy\": \"507f1f77bcf86cd799439012\",\n        \"category\": \"electrical\",\n        \"priority\": \"high\",\n        \"status\": \"pending\",\n        \"description\": \"The main light fixture in the room is not working\",\n        \"createdAt\": \"2024-01-20T10:00:00.000Z\"\n      }\n    ],\n    \"pagination\": {\n      \"currentPage\": 1,\n      \"totalPages\": 1,\n      \"totalItems\": 1,\n      \"itemsPerPage\": 10\n    }\n  },\n  \"timestamp\": \"2024-01-20T10:00:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Maintenance Request by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{version}}/maintenance-requests/{{requestId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{version}}", "maintenance-requests", "{{requestId}}"]
+            },
+            "description": "Retrieve a specific maintenance request by its ID."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/{{version}}/maintenance-requests/68aded384dfe2dbc07200adb",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "{{version}}", "maintenance-requests", "68aded384dfe2dbc07200adb"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Maintenance request retrieved successfully\",\n  \"data\": {\n    \"_id\": \"68aded384dfe2dbc07200adb\",\n    \"roomId\": \"507f1f77bcf86cd799439011\",\n    \"reportedBy\": \"507f1f77bcf86cd799439012\",\n    \"category\": \"electrical\",\n    \"priority\": \"high\",\n    \"status\": \"pending\",\n    \"description\": \"The main light fixture in the room is not working\",\n    \"scheduledDate\": \"2024-01-21T10:00:00.000Z\",\n    \"notes\": \"Guest reported the issue during check-in\",\n    \"isActive\": true,\n    \"createdAt\": \"2024-01-20T10:00:00.000Z\",\n    \"updatedAt\": \"2024-01-20T10:00:00.000Z\"\n  },\n  \"timestamp\": \"2024-01-20T10:00:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Maintenance Request",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"priority\": \"medium\",\n  \"description\": \"Updated: The main light fixture in the room is flickering\",\n  \"scheduledDate\": \"2024-01-22T14:00:00.000Z\",\n  \"notes\": \"Priority reduced after further inspection\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{version}}/maintenance-requests/{{requestId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{version}}", "maintenance-requests", "{{requestId}}"]
+            },
+            "description": "Update an existing maintenance request with new information."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"priority\": \"medium\",\n  \"description\": \"Updated: The main light fixture in the room is flickering\",\n  \"scheduledDate\": \"2024-01-22T14:00:00.000Z\",\n  \"notes\": \"Priority reduced after further inspection\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/{{version}}/maintenance-requests/68aded384dfe2dbc07200adb",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "{{version}}", "maintenance-requests", "68aded384dfe2dbc07200adb"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Maintenance request updated successfully\",\n  \"data\": {\n    \"_id\": \"68aded384dfe2dbc07200adb\",\n    \"roomId\": \"507f1f77bcf86cd799439011\",\n    \"reportedBy\": \"507f1f77bcf86cd799439012\",\n    \"category\": \"electrical\",\n    \"priority\": \"medium\",\n    \"status\": \"pending\",\n    \"description\": \"Updated: The main light fixture in the room is flickering\",\n    \"scheduledDate\": \"2024-01-22T14:00:00.000Z\",\n    \"notes\": \"Priority reduced after further inspection\",\n    \"updatedAt\": \"2024-01-20T10:30:00.000Z\"\n  },\n  \"timestamp\": \"2024-01-20T10:30:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Maintenance Request",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{version}}/maintenance-requests/{{requestId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{version}}", "maintenance-requests", "{{requestId}}"]
+            },
+            "description": "Delete a maintenance request by its ID."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/{{version}}/maintenance-requests/68aded384dfe2dbc07200adb",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "{{version}}", "maintenance-requests", "68aded384dfe2dbc07200adb"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Maintenance request deleted successfully\",\n  \"data\": {\n    \"id\": \"68aded384dfe2dbc07200adb\"\n  },\n  \"timestamp\": \"2024-01-20T10:45:00.000Z\"\n}"
+            }
+          ]
+        }
+      ]
+    }

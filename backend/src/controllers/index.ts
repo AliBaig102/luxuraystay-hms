@@ -1,6 +1,11 @@
 export { TestController } from './test.controller';
 export { RoomController } from './room.controller';
 export { UserController } from './user.controller';
+export { ReservationController } from './reservation.controller';
 export { BillController } from './bill.controller';
 export { CheckInController } from './checkin.controller';
 export { CheckOutController } from './checkout.controller';
+export { ServiceRequestController } from './servicerequest.controller';
+export { HousekeepingTaskController } from './housekeepingtask.controller';
+export { MaintenanceRequestController } from './maintenancerequest.controller';
+export { FeedbackController } from './feedback.controller';
