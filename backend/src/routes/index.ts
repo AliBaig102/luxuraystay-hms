@@ -11,6 +11,7 @@ import { maintenanceRequestRoutes } from './maintenancerequest.routes';
 import { feedbackRoutes } from './feedback.routes';
 import notificationRoutes from './notification.routes';
 import { reportRoutes } from './report.routes';
+import { inventoryRoutes } from './inventory.routes';
 
 export {
   testRoutes,
@@ -26,4 +27,5 @@ export {
   feedbackRoutes,
   notificationRoutes,
   reportRoutes,
+  inventoryRoutes,
 };
