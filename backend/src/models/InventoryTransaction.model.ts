@@ -28,13 +28,15 @@ const inventoryTransactionSchema = new Schema<InventoryTransactionDocument>(
     },
     unitPrice: {
       type: Number,
+      required: true,
       min: [0, 'Unit price cannot be negative'],
       max: [100000, 'Unit price cannot exceed 100000'],
     },
-    totalValue: {
+    totalAmount: {
       type: Number,
-      min: [0, 'Total value cannot be negative'],
-      max: [10000000, 'Total value cannot exceed 10000000'],
+      required: true,
+      min: [0, 'Total amount cannot be negative'],
+      max: [10000000, 'Total amount cannot exceed 10000000'],
     },
     reference: {
       type: String,
@@ -49,9 +51,15 @@ const inventoryTransactionSchema = new Schema<InventoryTransactionDocument>(
       ref: 'User',
       required: true,
     },
-    location: {
-      type: String,
-      maxlength: [200, 'Location cannot exceed 200 characters'],
+    previousQuantity: {
+      type: Number,
+      required: true,
+      min: [0, 'Previous quantity cannot be negative'],
+    },
+    newQuantity: {
+      type: Number,
+      required: true,
+      min: [0, 'New quantity cannot be negative'],
     },
   },
   {
@@ -72,11 +80,11 @@ inventoryTransactionSchema.index({ itemId: 1, transactionType: 1 });
 inventoryTransactionSchema.index({ itemId: 1, createdAt: -1 });
 inventoryTransactionSchema.index({ performedBy: 1, createdAt: -1 });
 
-// Pre-save middleware to calculate total value if not provided
+// Pre-save middleware to calculate total amount if not provided
 inventoryTransactionSchema.pre('save', function (next) {
   const doc = this as any;
-  if (!doc.totalValue && doc.unitPrice && doc.quantity) {
-    doc.totalValue = doc.unitPrice * doc.quantity;
+  if (!doc.totalAmount && doc.unitPrice && doc.quantity) {
+    doc.totalAmount = doc.unitPrice * doc.quantity;
   }
   next();
 });

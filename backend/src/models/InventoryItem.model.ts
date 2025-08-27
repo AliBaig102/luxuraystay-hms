@@ -10,6 +10,17 @@ export interface InventoryItemDocument extends InventoryItem, Document {}
 
 const inventoryItemSchema = new Schema<InventoryItemDocument>(
   {
+    sku: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+      maxlength: [100, 'SKU cannot exceed 100 characters'],
+      match: [
+        /^[A-Z0-9-_]+$/,
+        'SKU can only contain uppercase letters, numbers, hyphens, and underscores',
+      ],
+    },
     name: {
       type: String,
       required: true,
@@ -19,6 +30,11 @@ const inventoryItemSchema = new Schema<InventoryItemDocument>(
     description: {
       type: String,
       maxlength: [1000, 'Description cannot exceed 1000 characters'],
+    },
+    category: {
+      type: String,
+      required: true,
+      maxlength: [100, 'Category cannot exceed 100 characters'],
     },
     type: {
       type: String,
@@ -31,32 +47,17 @@ const inventoryItemSchema = new Schema<InventoryItemDocument>(
       default: InventoryItemStatus.IN_STOCK,
       required: true,
     },
-    sku: {
-      type: String,
-      required: true,
-      unique: true,
-      trim: true,
-      maxlength: [100, 'SKU cannot exceed 100 characters'],
-      match: [
-        /^[A-Z0-9-_]+$/,
-        'SKU can only contain uppercase letters, numbers, hyphens, and underscores',
-      ],
-    },
-    barcode: {
-      type: String,
-      maxlength: [100, 'Barcode cannot exceed 100 characters'],
-    },
-    unit: {
-      type: String,
-      enum: Object.values(InventoryUnit),
-      default: InventoryUnit.PIECE,
-      required: true,
-    },
     quantity: {
       type: Number,
       required: true,
       min: [0, 'Quantity cannot be negative'],
       max: [1000000, 'Quantity cannot exceed 1000000'],
+    },
+    unitPrice: {
+      type: Number,
+      required: true,
+      min: [0, 'Unit price cannot be negative'],
+      max: [100000, 'Unit price cannot exceed 100000'],
     },
     minQuantity: {
       type: Number,
@@ -69,18 +70,6 @@ const inventoryItemSchema = new Schema<InventoryItemDocument>(
       min: [0, 'Maximum quantity cannot be negative'],
       max: [1000000, 'Maximum quantity cannot exceed 1000000'],
     },
-    unitPrice: {
-      type: Number,
-      required: true,
-      min: [0, 'Unit price cannot be negative'],
-      max: [100000, 'Unit price cannot exceed 100000'],
-    },
-    totalValue: {
-      type: Number,
-      required: true,
-      min: [0, 'Total value cannot be negative'],
-      max: [100000000, 'Total value cannot exceed 100000000'],
-    },
     supplier: {
       type: String,
       maxlength: [200, 'Supplier cannot exceed 200 characters'],
@@ -89,19 +78,9 @@ const inventoryItemSchema = new Schema<InventoryItemDocument>(
       type: String,
       maxlength: [200, 'Location cannot exceed 200 characters'],
     },
-    category: {
+    barcode: {
       type: String,
-      maxlength: [100, 'Category cannot exceed 100 characters'],
-    },
-    tags: {
-      type: [String],
-      default: [],
-      validate: {
-        validator: function (tags: string[]) {
-          return tags.length <= 20;
-        },
-        message: 'Cannot have more than 20 tags',
-      },
+      maxlength: [100, 'Barcode cannot exceed 100 characters'],
     },
     expiryDate: {
       type: Date,
@@ -109,9 +88,11 @@ const inventoryItemSchema = new Schema<InventoryItemDocument>(
     lastRestocked: {
       type: Date,
     },
-    notes: {
-      type: String,
-      maxlength: [1000, 'Notes cannot exceed 1000 characters'],
+    totalValue: {
+      type: Number,
+      required: true,
+      min: [0, 'Total value cannot be negative'],
+      max: [100000000, 'Total value cannot exceed 100000000'],
     },
     isActive: {
       type: Boolean,

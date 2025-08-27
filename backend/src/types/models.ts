@@ -357,3 +357,75 @@ export enum ReportFormat {
   CSV = 'csv',
   JSON = 'json',
 }
+
+// Inventory Management Types
+export interface InventoryItem extends BaseModel {
+  sku: string;
+  name: string;
+  description?: string;
+  category: string;
+  type: InventoryItemType;
+  status: InventoryItemStatus;
+  quantity: number;
+  unitPrice: number;
+  minQuantity: number;
+  maxQuantity?: number;
+  supplier?: string;
+  location?: string;
+  barcode?: string;
+  expiryDate?: Date;
+  lastRestocked?: Date;
+  totalValue: number;
+  isActive: boolean;
+}
+
+export enum InventoryItemType {
+  FOOD = 'food',
+  BEVERAGE = 'beverage',
+  CLEANING_SUPPLY = 'cleaning_supply',
+  AMENITY = 'amenity',
+  MAINTENANCE = 'maintenance',
+  OFFICE_SUPPLY = 'office_supply',
+  OTHER = 'other',
+}
+
+export enum InventoryItemStatus {
+  IN_STOCK = 'in_stock',
+  LOW_STOCK = 'low_stock',
+  OUT_OF_STOCK = 'out_of_stock',
+  EXPIRED = 'expired',
+  DISCONTINUED = 'discontinued',
+}
+
+export enum InventoryUnit {
+  PIECE = 'piece',
+  KILOGRAM = 'kilogram',
+  LITER = 'liter',
+  METER = 'meter',
+  BOX = 'box',
+  PACK = 'pack',
+  ROLL = 'roll',
+}
+
+export interface InventoryTransaction extends BaseModel {
+  itemId: string;
+  transactionType: InventoryTransactionType;
+  quantity: number;
+  unitPrice: number;
+  totalAmount: number;
+  reference?: string;
+  notes?: string;
+  performedBy: string;
+  previousQuantity: number;
+  newQuantity: number;
+}
+
+export enum InventoryTransactionType {
+  IN = 'in',
+  OUT = 'out',
+  RETURN = 'return',
+  ADJUSTMENT = 'adjustment',
+  TRANSFER = 'transfer',
+  DAMAGED = 'damaged',
+  EXPIRED = 'expired',
+}
