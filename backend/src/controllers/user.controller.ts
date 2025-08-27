@@ -11,6 +11,7 @@ import {
 } from '../validations/user.validation';
 import { UserRole } from '../types/models';
 import { HttpStatusCode } from '../types/api';
+import { emailService } from '../services/email.service';
 
 /**
  * User Controller
@@ -50,6 +51,12 @@ export class UserController {
       const saltRounds = 12;
       const hashedPassword = await bcrypt.hash(password, saltRounds);
 
+      // Generate email verification token
+      const emailVerificationToken = crypto.randomBytes(32).toString('hex');
+      const emailVerificationExpires = new Date(
+        Date.now() + 24 * 60 * 60 * 1000
+      ); // 24 hours
+
       // Create user
       const user = await UserModel.create({
         email,
@@ -58,15 +65,47 @@ export class UserController {
         lastName,
         phone,
         role: role || UserRole.GUEST,
+        isEmailVerified: false,
+        emailVerificationToken,
+        emailVerificationExpires,
       });
+
+      // Send verification email
+      try {
+        await emailService.sendEmailVerification(
+          email,
+          emailVerificationToken,
+          firstName
+        );
+        logger.info('Verification email sent successfully', {
+          userId: user._id,
+          email,
+        });
+      } catch (emailError) {
+        logger.error('Failed to send verification email', {
+          userId: user._id,
+          email,
+          error: emailError,
+        });
+        // Continue with user creation even if email fails
+      }
 
       logger.info('User registered successfully', { userId: user._id, email });
       return ResponseUtil.success(
         res,
         {
-          user,
+          user: {
+            _id: user._id,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            phone: user.phone,
+            role: user.role,
+            isEmailVerified: user.isEmailVerified,
+          },
+          message: 'Please check your email to verify your account',
         },
-        'User registered successfully',
+        'User registered successfully. Please verify your email.',
         HttpStatusCode.CREATED
       );
     } catch (error) {
@@ -562,51 +601,203 @@ export class UserController {
   }
 
   /**
-   * Reset password with token
+   * Send email verification
+   * @route POST /api/v1/users/send-verification
+   */
+  async sendVerificationEmail(req: Request, res: Response) {
+    try {
+      const { email } = req.body;
+
+      if (!email) {
+        return ResponseUtil.badRequest(res, 'Email is required');
+      }
+
+      const user = await UserModel.findOne({ email });
+      if (!user) {
+        return ResponseUtil.notFound(res, 'User not found');
+      }
+
+      if (user.isEmailVerified) {
+        return ResponseUtil.badRequest(res, 'Email is already verified');
+      }
+
+      // Generate new verification token
+      const emailVerificationToken = crypto.randomBytes(32).toString('hex');
+      const emailVerificationExpires = new Date(
+        Date.now() + 24 * 60 * 60 * 1000
+      ); // 24 hours
+
+      // Update user with new token
+      await UserModel.findByIdAndUpdate(user._id, {
+        emailVerificationToken,
+        emailVerificationExpires,
+      });
+
+      // Send verification email
+      await emailService.sendEmailVerification(
+        email,
+        emailVerificationToken,
+        user.firstName
+      );
+
+      logger.info('Verification email sent', { userId: user._id, email });
+      return ResponseUtil.success(res, 'Verification email sent successfully');
+    } catch (error) {
+      logger.error('Error sending verification email', { error });
+      return ResponseUtil.internalError(
+        res,
+        'Failed to send verification email'
+      );
+    }
+  }
+
+  /**
+   * Verify email
+   * @route POST /api/v1/users/verify-email
+   */
+  async verifyEmail(req: Request, res: Response) {
+    try {
+      const { token } = req.body;
+
+      if (!token) {
+        return ResponseUtil.badRequest(res, 'Verification token is required');
+      }
+
+      const user = await UserModel.findOne({
+        emailVerificationToken: token,
+        emailVerificationExpires: { $gt: new Date() },
+      });
+
+      if (!user) {
+        return ResponseUtil.badRequest(
+          res,
+          'Invalid or expired verification token'
+        );
+      }
+
+      // Mark email as verified and clear token
+      await UserModel.findByIdAndUpdate(user._id, {
+        isEmailVerified: true,
+        emailVerificationToken: undefined,
+        emailVerificationExpires: undefined,
+      });
+
+      // Send welcome email
+      try {
+        await emailService.sendWelcomeEmail(user.email, user.firstName);
+      } catch (emailError) {
+        logger.error('Failed to send welcome email', {
+          userId: user._id,
+          error: emailError,
+        });
+      }
+
+      logger.info('Email verified successfully', {
+        userId: user._id,
+        email: user.email,
+      });
+      return ResponseUtil.success(res, 'Email verified successfully');
+    } catch (error) {
+      logger.error('Error verifying email', { error });
+      return ResponseUtil.internalError(res, 'Failed to verify email');
+    }
+  }
+
+  /**
+   * Send password reset email
+   * @route POST /api/v1/users/forgot-password
+   */
+  async sendPasswordReset(req: Request, res: Response) {
+    try {
+      const { email } = req.body;
+
+      if (!email) {
+        return ResponseUtil.badRequest(res, 'Email is required');
+      }
+
+      const user = await UserModel.findOne({ email });
+      if (!user) {
+        // Don't reveal if user exists or not for security
+        logger.info('Password reset requested for non-existent email', {
+          email,
+        });
+        return ResponseUtil.success(
+          res,
+          'If an account with that email exists, a password reset link has been sent'
+        );
+      }
+
+      // Generate password reset token
+      const passwordResetToken = crypto.randomBytes(32).toString('hex');
+      const passwordResetExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+      // Update user with reset token
+      await UserModel.findByIdAndUpdate(user._id, {
+        passwordResetToken,
+        passwordResetExpires,
+      });
+
+      // Send password reset email
+      await emailService.sendPasswordReset(
+        email,
+        passwordResetToken,
+        user.firstName
+      );
+
+      logger.info('Password reset email sent', { userId: user._id, email });
+      return ResponseUtil.success(
+        res,
+        'If an account with that email exists, a password reset link has been sent'
+      );
+    } catch (error) {
+      logger.error('Error sending password reset email', { error });
+      return ResponseUtil.internalError(
+        res,
+        'Failed to send password reset email'
+      );
+    }
+  }
+
+  /**
+   * Reset password
    * @route POST /api/v1/users/reset-password
    */
   async resetPassword(req: Request, res: Response) {
     try {
-      const validation = userValidationSchemas.resetPassword.safeParse(
-        req.body
-      );
-      if (!validation.success) {
-        const validationErrors = validation.error.issues.map(issue => ({
-          field: issue.path.join('.'),
-          message: issue.message,
-          code: issue.code,
-        }));
-        return ResponseUtil.validationError(res, validationErrors);
+      const { token, newPassword } = req.body;
+
+      if (!token || !newPassword) {
+        return ResponseUtil.badRequest(
+          res,
+          'Token and new password are required'
+        );
       }
 
-      const { email, resetToken, newPassword } = validation.data;
-
-      // In a real application, you'd verify the token from the database
-      // For now, we'll just find the user by email and log the token
-      const user = await UserModel.findOne({ email });
-      if (!user) {
-        logger.warn('Password reset attempt with invalid email', {
-          email,
-          resetToken,
-        });
-        return ResponseUtil.badRequest(res, 'Invalid reset token or email');
-      }
-
-      // Log the reset token for verification (in production, verify against stored token)
-      logger.info('Password reset token received', {
-        userId: user._id,
-        resetToken,
+      const user = await UserModel.findOne({
+        passwordResetToken: token,
+        passwordResetExpires: { $gt: new Date() },
       });
+
+      if (!user) {
+        return ResponseUtil.badRequest(res, 'Invalid or expired reset token');
+      }
 
       // Hash new password
       const saltRounds = 12;
       const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
 
-      // Update password
-      await UserModel.findByIdAndUpdate(user._id, { password: hashedPassword });
+      // Update password and clear reset token
+      await UserModel.findByIdAndUpdate(user._id, {
+        password: hashedPassword,
+        passwordResetToken: undefined,
+        passwordResetExpires: undefined,
+      });
 
-      logger.info('Password reset successfully', { userId: user._id, email });
-      return ResponseUtil.success(res, null, 'Password reset successfully');
+      logger.info('Password reset successfully', {
+        userId: user._id,
+        email: user.email,
+      });
+      return ResponseUtil.success(res, 'Password reset successfully');
     } catch (error) {
       logger.error('Error resetting password', { error });
       return ResponseUtil.internalError(res, 'Failed to reset password');

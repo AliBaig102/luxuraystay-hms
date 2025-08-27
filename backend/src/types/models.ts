@@ -19,6 +19,11 @@ export interface User extends BaseModel {
   phone: string;
   role: UserRole;
   isActive: boolean;
+  isEmailVerified: boolean;
+  emailVerificationToken?: string;
+  emailVerificationExpires?: Date;
+  passwordResetToken?: string;
+  passwordResetExpires?: Date;
   lastLogin?: Date;
   profileImage?: string;
 }
@@ -356,4 +361,119 @@ export enum ReportFormat {
   EXCEL = 'excel',
   CSV = 'csv',
   JSON = 'json',
+}
+
+// Inventory Management Types
+export interface InventoryItem extends BaseModel {
+  name: string;
+  description?: string;
+  type: InventoryItemType;
+  status: InventoryItemStatus;
+  sku: string;
+  barcode?: string;
+  unit: InventoryUnit;
+  quantity: number;
+  minQuantity: number;
+  maxQuantity?: number;
+  unitPrice: number;
+  totalValue: number;
+  supplier?: string;
+  location?: string;
+  category?: string;
+  tags: string[];
+  expiryDate?: Date;
+  lastRestocked?: Date;
+  notes?: string;
+  isActive: boolean;
+}
+
+export enum InventoryItemType {
+  AMENITIES = 'amenities',
+  CLEANING_SUPPLIES = 'cleaning_supplies',
+  MAINTENANCE_TOOLS = 'maintenance_tools',
+  OFFICE_SUPPLIES = 'office_supplies',
+  FOOD_BEVERAGE = 'food_beverage',
+  LINENS = 'linens',
+  ELECTRONICS = 'electronics',
+  FURNITURE = 'furniture',
+  DECORATIONS = 'decorations',
+  OTHER = 'other',
+}
+
+export enum InventoryItemStatus {
+  IN_STOCK = 'in_stock',
+  LOW_STOCK = 'low_stock',
+  OUT_OF_STOCK = 'out_of_stock',
+  DISCONTINUED = 'discontinued',
+  ON_ORDER = 'on_order',
+  RESERVED = 'reserved',
+}
+
+export enum InventoryUnit {
+  PIECE = 'piece',
+  BOX = 'box',
+  PACK = 'pack',
+  BOTTLE = 'bottle',
+  ROLL = 'roll',
+  METER = 'meter',
+  LITER = 'liter',
+  KILOGRAM = 'kilogram',
+  PAIR = 'pair',
+  SET = 'set',
+  OTHER = 'other',
+}
+
+export interface InventoryTransaction extends BaseModel {
+  itemId: string;
+  transactionType: InventoryTransactionType;
+  quantity: number;
+  unitPrice?: number;
+  totalValue?: number;
+  reference?: string;
+  notes?: string;
+  performedBy: string;
+  location?: string;
+}
+
+export enum InventoryTransactionType {
+  IN = 'in',
+  OUT = 'out',
+  ADJUSTMENT = 'adjustment',
+  TRANSFER = 'transfer',
+  RETURN = 'return',
+  DAMAGE = 'damage',
+  EXPIRY = 'expiry',
+}
+
+export interface InventoryRestock extends BaseModel {
+  itemId: string;
+  quantity: number;
+  unitPrice: number;
+  supplier?: string;
+  orderNumber?: string;
+  expectedDelivery?: Date;
+  notes?: string;
+}
+
+export interface InventoryTransfer extends BaseModel {
+  itemId: string;
+  quantity: number;
+  fromLocation: string;
+  toLocation: string;
+  reason: string;
+  notes?: string;
+}
+
+export interface InventoryAdjustment extends BaseModel {
+  itemId: string;
+  adjustmentType: InventoryAdjustmentType;
+  quantity: number;
+  reason: string;
+  notes?: string;
+}
+
+export enum InventoryAdjustmentType {
+  ADD = 'add',
+  SUBTRACT = 'subtract',
+  SET = 'set',
 }

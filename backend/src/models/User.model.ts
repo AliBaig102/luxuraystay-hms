@@ -49,6 +49,22 @@ const userSchema = new Schema<UserDocument>(
       type: Boolean,
       default: true,
     },
+    isEmailVerified: {
+      type: Boolean,
+      default: false,
+    },
+    emailVerificationToken: {
+      type: String,
+    },
+    emailVerificationExpires: {
+      type: Date,
+    },
+    passwordResetToken: {
+      type: String,
+    },
+    passwordResetExpires: {
+      type: Date,
+    },
     lastLogin: {
       type: Date,
     },
@@ -67,6 +83,8 @@ userSchema.index({ email: 1 });
 userSchema.index({ role: 1 });
 userSchema.index({ isActive: 1 });
 userSchema.index({ createdAt: -1 });
+userSchema.index({ emailVerificationToken: 1 });
+userSchema.index({ passwordResetToken: 1 });
 
 // Virtual for full name
 userSchema.virtual('fullName').get(function (this: UserDocument) {
@@ -78,6 +96,10 @@ userSchema.set('toJSON', {
   virtuals: true,
   transform: function (doc: any, ret: any) {
     delete ret.password;
+    delete ret.emailVerificationToken;
+    delete ret.emailVerificationExpires;
+    delete ret.passwordResetToken;
+    delete ret.passwordResetExpires;
     return ret;
   },
 });

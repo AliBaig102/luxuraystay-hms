@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
+import { createServer } from 'http';
 // Load environment variables
 dotenv.config();
 
@@ -28,7 +29,7 @@ import {
   reportRoutes,
   inventoryRoutes,
 } from './routes';
-
+import WebSocketService from './services/websocket.service';
 const PROJECT_VERSION = process.env.PROJECT_VERSION || 'v1';
 const PROJECT_NAME = process.env.PROJECT_NAME || 'LuxuryStay HMS';
 const PORT = process.env.PORT || 4000;
@@ -93,9 +94,19 @@ export async function startServer(
     // Initialize database connection
     await databaseConnection.connect();
 
-    app.listen(PORT, () => {
+    // Create HTTP server
+    const server = createServer(app);
+
+    // Initialize WebSocket service
+    const webSocketService = new WebSocketService(server);
+
+    // Store WebSocket service globally for use in other parts of the application
+    (global as any).webSocketService = webSocketService;
+
+    server.listen(PORT, () => {
       logger.info(`🚀 Server is running on port ${PORT}`);
       logger.info(`📱 Environment: ${process.env.NODE_ENV || 'development'}`);
+      logger.info(`🔌 WebSocket: Initialized`);
       logger.info(`🔗 Health check: http://localhost:${PORT}/health`);
       logger.info(`🗄️  Database: Connected`);
     });

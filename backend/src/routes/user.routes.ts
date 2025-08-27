@@ -31,20 +31,43 @@ router.post(
  */
 router.post('/login', asyncHandler(userController.login.bind(userController)));
 /**
+ * @route   POST /api/v1/users/send-verification
+ * @desc    Send email verification
+ * @access  Public
+ * @body    email
+ */
+router.post(
+  '/send-verification',
+  asyncHandler(userController.sendVerificationEmail.bind(userController))
+);
+
+/**
+ * @route   POST /api/v1/users/verify-email
+ * @desc    Verify email with token
+ * @access  Public
+ * @body    token
+ */
+router.post(
+  '/verify-email',
+  asyncHandler(userController.verifyEmail.bind(userController))
+);
+
+/**
  * @route   POST /api/v1/users/forgot-password
- * @desc    Forgot password
+ * @desc    Send password reset email
  * @access  Public
  * @body    email
  */
 router.post(
   '/forgot-password',
-  asyncHandler(userController.forgotPassword.bind(userController))
+  asyncHandler(userController.sendPasswordReset.bind(userController))
 );
+
 /**
  * @route   POST /api/v1/users/reset-password
- * @desc    Reset password
+ * @desc    Reset password with token
  * @access  Public
- * @body    token, password
+ * @body    token, newPassword
  */
 router.post(
   '/reset-password',
