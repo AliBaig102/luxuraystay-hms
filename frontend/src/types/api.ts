@@ -1,8 +1,8 @@
-import type { AxiosRequestConfig } from 'axios'
-import type { SWRConfiguration, SWRResponse } from 'swr'
-import type { ToastOptions } from 'react-toastify'
+import type { AxiosRequestConfig, Method } from "axios"
+import type { ToastOptions } from "react-toastify"
+import type { SWRConfiguration, SWRResponse } from "swr"
+import type { z } from "zod"
 
-// API Response Interfaces
 export interface ApiResponse<T> {
   success: boolean
   message: string
@@ -45,14 +45,24 @@ export interface PaginationMeta {
 export interface UseApiOptions<T> {
   /** Disable automatic fetch on mount */
   immediate?: boolean
+  /** Enable authentication token for requests */
+  auth?: boolean
   /** Default axios configuration overrides */
   axiosConfig?: AxiosRequestConfig
   /** Global headers to apply to all requests */
   headers?: Record<string, string>
   /** SWR configuration overrides */
-  swrConfig?: SWRConfiguration<T, Error>
+  swrConfig?: SWRConfiguration<T, Error> & { retryCount?: number; retryDelay?: number }
   /** Toast options for success/error notifications */
   toastOptions?: ToastOptions
+  /** Custom error handler */
+  onError?: (error: unknown, endpoint: string, method: Method) => void
+  /** Zod schema for response validation */
+  dataSchema?: z.ZodType<T>
+  /** Enable debouncing for GET requests */
+  debounce?: boolean
+  /** Debounce delay in milliseconds */
+  debounceDelay?: number
 }
 
 export interface RequestConfig {
@@ -62,14 +72,33 @@ export interface RequestConfig {
   silent?: boolean
   /** Axios config overrides for this request */
   config?: AxiosRequestConfig
+  /** Number of retries for failed requests */
+  retryCount?: number
+  /** Delay between retries in ms */
+  retryDelay?: number
+  /** Function to compute optimistic update */
+  optimisticUpdate?: <T>(currentData: T | undefined) => T
 }
 
 export interface ApiHookReturn<T> extends SWRResponse<T, Error> {
+  /** Loading state for GET requests */
+  isFetching: boolean
+  /** Loading state for mutations */
+  isMutating: boolean
+  /** Perform a GET request */
   get: <R = T>(endpoint: string, cfg?: RequestConfig) => Promise<R>
+  /** Perform a POST request */
   post: <R = T>(endpoint: string, body: unknown, cfg?: RequestConfig) => Promise<R>
+  /** Perform a PUT request */
   put: <R = T>(endpoint: string, body: unknown, cfg?: RequestConfig) => Promise<R>
+  /** Perform a PATCH request */
   patch: <R = T>(endpoint: string, body: unknown, cfg?: RequestConfig) => Promise<R>
+  /** Perform a DELETE request */
   delete: <R = T>(endpoint: string, cfg?: RequestConfig) => Promise<R>
+  /** Invalidate cache keys */
   invalidate: (keys?: string | string[]) => Promise<void>
+  /** Upload a file */
   uploadFile: (endpoint: string, file: File, onProgress?: (percentage: number) => void) => Promise<T>
+  /** Execute multiple requests concurrently */
+  batch: <R>(requests: { method: Method; endpoint: string; data?: unknown }[]) => Promise<R[]>
 }

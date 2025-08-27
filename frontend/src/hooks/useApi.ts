@@ -1,15 +1,28 @@
 import axios from 'axios'
-import type { AxiosInstance, AxiosResponse, Method } from 'axios'
+import type { AxiosInstance, Method } from 'axios'
 import useSWR, { mutate } from 'swr'
-import type { SWRConfiguration } from 'swr'
 import { toast } from 'react-toastify'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useAuth } from './useAuth'
+import { z } from 'zod'
+import { debounce as debounceFn } from 'lodash'
 import type {
   ApiResponse,
   UseApiOptions,
   RequestConfig,
   ApiHookReturn,
 } from '../types/api'
+
+// API Response Schema for runtime validation
+const ApiResponseSchema = <T>(dataSchema: z.ZodType<T>) =>
+  z.object({
+    success: z.boolean(),
+    message: z.string(),
+    data: dataSchema.optional(),
+    errors: z.array(z.object({ field: z.string(), message: z.string(), code: z.string().optional(), value: z.any().optional() })).optional(),
+    meta: z.object({ pagination: z.any(), total: z.number().optional(), page: z.number().optional(), limit: z.number().optional(), hasNext: z.boolean().optional(), hasPrev: z.boolean().optional(), version: z.string().optional() }).optional(),
+    timestamp: z.string(),
+  })
 
 // Create axios instance with baseURL from environment
 const createApiInstance = (): AxiosInstance => {
@@ -27,6 +40,10 @@ const createApiInstance = (): AxiosInstance => {
 const apiInstance = createApiInstance()
 
 // Set auth token function for external use
+/**
+ * Sets or removes the Authorization header with a Bearer token.
+ * @param token - Authentication token or null to remove the header
+ */
 export const setAuthToken = (token: string | null) => {
   if (token) {
     apiInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`
@@ -36,14 +53,38 @@ export const setAuthToken = (token: string | null) => {
 }
 
 /**
- * Custom hook for RESTful API interactions with axios + SWR.
+ * Custom hook for RESTful API interactions with axios and SWR.
+ * @template T - Type of the response data
  * @param endpoint - API endpoint path (e.g., '/users', '/health')
- * @param options - Hook configuration
+ * @param options - Configuration options for the hook
+ * @returns An object with SWR data, loading states, and request methods
  */
-export function useApi<T>(endpoint: string, options: UseApiOptions<T> = {}): ApiHookReturn<T> {
-  const { immediate = true, axiosConfig, headers = {}, swrConfig, toastOptions } = options
-  const [isLoading, setIsLoading] = useState(false)
-  
+export function useApi<T>(
+  endpoint: string,
+  options: UseApiOptions<T> = {}
+): ApiHookReturn<T> {
+  const {
+    immediate = true,
+    auth = false,
+    axiosConfig,
+    headers = {},
+    swrConfig,
+    toastOptions,
+    dataSchema,
+    onError,
+    debounce: enableDebounce = false, // Enable/disable debouncing
+    debounceDelay = 300, // Debounce delay in ms
+  } = options
+  const [isMutating, setIsMutating] = useState(false)
+  const { token } = useAuth()
+
+  // Apply token if auth is true
+  if (auth && token) {
+    setAuthToken(token)
+  } else if (auth && !token) {
+    setAuthToken(null)
+  }
+
   // Create instance with additional configuration
   const requestInstance: AxiosInstance = axios.create({
     ...apiInstance.defaults,
@@ -57,9 +98,37 @@ export function useApi<T>(endpoint: string, options: UseApiOptions<T> = {}): Api
     (error) => Promise.reject(error),
   )
 
-  // SWR fetcher returns typed data
-  const fetcher = (endpoint: string): Promise<T> =>
-    requestInstance.get<ApiResponse<T>>(endpoint).then((res: AxiosResponse<ApiResponse<T>>) => res.data.data as T)
+  // SWR fetcher with optional debouncing and retries
+  const fetcher = (endpoint: string): Promise<T> => {
+    const { retryCount = 3, retryDelay = 1000 } = swrConfig || {}
+    const fetchFn = async () => {
+      let lastError: unknown
+      for (let i = 0; i <= retryCount; i++) {
+        try {
+          const response = await requestInstance.get(endpoint)
+          const parsed = dataSchema ? ApiResponseSchema(dataSchema).safeParse(response.data) : { success: true, data: response.data }
+          if (!parsed.success) {
+            throw new Error(`Invalid API response: ${'error' in parsed ? parsed.error?.message : 'Unknown error'}`)
+          }
+          return parsed.data.data as T
+        } catch (error) {
+          lastError = error
+          if (i < retryCount) {
+            await new Promise((resolve) => setTimeout(resolve, retryDelay))
+          }
+        }
+      }
+      throw lastError
+    }
+
+    // Apply debouncing only if enabled
+    if (enableDebounce) {
+      const debouncedFn = debounceFn(fetchFn, debounceDelay)
+      const result = debouncedFn()
+      return result || fetchFn() // Fallback if debounced function returns undefined
+    }
+    return fetchFn()
+  }
 
   // SWR hook
   const swrResponse = useSWR<T>(immediate ? endpoint : null, fetcher, {
@@ -69,7 +138,13 @@ export function useApi<T>(endpoint: string, options: UseApiOptions<T> = {}): Api
   })
 
   /**
-   * Generic request wrapper
+   * Generic request wrapper with retries and cancellation
+   * @template R - Type of the response data
+   * @param method - HTTP method (GET, POST, PUT, etc.)
+   * @param endpoint - API endpoint path
+   * @param data - Request payload
+   * @param reqConfig - Request configuration
+   * @returns Promise resolving to the response data
    */
   const request = async <R>(
     method: Method,
@@ -77,55 +152,151 @@ export function useApi<T>(endpoint: string, options: UseApiOptions<T> = {}): Api
     data?: unknown,
     reqConfig: RequestConfig = {},
   ): Promise<R> => {
-    const { message = true, silent = false, config } = reqConfig
-    setIsLoading(true)
-    try {
-      const response = await requestInstance.request<ApiResponse<R>>({
-        method,
-        url: endpoint,
-        data,
-        ...config,
-      })
+    const { message = true, silent = false, config, retryCount = 0, retryDelay = 1000, optimisticUpdate } = reqConfig
+    const abortController = new AbortController()
+    setIsMutating(true)
 
-      if (message && !silent && response.data.success) {
-        toast.success(
-          response.data.message ?? 'Operation completed successfully',
-          toastOptions,
-        )
-      }
-      return response.data.data as R
-    } catch (error: unknown) {
-      const errMsg = axios.isAxiosError(error) && error.response?.data 
-        ? error.response.data 
-        : { message: (error as Error).message }
-      
-      if (!silent) {
-        toast.error(errMsg.message || 'An error occurred', toastOptions)
-      }
-      throw error
-    } finally {
-      setIsLoading(false)
+    if (optimisticUpdate && method !== 'get') {
+      await mutate(endpoint, optimisticUpdate, false) // Optimistic update
     }
+
+    let lastError: unknown
+    for (let i = 0; i <= retryCount; i++) {
+      try {
+        const response = await requestInstance.request<ApiResponse<R>>({
+          method,
+          url: endpoint,
+          data,
+          ...config,
+          signal: abortController.signal,
+        })
+
+        const parsed = dataSchema ? ApiResponseSchema(dataSchema).safeParse(response.data) : { success: true, data: response.data }
+        if (!parsed.success) {
+          throw new Error(`Invalid API response: ${'error' in parsed ? parsed.error?.message : 'Unknown error'}`)
+        }
+
+        if (message && !silent && parsed.data.success) {
+          toast.success(
+            parsed.data.message ?? 'Operation completed successfully',
+            toastOptions,
+          )
+        }
+        await mutate(endpoint) // Revalidate cache
+        return parsed.data.data as R
+      } catch (error: unknown) {
+        if (axios.isCancel(error) || (error instanceof Error && error.name === 'AbortError')) {
+          console.log('Request cancelled:', endpoint)
+          return Promise.reject(error)
+        }
+        lastError = error
+        if (i < retryCount) {
+          await new Promise((resolve) => setTimeout(resolve, retryDelay))
+        }
+      } finally {
+        if (i === retryCount) {
+          setIsMutating(false)
+        }
+      }
+    }
+
+    let errMsg = { message: 'An error occurred' }
+    let statusCode: number | undefined
+    if (axios.isAxiosError(lastError)) {
+      statusCode = lastError.response?.status
+      errMsg = lastError.response?.data || { message: lastError.message }
+      if (statusCode === 401) {
+        errMsg.message = 'Unauthorized: Please log in again'
+      } else if (statusCode === 403) {
+        errMsg.message = 'Forbidden: You lack permission'
+      } else if (statusCode === 429) {
+        errMsg.message = 'Too Many Requests: Please try again later'
+      }
+    } else {
+      errMsg.message = (lastError as Error).message
+    }
+
+    if (!silent) {
+      toast.error(`${errMsg.message} ${statusCode ? `(Status: ${statusCode})` : ''}`, toastOptions)
+    }
+
+    if (onError) {
+      onError(lastError, endpoint, method)
+    }
+
+    await mutate(endpoint) // Revalidate on error
+    throw lastError
   }
 
-  // Shorthand methods
+  /**
+   * Performs a GET request
+   * @template R - Type of the response data
+   * @param endpoint - API endpoint path
+   * @param cfg - Request configuration
+   * @returns Promise resolving to the response data
+   */
   const get = <R = T>(endpoint: string, cfg?: RequestConfig) => request<R>('get', endpoint, undefined, cfg)
+
+  /**
+   * Performs a POST request
+   * @template R - Type of the response data
+   * @param endpoint - API endpoint path
+   * @param body - Request payload
+   * @param cfg - Request configuration
+   * @returns Promise resolving to the response data
+   */
   const post = <R = T>(endpoint: string, body: unknown, cfg?: RequestConfig) =>
     request<R>('post', endpoint, body, cfg)
+
+  /**
+   * Performs a PUT request
+   * @template R - Type of the response data
+   * @param endpoint - API endpoint path
+   * @param body - Request payload
+   * @param cfg - Request configuration
+   * @returns Promise resolving to the response data
+   */
   const put = <R = T>(endpoint: string, body: unknown, cfg?: RequestConfig) =>
     request<R>('put', endpoint, body, cfg)
+
+  /**
+   * Performs a PATCH request
+   * @template R - Type of the response data
+   * @param endpoint - API endpoint path
+   * @param body - Request payload
+   * @param cfg - Request configuration
+   * @returns Promise resolving to the response data
+   */
   const patch = <R = T>(endpoint: string, body: unknown, cfg?: RequestConfig) =>
     request<R>('patch', endpoint, body, cfg)
+
+  /**
+   * Performs a DELETE request
+   * @template R - Type of the response data
+   * @param endpoint - API endpoint path
+   * @param cfg - Request configuration
+   * @returns Promise resolving to the response data
+   */
   const del = <R = T>(endpoint: string, cfg?: RequestConfig) => request<R>('delete', endpoint, undefined, cfg)
 
-  // Invalidate one or more SWR cache keys
+  /**
+   * Invalidates one or more SWR cache keys
+   * @param keys - Cache key(s) to invalidate
+   * @returns Promise that resolves when invalidation is complete
+   */
   const invalidate = async (keys?: string | string[]) => {
     if (!keys) return
     const list = Array.isArray(keys) ? keys : [keys]
     await Promise.all(list.map((key) => mutate(key)))
   }
 
-  // File upload with progress callback
+  /**
+   * Uploads a file with progress tracking
+   * @param endpoint - API endpoint path
+   * @param file - File to upload
+   * @param onProgress - Callback for upload progress
+   * @returns Promise resolving to the response data
+   */
   const uploadFile = (
     endpoint: string,
     file: File,
@@ -143,9 +314,58 @@ export function useApi<T>(endpoint: string, options: UseApiOptions<T> = {}): Api
     })
   }
 
+  /**
+   * Executes multiple requests concurrently
+   * @template R - Type of the response data
+   * @param requests - Array of request configurations
+   * @returns Promise resolving to an array of response data
+   */
+  const batch = async <R>(
+    requests: { method: Method; endpoint: string; data?: unknown }[],
+  ): Promise<R[]> => {
+    setIsMutating(true)
+    try {
+      const results = await Promise.all(
+        requests.map(({ method, endpoint, data }) =>
+          requestInstance.request<ApiResponse<R>>({ method, url: endpoint, data }).then((res) => {
+            if (dataSchema) {
+              const parsed = ApiResponseSchema(dataSchema).safeParse(res.data)
+              if (!parsed.success) {
+                throw new Error(`Invalid API response: ${'error' in parsed ? parsed.error?.message : 'Unknown error'}`)
+              }
+              return parsed.data.data as R
+            } else {
+              // When no schema is provided, assume the response is already in the expected format
+              return res.data.data as R
+            }
+          })
+        )
+      )
+      return results
+    } catch (error: unknown) {
+      const errMsg = axios.isAxiosError(error) && error.response?.data 
+        ? error.response.data 
+        : { message: (error as Error).message }
+      
+      toast.error(errMsg.message || 'Batch request failed', toastOptions)
+      throw error
+    } finally {
+      setIsMutating(false)
+    }
+  }
+
+  // Cleanup on unmount
+  useEffect(() => {
+    const abortController = new AbortController()
+    return () => {
+      abortController.abort()
+    }
+  }, [])
+
   return {
     ...swrResponse,
-    isLoading,
+    isFetching: swrResponse.isLoading || swrResponse.isValidating,
+    isMutating,
     get,
     post,
     put,
@@ -153,78 +373,6 @@ export function useApi<T>(endpoint: string, options: UseApiOptions<T> = {}): Api
     delete: del,
     invalidate,
     uploadFile,
+    batch,
   }
 }
-
-// Legacy exports for backward compatibility
-export function useAPI<T = any>(
-  url: string | null,
-  config?: SWRConfiguration
-) {
-  const { data, error, isLoading, mutate: mutateFn } = useSWR<ApiResponse<T>>(
-    url,
-    async (url: string) => {
-      try {
-        const response: AxiosResponse<ApiResponse<T>> = await apiInstance.get(url)
-        return response.data
-      } catch (error: any) {
-        toast.error(error.response?.data?.message || 'An error occurred')
-        throw error
-      }
-    },
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: true,
-      ...config,
-    }
-  )
-
-  return {
-    data: data?.data,
-    error,
-    isLoading,
-    mutate: mutateFn,
-    response: data,
-  }
-}
-
-export function useAPIMutation() {
-  const mutation = async <T = any>(
-    method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',
-    url: string,
-    data?: any,
-    showSuccessToast = true
-  ): Promise<ApiResponse<T>> => {
-    try {
-      const response: AxiosResponse<ApiResponse<T>> = await apiInstance.request({
-        method,
-        url,
-        data,
-      })
-
-      if (showSuccessToast && response.data.message) {
-        toast.success(response.data.message)
-      }
-
-      mutate(url)
-      return response.data
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || 'An error occurred')
-      throw error
-    }
-  }
-
-  return {
-    post: <T = any>(url: string, data?: any, showSuccessToast = true) =>
-      mutation<T>('POST', url, data, showSuccessToast),
-    put: <T = any>(url: string, data?: any, showSuccessToast = true) =>
-      mutation<T>('PUT', url, data, showSuccessToast),
-    patch: <T = any>(url: string, data?: any, showSuccessToast = true) =>
-      mutation<T>('PATCH', url, data, showSuccessToast),
-    delete: <T = any>(url: string, showSuccessToast = true) =>
-      mutation<T>('DELETE', url, undefined, showSuccessToast),
-  }
-}
-
-// Export the axios instance for direct use if needed
-export { apiInstance }
