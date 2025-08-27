@@ -1,0 +1,308 @@
+{
+  "info": {
+    "name": "Notification Management API",
+    "description": "Comprehensive API for managing notifications in the Luxury Stay HMS system. Supports CRUD operations, filtering, bulk operations, and real-time features.",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:4000/api/v1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Create Notification",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"recipientId\": \"507f1f77bcf86cd799439011\",\n  \"recipientType\": \"user\",\n  \"title\": \"Booking Confirmation\",\n  \"message\": \"Your booking has been confirmed for Room 101\",\n  \"type\": \"booking\",\n  \"priority\": \"medium\",\n  \"metadata\": {\n    \"bookingId\": \"BK123456\",\n    \"roomNumber\": \"101\"\n  }\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/notifications",
+          "host": ["{{baseUrl}}"],
+          "path": ["notifications"]
+        },
+        "description": "Create a new notification. Supports different types: booking, maintenance, housekeeping, billing, system, reminder. Priorities: low, medium, high, urgent."
+      }
+    },
+    {
+      "name": "Get All Notifications",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/notifications?page=1&limit=10",
+          "host": ["{{baseUrl}}"],
+          "path": ["notifications"],
+          "query": [
+            {
+              "key": "page",
+              "value": "1",
+              "description": "Page number for pagination"
+            },
+            {
+              "key": "limit",
+              "value": "10",
+              "description": "Number of items per page"
+            },
+            {
+              "key": "recipientId",
+              "value": "",
+              "description": "Filter by recipient ID",
+              "disabled": true
+            },
+            {
+              "key": "recipientType",
+              "value": "",
+              "description": "Filter by recipient type (user, staff, admin)",
+              "disabled": true
+            },
+            {
+              "key": "type",
+              "value": "",
+              "description": "Filter by notification type",
+              "disabled": true
+            },
+            {
+              "key": "priority",
+              "value": "",
+              "description": "Filter by priority",
+              "disabled": true
+            },
+            {
+              "key": "isRead",
+              "value": "",
+              "description": "Filter by read status (true/false)",
+              "disabled": true
+            }
+          ]
+        },
+        "description": "Retrieve all notifications with optional filtering and pagination."
+      }
+    },
+    {
+      "name": "Get Notification by ID",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/notifications/:id",
+          "host": ["{{baseUrl}}"],
+          "path": ["notifications", ":id"],
+          "variable": [
+            {
+              "key": "id",
+              "value": "507f1f77bcf86cd799439011",
+              "description": "Notification ID"
+            }
+          ]
+        },
+        "description": "Retrieve a specific notification by its ID."
+      }
+    },
+    {
+      "name": "Update Notification",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Updated Booking Confirmation\",\n  \"message\": \"Your booking has been updated for Room 102\",\n  \"priority\": \"high\",\n  \"metadata\": {\n    \"bookingId\": \"BK123456\",\n    \"roomNumber\": \"102\"\n  }\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/notifications/:id",
+          "host": ["{{baseUrl}}"],
+          "path": ["notifications", ":id"],
+          "variable": [
+            {
+              "key": "id",
+              "value": "507f1f77bcf86cd799439011",
+              "description": "Notification ID"
+            }
+          ]
+        },
+        "description": "Update an existing notification. Only updatable fields: title, message, priority, metadata."
+      }
+    },
+    {
+      "name": "Delete Notification",
+      "request": {
+        "method": "DELETE",
+        "url": {
+          "raw": "{{baseUrl}}/notifications/:id",
+          "host": ["{{baseUrl}}"],
+          "path": ["notifications", ":id"],
+          "variable": [
+            {
+              "key": "id",
+              "value": "507f1f77bcf86cd799439011",
+              "description": "Notification ID"
+            }
+          ]
+        },
+        "description": "Delete a specific notification by its ID."
+      }
+    },
+    {
+      "name": "Mark Notification as Read",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"notificationId\": \"507f1f77bcf86cd799439011\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/notifications/mark-as-read",
+          "host": ["{{baseUrl}}"],
+          "path": ["notifications", "mark-as-read"]
+        },
+        "description": "Mark a specific notification as read."
+      }
+    },
+    {
+      "name": "Mark Notification as Unread",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"notificationId\": \"507f1f77bcf86cd799439011\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/notifications/mark-as-unread",
+          "host": ["{{baseUrl}}"],
+          "path": ["notifications", "mark-as-unread"]
+        },
+        "description": "Mark a specific notification as unread."
+      }
+    },
+    {
+      "name": "Mark All as Read for Recipient",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"recipientId\": \"507f1f77bcf86cd799439011\",\n  \"recipientType\": \"user\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/notifications/mark-all-read",
+          "host": ["{{baseUrl}}"],
+          "path": ["notifications", "mark-all-read"]
+        },
+        "description": "Mark all notifications as read for a specific recipient."
+      }
+    },
+    {
+      "name": "Bulk Delete Notifications",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"notificationIds\": [\n    \"507f1f77bcf86cd799439011\",\n    \"507f1f77bcf86cd799439012\"\n  ]\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/notifications/bulk-delete",
+          "host": ["{{baseUrl}}"],
+          "path": ["notifications", "bulk-delete"]
+        },
+        "description": "Delete multiple notifications by their IDs."
+      }
+    },
+    {
+      "name": "Get Notification Statistics",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/notifications/statistics",
+          "host": ["{{baseUrl}}"],
+          "path": ["notifications", "statistics"]
+        },
+        "description": "Get aggregated statistics about notifications including counts by type, priority, and read status."
+      }
+    },
+    {
+      "name": "Get Unread Count for Recipient",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/notifications/unread-count/:recipientId",
+          "host": ["{{baseUrl}}"],
+          "path": ["notifications", "unread-count", ":recipientId"],
+          "variable": [
+            {
+              "key": "recipientId",
+              "value": "507f1f77bcf86cd799439011",
+              "description": "Recipient ID"
+            }
+          ]
+        },
+        "description": "Get the count of unread notifications for a specific recipient."
+      }
+    },
+    {
+      "name": "Search Notifications",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/notifications/search?query=booking&page=1&limit=10",
+          "host": ["{{baseUrl}}"],
+          "path": ["notifications", "search"],
+          "query": [
+            {
+              "key": "query",
+              "value": "booking",
+              "description": "Search term for title and message"
+            },
+            {
+              "key": "page",
+              "value": "1",
+              "description": "Page number for pagination"
+            },
+            {
+              "key": "limit",
+              "value": "10",
+              "description": "Number of items per page"
+            }
+          ]
+        },
+        "description": "Search notifications by title and message content with pagination."
+      }
+    }
+  ]
+}

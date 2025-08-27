@@ -21,6 +21,13 @@ export interface ValidationOptions {
  */
 export const validate = (schema: ZodSchema | ValidationOptions) => {
   return (req: Request, res: Response, next: NextFunction): void => {
+    logger.info('=== VALIDATION MIDDLEWARE CALLED ===', {
+      method: req.method,
+      path: req.path,
+      body: req.body,
+      schema: typeof schema,
+    });
+
     // Handle both direct schema and options object
     let options: ValidationOptions;
 
@@ -104,6 +111,7 @@ export const validate = (schema: ZodSchema | ValidationOptions) => {
 
       // If there are validation errors, return error response
       if (errors.length > 0) {
+        logger.warn('Validation middleware - errors found:', errors);
         logger.warn('Validation failed', {
           requestId: res.locals['requestId'],
           errors,
@@ -113,6 +121,8 @@ export const validate = (schema: ZodSchema | ValidationOptions) => {
         ResponseUtil.validationError(res, errors);
         return;
       }
+
+      logger.info('Validation middleware - no errors, continuing...');
 
       // Continue to next middleware if validation passes
       next();

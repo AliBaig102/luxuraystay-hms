@@ -9,6 +9,8 @@ import { serviceRequestRoutes } from './servicerequest.routes';
 import { housekeepingTaskRoutes } from './housekeepingtask.routes';
 import { maintenanceRequestRoutes } from './maintenancerequest.routes';
 import { feedbackRoutes } from './feedback.routes';
+import notificationRoutes from './notification.routes';
+import { reportRoutes } from './report.routes';
 
 export {
   testRoutes,
@@ -22,4 +24,6 @@ export {
   housekeepingTaskRoutes,
   maintenanceRequestRoutes,
   feedbackRoutes,
+  notificationRoutes,
+  reportRoutes,
 };

@@ -24,6 +24,8 @@ import {
   housekeepingTaskRoutes,
   maintenanceRequestRoutes,
   feedbackRoutes,
+  notificationRoutes,
+  reportRoutes,
 } from './routes';
 
 const PROJECT_VERSION = process.env.PROJECT_VERSION || 'v1';
@@ -61,6 +63,8 @@ export function createApp(): express.Application {
     maintenanceRequestRoutes
   );
   app.use(`/api/${PROJECT_VERSION}/feedback`, feedbackRoutes);
+  app.use(`/api/${PROJECT_VERSION}/notifications`, notificationRoutes);
+  app.use(`/api/${PROJECT_VERSION}/reports`, reportRoutes);
 
   // Health check endpoint with specific rate limiting
   app.get('/health', healthCheckLimiter, (req, res) => {

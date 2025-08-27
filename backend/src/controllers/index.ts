@@ -9,3 +9,5 @@ export { ServiceRequestController } from './servicerequest.controller';
 export { HousekeepingTaskController } from './housekeepingtask.controller';
 export { MaintenanceRequestController } from './maintenancerequest.controller';
 export { FeedbackController } from './feedback.controller';
+export { NotificationController } from './notification.controller';
+export { ReportController } from './report.controller';

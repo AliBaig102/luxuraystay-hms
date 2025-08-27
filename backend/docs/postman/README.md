@@ -1,10 +1,19 @@
-# Feedback Management API - Postman Documentation
+# Luxuray Stay HMS - Postman API Documentation
 
-This directory contains comprehensive Postman documentation for the Feedback Management API of the Luxuray Stay Hotel Management System.
+This directory contains comprehensive Postman documentation for all APIs in the Luxuray Stay Hotel Management System.
 
-## Files
+## Available API Collections
 
-- `Feedback_Management_API.postman_collection.json` - Complete Postman collection with all API endpoints
+### Feedback Management API
+- `Feedback_Management_API.postman_collection.json` - Complete Postman collection for feedback operations
+- Documentation: See [Feedback API section](#feedback-management-api) below
+
+### Report Management API
+- `Report_Management_API.postman_collection.json` - Complete Postman collection for report operations
+- `Report_Management_API_README.md` - Detailed documentation for Report Management API
+
+### Maintenance Request API
+- `Maintenance_Request_API.postman_collection.json` - Complete Postman collection for maintenance operations
 
 ## How to Import the Collection
 
@@ -226,10 +235,42 @@ All API responses follow this standard format:
 - Use valid MongoDB ObjectIDs for `guestId`, `reservationId`, and `roomId`
 - The collection includes sample data that may need to be adjusted for your environment
 
+---
+
+# Report Management API
+
+For detailed documentation of the Report Management API, please refer to the dedicated documentation file: `Report_Management_API_README.md`
+
+## Quick Overview
+
+The Report Management API provides comprehensive functionality for:
+- Generating various types of reports (occupancy, revenue, guest, maintenance, financial)
+- Multiple output formats (JSON, PDF, Excel, CSV)
+- Report statistics and analytics
+- Bulk operations and cleanup
+- Download and management features
+
+### Key Endpoints
+- **POST** `/api/v1/reports/generate` - Generate new reports
+- **GET** `/api/v1/reports` - List all reports with filtering
+- **GET** `/api/v1/reports/statistics` - Get report statistics
+- **GET** `/api/v1/reports/:id` - Get specific report
+- **GET** `/api/v1/reports/:id/download` - Download report file
+- **PUT** `/api/v1/reports/:id` - Update report metadata
+- **DELETE** `/api/v1/reports/:id` - Delete report
+- **POST** `/api/v1/reports/cleanup` - Cleanup old reports
+- **DELETE** `/api/v1/reports/bulk-delete` - Bulk delete reports
+
+### Authentication
+All Report Management API endpoints require JWT authentication except the health check endpoint.
+
+---
+
 ## Support
 
-For issues or questions regarding the API:
+For issues or questions regarding any API:
 1. Check the server logs for detailed error messages
 2. Verify all required fields are provided
 3. Ensure data types match the validation schema
 4. Confirm the server is running and accessible
+5. For Report Management API, refer to `Report_Management_API_README.md` for detailed documentation
