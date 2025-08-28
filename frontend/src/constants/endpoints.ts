@@ -1,7 +1,7 @@
 const ENDPOINT = {
   BASE_URL: import.meta.env.VITE_API_BASE_URL,
-  VERSION: import.meta.env.PROJECT_VERSION,
-  NAME: import.meta.env.PROJECT_NAME,
+  VERSION: import.meta.env.VITE_PROJECT_VERSION ,
+  NAME: import.meta.env.VITE_PROJECT_NAME,
 };
 
 const ENDPOINT_URL = `api/${ENDPOINT.VERSION}`;
