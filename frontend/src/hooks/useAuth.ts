@@ -1,6 +1,12 @@
+import { useAppSelector } from "@/store";
+
 export const useAuth = () => {
-    return {
-        token: null,
-        user: null,
-    }
-}
+  const { token, isAuthenticated, user } = useAppSelector(
+    (state) => state.auth
+  );
+  return {
+    token,
+    isAuthenticated,
+    user,
+  };
+};
