@@ -19,6 +19,7 @@ export interface User extends BaseModel {
   lastName: string;
   phone: string;
   role: UserRole;
+  status: UserStatus;
   isActive: boolean;
   lastLogin?: Date;
   profileImage?: string;
@@ -33,6 +34,14 @@ export const USER_ROLES = {
   HOUSEKEEPING: 'housekeeping',
   MAINTENANCE: 'maintenance',
   GUEST: 'guest',
+} as const;
+
+export type UserStatus = 'active' | 'inactive' | 'suspended';
+
+export const USER_STATUSES = {
+  ACTIVE: 'active',
+  INACTIVE: 'inactive',
+  SUSPENDED: 'suspended',
 } as const;
 
 export interface UserProfile {
@@ -54,10 +63,34 @@ export interface UserProfile {
   };
 }
 
+// Guest Management Types
+export interface Guest extends BaseModel {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  address?: string;
+  dateOfBirth?: Date;
+  nationality?: string;
+  idProof?: string;
+  emergencyContact?: {
+    name: string;
+    relationship: string;
+    phone: string;
+  };
+  preferences?: {
+    roomType?: string;
+    floor?: string;
+    amenities?: string[];
+    specialRequests?: string;
+  };
+  isActive: boolean;
+}
+
 // Room Management Types
 export interface Room extends BaseModel {
   roomNumber: string;
-  roomType: RoomType;
+  type: RoomType;
   floor: number;
   capacity: number;
   pricePerNight: number;
