@@ -1,6 +1,6 @@
 import type { AxiosRequestConfig, Method } from "axios"
 import type { ToastOptions } from "react-toastify"
-import type { SWRConfiguration, SWRResponse } from "swr"
+import type { SWRConfiguration, SWRResponse, KeyedMutator } from "swr"
 import type { z } from "zod"
 
 export interface ApiResponse<T> {
@@ -52,7 +52,7 @@ export interface UseApiOptions<T> {
   /** Global headers to apply to all requests */
   headers?: Record<string, string>
   /** SWR configuration overrides */
-  swrConfig?: SWRConfiguration<T, Error> & { retryCount?: number; retryDelay?: number }
+  swrConfig?: SWRConfiguration<{ data: T; response: ApiResponse<T> }, Error> & { retryCount?: number; retryDelay?: number }
   /** Toast options for success/error notifications */
   toastOptions?: ToastOptions
   /** Custom error handler */
@@ -80,25 +80,31 @@ export interface RequestConfig {
   optimisticUpdate?: <T>(currentData: T | undefined) => T
 }
 
-export interface ApiHookReturn<T> extends SWRResponse<T, Error> {
+export interface ApiHookReturn<T> extends Omit<SWRResponse<{ data: T; response: ApiResponse<T> }, Error>, 'data' | 'mutate'> {
+  /** Response data */
+  data?: T
+  /** Full API response */
+  response?: ApiResponse<T>
   /** Loading state for GET requests */
   isFetching: boolean
   /** Loading state for mutations */
   isMutating: boolean
+  /** SWR mutate function */
+  mutate: KeyedMutator<{ data: T; response: ApiResponse<T> }>
   /** Perform a GET request */
-  get: <R = T>(endpoint: string, cfg?: RequestConfig) => Promise<R>
+  get: <R = T>(endpoint: string, cfg?: RequestConfig) => Promise<{ data: R; response: ApiResponse<R> }>
   /** Perform a POST request */
-  post: <R = T>(endpoint: string, body: unknown, cfg?: RequestConfig) => Promise<R>
+  post: <R = T>(endpoint: string, body: unknown, cfg?: RequestConfig) => Promise<{ data: R; response: ApiResponse<R> }>
   /** Perform a PUT request */
-  put: <R = T>(endpoint: string, body: unknown, cfg?: RequestConfig) => Promise<R>
+  put: <R = T>(endpoint: string, body: unknown, cfg?: RequestConfig) => Promise<{ data: R; response: ApiResponse<R> }>
   /** Perform a PATCH request */
-  patch: <R = T>(endpoint: string, body: unknown, cfg?: RequestConfig) => Promise<R>
+  patch: <R = T>(endpoint: string, body: unknown, cfg?: RequestConfig) => Promise<{ data: R; response: ApiResponse<R> }>
   /** Perform a DELETE request */
-  delete: <R = T>(endpoint: string, cfg?: RequestConfig) => Promise<R>
+  delete: <R = T>(endpoint: string, cfg?: RequestConfig) => Promise<{ data: R; response: ApiResponse<R> }>
   /** Invalidate cache keys */
   invalidate: (keys?: string | string[]) => Promise<void>
   /** Upload a file */
-  uploadFile: (endpoint: string, file: File, onProgress?: (percentage: number) => void) => Promise<T>
+  uploadFile: (endpoint: string, file: File, onProgress?: (percentage: number) => void) => Promise<{ data: T; response: ApiResponse<T> }>
   /** Execute multiple requests concurrently */
-  batch: <R>(requests: { method: Method; endpoint: string; data?: unknown }[]) => Promise<R[]>
+  batch: <R>(requests: { method: Method; endpoint: string; data?: unknown }[]) => Promise<{ data: R; response: ApiResponse<R> }[]>
 }
