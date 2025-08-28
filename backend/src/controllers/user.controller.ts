@@ -97,7 +97,17 @@ export class UserController {
       const user = await UserModel.findOne({ email }).select('+password');
       if (!user) {
         logger.warn('Login attempt with non-existent email', { email });
-        return ResponseUtil.unauthorized(res, 'Invalid email or password');
+        return ResponseUtil.error(
+          res,
+          'Invalid email or password',
+          HttpStatusCode.BAD_REQUEST,
+          [
+            {
+              field: 'email',
+              message: 'Invalid email or password',
+            },
+          ]
+        );
       }
 
       // Check if user is active
@@ -110,7 +120,17 @@ export class UserController {
       const isPasswordValid = await bcrypt.compare(password, user.password);
       if (!isPasswordValid) {
         logger.warn('Login attempt with invalid password', { email });
-        return ResponseUtil.unauthorized(res, 'Invalid email or password');
+        return ResponseUtil.error(
+          res,
+          'Invalid email or password',
+          HttpStatusCode.UNAUTHORIZED,
+          [
+            {
+              field: 'email',
+              message: 'Invalid email or password',
+            },
+          ]
+        );
       }
 
       // Update last login
