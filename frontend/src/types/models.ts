@@ -24,7 +24,7 @@ export interface User extends BaseModel {
   profileImage?: string;
 }
 
-export type UserRole = 'admin' | 'manager' | 'receptionist' | 'housekeeping' | 'maintenance' | 'guest';
+export type UserRole = (typeof USER_ROLES)[keyof typeof USER_ROLES];
 
 export const USER_ROLES = {
   ADMIN: 'admin',

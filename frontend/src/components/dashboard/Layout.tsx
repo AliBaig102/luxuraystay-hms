@@ -1,19 +1,14 @@
-import type React from "react";
 import { Sidebar } from "./Sidebar";
 import { Header } from "./Header";
 import { SidebarInset, SidebarProvider } from "@/components/ui";
-
-interface LayoutProps {
-  children: React.ReactNode;
-}
-
-export function Layout({ children }: LayoutProps) {
+import { Outlet } from "react-router-dom";
+export function Layout() {
   return (
     <SidebarProvider>
       <Sidebar />
       <SidebarInset>
         <Header />
-        {children}
+        <Outlet />
       </SidebarInset>
     </SidebarProvider>
   );

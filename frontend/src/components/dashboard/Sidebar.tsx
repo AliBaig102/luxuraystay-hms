@@ -2,7 +2,7 @@ import * as React from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { Layers } from "lucide-react"; // Declared Layers here
 
-import { type MenuItem, menuItems } from "@/constants/navigation";
+import { type MenuItem } from "@/constants/navigation";
 import {
   Sidebar as SidebarPrimitive,
   SidebarContent,
@@ -17,9 +17,14 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { Link, useLocation } from "react-router-dom";
+import { getNavigationForRole } from "@/lib/permissions";
+import { useAuth } from "@/hooks/useAuth";
+import { USER_ROLES } from "@/types/models";
 
 export const Sidebar = () => {
+  const { user } = useAuth();
   const location = useLocation();
+  const menuItems = getNavigationForRole(user?.role || USER_ROLES.GUEST);
 
   return (
     <SidebarPrimitive>

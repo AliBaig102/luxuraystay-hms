@@ -1,41 +1,53 @@
-import { PageHeader } from "@/components/dashboard/PageHeader";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { USER_ROLES } from "@/types/models";
 
 export function Dashboard() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
+    // Redirect to role-specific dashboard
+    switch (user.role) {
+      case USER_ROLES.ADMIN:
+        navigate("/dashboard/admin", { replace: true });
+        break;
+      case USER_ROLES.MANAGER:
+        navigate("/dashboard/manager", { replace: true });
+        break;
+      case USER_ROLES.RECEPTIONIST:
+        navigate("/dashboard/receptionist", { replace: true });
+        break;
+      case USER_ROLES.HOUSEKEEPING:
+        navigate("/dashboard/housekeeping", { replace: true });
+        break;
+      case USER_ROLES.MAINTENANCE:
+        navigate("/dashboard/maintenance", { replace: true });
+        break;
+      case USER_ROLES.GUEST:
+        navigate("/dashboard/guest", { replace: true });
+        break;
+      default:
+        navigate("/unauthorized", { replace: true });
+        break;
+    }
+  }, [user, navigate]);
+
+  // Show loading while redirecting
   return (
-    <>
-      <PageHeader title="Dashboard" description="Welcome to your dashboard" />
-      <div className="p-6">
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-lg border bg-white p-4">
-            <div className="text-sm font-medium text-gray-600">
-              Total Revenue
-            </div>
-            <div className="mt-2 text-2xl font-bold">$45,231.89</div>
-          </div>
-          <div className="rounded-lg border bg-white p-4">
-            <div className="text-sm font-medium text-gray-600">Orders</div>
-            <div className="mt-2 text-2xl font-bold">+2350</div>
-          </div>
-          <div className="rounded-lg border bg-white p-4">
-            <div className="text-sm font-medium text-gray-600">Products</div>
-            <div className="mt-2 text-2xl font-bold">+12,234</div>
-          </div>
-          <div className="rounded-lg border bg-white p-4">
-            <div className="text-sm font-medium text-gray-600">
-              Active Users
-            </div>
-            <div className="mt-2 text-2xl font-bold">+573</div>
-          </div>
-        </div>
-        <div className="mt-6 rounded-lg border bg-white p-6">
-          <h2 className="text-lg font-medium">Recent Activity</h2>
-          <div className="mt-4">
-            <p className="text-sm text-gray-600">
-              Dashboard content goes here.
-            </p>
-          </div>
-        </div>
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+        <p className="text-muted-foreground">
+          Redirecting to your dashboard...
+        </p>
       </div>
-    </>
+    </div>
   );
 }
