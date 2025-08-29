@@ -1,9 +1,16 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { ProtectedRoute } from '@/components/custom/ProtectedRoute';
-import { PublicRoute } from '@/components/custom/PublicRoute';
-import { Login } from '@/pages/Login';
-import { Signup } from '@/pages/Signup';
-import { Dashboard } from '@/pages/Dashboard';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import { ProtectedRoute } from "@/components/custom/ProtectedRoute";
+import { PublicRoute } from "@/components/custom/PublicRoute";
+import { Login } from "@/pages/Login";
+import { Signup } from "@/pages/Signup";
+import { Dashboard } from "@/pages/Dashboard";
+import { Unauthorized } from "@/pages/Unauthorized";
+import { NotFound } from "@/pages/NotFound";
 
 function App() {
   return (
@@ -26,7 +33,7 @@ function App() {
             </PublicRoute>
           }
         />
-        
+
         {/* Protected Routes - require authentication */}
         <Route
           path="/dashboard"
@@ -36,45 +43,15 @@ function App() {
             </ProtectedRoute>
           }
         />
-        
+
         {/* Unauthorized page for role-based access */}
-        <Route
-          path="/unauthorized"
-          element={
-            <div className="min-h-screen flex items-center justify-center bg-background">
-              <div className="text-center">
-                <h1 className="text-4xl font-bold text-destructive mb-4">Unauthorized</h1>
-                <p className="text-muted-foreground mb-4">
-                  You don't have permission to access this page.
-                </p>
-                <a href="/dashboard" className="text-primary hover:underline">
-                  Go back to Dashboard
-                </a>
-              </div>
-            </div>
-          }
-        />
-        
+        <Route path="/unauthorized" element={<Unauthorized />} />
+
         {/* Default redirect */}
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        
+
         {/* 404 page */}
-        <Route
-          path="*"
-          element={
-            <div className="min-h-screen flex items-center justify-center bg-background">
-              <div className="text-center">
-                <h1 className="text-4xl font-bold text-destructive mb-4">404</h1>
-                <p className="text-muted-foreground mb-4">
-                  The page you're looking for doesn't exist.
-                </p>
-                <a href="/dashboard" className="text-primary hover:underline">
-                  Go back to Dashboard
-                </a>
-              </div>
-            </div>
-          }
-        />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
   );
