@@ -13,7 +13,6 @@ import { Unauthorized } from "@/pages/Unauthorized";
 import { NotFound } from "@/pages/NotFound";
 import { Layout } from "./components/dashboard/Layout";
 import { RoleProtectedRoute } from "./components/custom/RoleProtectedRoute";
-import { GuestDashboard } from "./pages/dashboard/GuestDashboard";
 import { Reservations } from "./pages/dashboard/Reservations";
 import { USER_ROLES } from "./types/models";
 
@@ -50,17 +49,16 @@ function App() {
         >
           <Route index element={<Dashboard />} />
           <Route
-            path="guest"
-            element={
-              <RoleProtectedRoute allowedRoles={[USER_ROLES.GUEST]}>
-                <GuestDashboard />
-              </RoleProtectedRoute>
-            }
-          />
-          <Route
             path="reservations"
             element={
-              <RoleProtectedRoute allowedRoles={[USER_ROLES.GUEST, USER_ROLES.ADMIN, USER_ROLES.MANAGER, USER_ROLES.RECEPTIONIST]}>
+              <RoleProtectedRoute
+                allowedRoles={[
+                  USER_ROLES.GUEST,
+                  USER_ROLES.ADMIN,
+                  USER_ROLES.MANAGER,
+                  USER_ROLES.RECEPTIONIST,
+                ]}
+              >
                 <Reservations />
               </RoleProtectedRoute>
             }

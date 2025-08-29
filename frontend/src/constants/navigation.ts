@@ -157,7 +157,7 @@ export const DASHBOARD_MENU_ITEMS: DashboardMenuItems = {
   [USER_ROLES.GUEST]: [
     { 
       title: "Dashboard",
-      href: "/dashboard/guest",
+      href: "/dashboard/",
       icon: BarChart,
     },
     {
