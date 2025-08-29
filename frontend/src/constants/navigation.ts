@@ -164,6 +164,16 @@ export const DASHBOARD_MENU_ITEMS: DashboardMenuItems = {
       title: "Reservations",
       href: "/dashboard/reservations",
       icon: Box,
+      submenu: [
+        {
+          title: "My Reservations",
+          href: "/dashboard/my-reservations",
+        },
+        {
+          title: "My Bills",
+          href: "/dashboard/my-bills",
+        },
+      ],
     },
   ],
 };

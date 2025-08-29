@@ -1,7 +1,5 @@
 import * as React from "react";
-import { ChevronDown, ChevronRight } from "lucide-react";
-import { Layers } from "lucide-react"; // Declared Layers here
-
+import { Building2, ChevronDown, ChevronRight } from "lucide-react";
 import { type MenuItem } from "@/constants/navigation";
 import {
   Sidebar as SidebarPrimitive,
@@ -29,9 +27,18 @@ export const Sidebar = () => {
   return (
     <SidebarPrimitive>
       <SidebarHeader>
-        <div className="flex items-center gap-2 px-4 py-2">
-          <Layers className="h-6 w-6" />
-          <span className="text-lg font-bold">Admin Panel</span>
+        <div className="flex items-center justify-between px-4 py-4">
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <Building2 className="h-8 w-8 " aria-hidden="true" />
+              <div className="absolute -top-1 -right-1 h-3 w-3 bg-amber-400 rounded-full animate-pulse" />
+            </div>
+
+            <div className="flex flex-col">
+              <span className="text-lg font-bold ">LuxurayStay</span>
+              <span className="text-xs font-medium">Hotel Management</span>
+            </div>
+          </div>
         </div>
       </SidebarHeader>
       <SidebarContent>

@@ -21,6 +21,9 @@ const rootReducer = combineReducers({
   auth: authReducer,
 });
 
+// Define RootState type from rootReducer
+export type RootState = ReturnType<typeof rootReducer>;
+
 const persistConfig = {
   key: "root",
   storage,
@@ -42,8 +45,12 @@ export const store = configureStore({
 
 export const persistor = persistStore(store);
 
-export type RootState = ReturnType<typeof store.getState>;
+// Export types
 export type AppDispatch = typeof store.dispatch;
 
+// Export typed hooks
 export const useAppDispatch = () => useDispatch<AppDispatch>();
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
+
+// Default export for compatibility
+export default store;
