@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Bell, X, Clock, Check, Trash2, MoreVertical } from 'lucide-react';
 import {
   DropdownMenu,
