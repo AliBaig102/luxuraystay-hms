@@ -29,5 +29,8 @@ export const ROLE_PERMISSIONS = {
   ],
   [USER_ROLES.GUEST]: [
     "user.view",
+    "user.create",
+    "user.update",
+    "user.delete",
   ],
 }

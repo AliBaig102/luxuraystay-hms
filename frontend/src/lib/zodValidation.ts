@@ -1,3 +1,4 @@
+import { USER_ROLES } from "@/types/models";
 import z from "zod";
 
 // Login form validation schema
@@ -41,3 +42,31 @@ export const signupSchema = z
 // Type definitions
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type SignupFormData = z.infer<typeof signupSchema>;
+
+
+export const createUserSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+  firstName: z
+    .string()
+    .min(1, "First name is required")
+    .max(50, "First name cannot exceed 50 characters"),
+  lastName: z
+    .string()
+    .min(1, "Last name is required")
+    .max(50, "Last name cannot exceed 50 characters"),
+  phone: z
+    .string()
+    .regex(/^[+]?[1-9][\d]{0,15}$/, "Please enter a valid phone number"),
+  role: z.enum([
+    USER_ROLES.ADMIN,
+    USER_ROLES.MANAGER,
+    USER_ROLES.RECEPTIONIST,
+    USER_ROLES.HOUSEKEEPING,
+    USER_ROLES.MAINTENANCE,
+    USER_ROLES.GUEST,
+  ] as const),
+  password: z.string().min(6, "Password must be at least 6 characters long"),
+  isActive: z.boolean().default(true),
+});
+
+export type CreateUserFormData = z.infer<typeof createUserSchema>;
