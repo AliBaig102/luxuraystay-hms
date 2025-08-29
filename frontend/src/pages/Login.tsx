@@ -22,14 +22,17 @@ import {
 import { LoadingButton } from "@/components/custom/LoadingButton";
 import { useAppDispatch } from "@/store";
 import { loginSchema, type LoginFormData } from "@/lib/zodValidation";
-import { useMockApi } from "@/hooks/useMockApi";
 import { handleApiError } from "@/lib";
 import type { User } from "@/types/models";
 import { setCredentials } from "@/store/slices/authSlice";
+import { useApi } from "@/hooks/useApi";
+import { ENDPOINT_URLS } from "@/constants/endpoints";
 
 export function Login() {
   const [showPassword, setShowPassword] = useState(false);
-  const { post, isMutating } = useMockApi();
+  const { post, isMutating } = useApi(ENDPOINT_URLS.USERS.LOGIN, {
+    immediate: false,
+  });
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -46,8 +49,10 @@ export function Login() {
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      const { data: { user, token } } = await post<{ user: User; token: string }>(
-        "/auth/login",
+      const {
+        data: { user, token },
+      } = await post<{ user: User; token: string }>(
+        ENDPOINT_URLS.USERS.LOGIN,
         data
       );
       console.log(user, token);

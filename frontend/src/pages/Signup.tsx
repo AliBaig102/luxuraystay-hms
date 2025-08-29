@@ -20,12 +20,15 @@ import {
 } from "@/components/ui";
 import { LoadingButton } from "@/components/custom/LoadingButton";
 import { signupSchema, type SignupFormData } from "@/lib/zodValidation";
-import { useMockApi } from "@/hooks/useMockApi";
 import type { User } from "@/types/models";
 import { handleApiError } from "@/lib";
+import { useApi } from "@/hooks/useApi";
+import { ENDPOINT_URLS } from "@/constants/endpoints";
 
 export function Signup() {
-  const { post, isMutating } = useMockApi();
+  const { post, isMutating } = useApi(ENDPOINT_URLS.USERS.REGISTER, {
+    immediate: false,
+  });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -45,7 +48,7 @@ export function Signup() {
 
   const onSubmit = async (data: SignupFormData) => {
     try {
-      await post<{ user: User }>("/auth/register", data);
+      await post<{ user: User }>(ENDPOINT_URLS.USERS.REGISTER, data);
       navigate("/login");
     } catch (error) {
       handleApiError(error, form.setError);
