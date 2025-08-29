@@ -11,6 +11,7 @@ import { Signup } from "@/pages/Signup";
 import { Dashboard } from "@/pages/Dashboard";
 import { Unauthorized } from "@/pages/Unauthorized";
 import { NotFound } from "@/pages/NotFound";
+import { Layout } from "./components/dashboard/Layout";
 
 function App() {
   return (
@@ -39,7 +40,17 @@ function App() {
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <Dashboard />
+              <Layout>
+                <Routes>
+                  <Route index element={<Dashboard />} />
+                  {/* <Route path="products" element={<Products />} />
+                <Route path="services" element={<Services />} />
+                <Route path="categories" element={<Categories />} />
+                <Route path="customers" element={<Customers />} />
+                <Route path="orders" element={<Orders />} />
+                <Route path="settings" element={<Settings />} /> */}
+                </Routes>
+              </Layout>
             </ProtectedRoute>
           }
         />
