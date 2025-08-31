@@ -44,6 +44,8 @@ import { generatePassword } from "@/lib/utils";
 import { USER_ROLES, type UserRole } from "@/types/models";
 import { LoadingButton } from "../custom/LoadingButton";
 import { createUserSchema, type CreateUserFormData } from "@/lib/zodValidation";
+import { useApi } from "@/hooks/useApi";
+import { ENDPOINT_URLS } from "@/constants/endpoints";
 
 interface UserSheetProps {
   children: React.ReactNode;
@@ -67,9 +69,10 @@ const roleColors: Record<UserRole, string> = {
   [USER_ROLES.GUEST]: "bg-muted text-muted-foreground",
 };
 
-export function UserSheet({
-  children,
-}: UserSheetProps) {
+export function UserSheet({ children }: UserSheetProps) {
+  const { post, isMutating } = useApi(ENDPOINT_URLS.USERS.REGISTER, {
+    immediate: false,
+  });
   const [open, setOpen] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
   const [passwordCopied, setPasswordCopied] = React.useState(false);
@@ -115,9 +118,9 @@ export function UserSheet({
 
   const handleSubmit = async (data: CreateUserFormData) => {
     try {
-      console.log(data);
+      await post(ENDPOINT_URLS.USERS.REGISTER,data)
       form.reset();
-      setOpen(false);
+      setOpen(false); 
       setShowPassword(false);
       setPasswordCopied(false);
     } catch (error) {
@@ -157,7 +160,7 @@ export function UserSheet({
           </SheetDescription>
         </SheetHeader>
 
-        <div className="flex-1 overflow-y-auto px-6">
+        <div className="flex-1 overflow-y-auto px-6 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-muted">
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(handleSubmit)}
@@ -419,7 +422,7 @@ export function UserSheet({
         <div className="border-t bg-background p-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <LoadingButton
-              isLoading={false}
+              isLoading={isMutating}
               variant="outline"
               onClick={() => setOpen(false)}
               className="w-full flex items-center justify-center gap-2"
@@ -429,7 +432,7 @@ export function UserSheet({
             </LoadingButton>
             <LoadingButton
               type="submit"
-              isLoading={false}
+              isLoading={isMutating}
               onClick={form.handleSubmit(handleSubmit)}
               className="w-full flex items-center justify-center gap-2"
             >
