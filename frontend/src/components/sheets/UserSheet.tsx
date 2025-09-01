@@ -48,6 +48,7 @@ import { useApi } from "@/hooks/useApi";
 import { ENDPOINT_URLS } from "@/constants/endpoints";
 
 interface UserSheetProps {
+  id?: string;
   children: React.ReactNode;
 }
 
@@ -69,7 +70,7 @@ const roleColors: Record<UserRole, string> = {
   [USER_ROLES.GUEST]: "bg-muted text-muted-foreground",
 };
 
-export function UserSheet({ children }: UserSheetProps) {
+export function UserSheet({ id, children }: UserSheetProps) {
   const { post, isMutating } = useApi(ENDPOINT_URLS.USERS.REGISTER, {
     immediate: false,
   });
