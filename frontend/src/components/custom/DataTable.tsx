@@ -59,6 +59,9 @@ import {
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
+  X,
+  Columns3,
+  RotateCcw,
 } from "lucide-react";
 import Papa from "papaparse"; // For CSV export (install papaparse)
 import * as XLSX from "xlsx"; // For Excel export (install xlsx)
@@ -120,6 +123,8 @@ export function DataTable<T extends Record<string, any>>({
     from: undefined,
     to: undefined,
   });
+
+  const [datePopoverOpen, setDatePopoverOpen] = useState(false);
 
   // Add select column if row selection is enabled
   const tableColumns = useMemo(() => {
@@ -300,106 +305,168 @@ export function DataTable<T extends Record<string, any>>({
         <div className="flex items-center gap-2">
           {/* Global Search */}
           {enableGlobalSearch && (
-            <Input
-              placeholder="Search..."
-              value={globalFilter ?? ""}
-              onChange={(event) => setGlobalFilter(event.target.value)}
-              className="grow"
-            />
+            <div className="relative">
+              <Input
+                placeholder="Search..."
+                value={globalFilter ?? ""}
+                onChange={(event) => setGlobalFilter(event.target.value)}
+                className="grow pr-8"
+              />
+              {globalFilter && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 p-0 hover:bg-gray-100 rounded-full"
+                  onClick={() => setGlobalFilter("")}
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              )}
+            </div>
           )}
 
           {/* Dynamic Filters */}
           {filters.map((filter) => (
-            <Select
-              key={filter.id}
-              value={filterValues[filter.id]}
-              onValueChange={(value) =>
-                setFilterValues((prev) => ({ ...prev, [filter.id]: value }))
-              }
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder={filter.label} />
-              </SelectTrigger>
-              <SelectContent>
-                {filter.options.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div key={filter.id} className="relative">
+              <Select
+                key={filterValues[filter.id] || 'empty'}
+                value={filterValues[filter.id] || ""}
+                onValueChange={(value) =>
+                  setFilterValues((prev) => ({ ...prev, [filter.id]: value }))
+                }
+              >
+                <SelectTrigger className="min-w-[150px]">
+                  <SelectValue placeholder={filter.label} />
+                </SelectTrigger>
+                <SelectContent>
+                  {filter.options.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {filterValues[filter.id] && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 p-0 bg-background hover:bg-muted rounded-full z-10"
+                  onClick={() =>
+                    setFilterValues((prev) => ({ ...prev, [filter.id]: undefined }))
+                  }
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              )}
+            </div>
           ))}
         </div>
 
         <div className="flex items-center gap-2">
           {/* Date Range Filter */}
           {enableDateFilter && (
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={"outline"}
-                  className={cn(
-                    "justify-start text-left font-normal",
-                    !dateRange && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {dateRange?.from ? (
-                    dateRange.to ? (
-                      <>
-                        {format(dateRange.from, "LLL dd, y")} -{" "}
-                        {format(dateRange.to, "LLL dd, y")}
-                      </>
+            <div className="relative">
+              <Popover open={datePopoverOpen} onOpenChange={setDatePopoverOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={"outline"}
+                    className={cn(
+                      "justify-start text-left font-normal pr-10!",
+                      !dateRange && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {dateRange?.from ? (
+                      dateRange.to ? (
+                        <>
+                          {format(dateRange.from, "LLL dd, y")} -{" "}
+                          {format(dateRange.to, "LLL dd, y")}
+                        </>
+                      ) : (
+                        format(dateRange.from, "LLL dd, y")
+                      )
                     ) : (
-                      format(dateRange.from, "LLL dd, y")
-                    )
-                  ) : (
-                    <span>Pick a date range</span>
-                  )}
+                      <span>Pick a date range</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    initialFocus
+                    mode="range"
+                    defaultMonth={dateRange?.from}
+                    selected={{ from: dateRange.from, to: dateRange.to }}
+                    onSelect={(range) => {
+                      setDateRange({
+                        from: range?.from,
+                        to: range?.to,
+                      });
+                      // Auto-close when both dates are selected
+                      if (range?.from && range?.to) {
+                        setDatePopoverOpen(false);
+                      }
+                    }}
+                    numberOfMonths={2}
+                  />
+                </PopoverContent>
+              </Popover>
+              {(dateRange?.from || dateRange?.to) && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 h-5 w-5 p-0 hover:bg-gray-100 rounded-full z-10"
+                  onClick={() => setDateRange({ from: undefined, to: undefined })}
+                >
+                  <X className="h-3 w-3" />
                 </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  initialFocus
-                  mode="range"
-                  defaultMonth={dateRange?.from}
-                  selected={{ from: dateRange.from, to: dateRange.to }}
-                  onSelect={(range) => {
-                    setDateRange({
-                      from: range?.from,
-                      to: range?.to,
-                    });
-                  }}
-                  numberOfMonths={2}
-                />
-              </PopoverContent>
-            </Popover>
+              )}
+            </div>
           )}
 
           {/* Column Visibility */}
           {enableColumnVisibility && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="ml-auto">
+                <Button variant="outline" className="gap-2">
+                  <Columns3 className="h-4 w-4" />
                   Columns
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {table
-                  .getAllColumns()
-                  .filter((column) => column.getCanHide())
-                  .map((column) => (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  ))}
+              <DropdownMenuContent align="end" className="w-56">
+                <div className="flex items-center justify-between px-2 py-1.5 text-sm font-medium">
+                  <span>Toggle columns</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 w-6 p-0"
+                    onClick={() => {
+                      table.getAllColumns().forEach((column) => {
+                        if (column.getCanHide()) {
+                          column.toggleVisibility(true);
+                        }
+                      });
+                    }}
+                  >
+                    <RotateCcw className="h-3 w-3" />
+                  </Button>
+                </div>
+                <div className="border-t">
+                  {table
+                    .getAllColumns()
+                    .filter((column) => column.getCanHide())
+                    .map((column) => (
+                      <DropdownMenuCheckboxItem
+                        key={column.id}
+                        className="capitalize flex items-center gap-2 px-2 py-2"
+                        checked={column.getIsVisible()}
+                        onCheckedChange={(value) =>
+                          column.toggleVisibility(!!value)
+                        }
+                      >
+                        <span className="ml-6 flex-1">{column.id}</span>
+                      </DropdownMenuCheckboxItem>
+                    ))}
+                </div>
               </DropdownMenuContent>
             </DropdownMenu>
           )}
