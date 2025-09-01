@@ -2,10 +2,11 @@ import { format } from "date-fns";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { User, UserRole } from "@/types/models";
 import { ConfirmDeleteDialog } from "@/components/dialogs/ConfirmUserDeleteDialog";
-import { Button } from "@/components/ui";
+import { Button, Badge } from "@/components/ui";
 import { Edit, Trash2 } from "lucide-react";
 import { UserSheet } from "@/components/sheets";
 import { hasPermission } from "@/lib/permissions";
+import { USER_ROLES } from "@/types/models";
 
 export const createUserColumns = (currentUserRole?: UserRole): ColumnDef<User>[] => {
   return [
@@ -46,6 +47,25 @@ export const createUserColumns = (currentUserRole?: UserRole): ColumnDef<User>[]
     header: "Role",
     enableSorting: true,
     sortingFn: "text",
+    cell: ({ row }) => {
+      const role = row.original.role;
+      const roleColors: Record<UserRole, string> = {
+        [USER_ROLES.ADMIN]: "bg-destructive/10 text-destructive",
+        [USER_ROLES.MANAGER]: "bg-chart-1/10 text-chart-1",
+        [USER_ROLES.RECEPTIONIST]: "bg-chart-2/10 text-chart-2",
+        [USER_ROLES.HOUSEKEEPING]: "bg-chart-3/10 text-chart-3",
+        [USER_ROLES.MAINTENANCE]: "bg-chart-4/10 text-chart-4",
+        [USER_ROLES.GUEST]: "bg-muted text-muted-foreground",
+      };
+      return (
+        <Badge 
+          variant="secondary" 
+          className={`${roleColors[role]} capitalize`}
+        >
+          {role}
+        </Badge>
+      );
+    },
   },
   {
     accessorKey: "isActive",
@@ -53,7 +73,14 @@ export const createUserColumns = (currentUserRole?: UserRole): ColumnDef<User>[]
     enableSorting: true,
     sortingFn: "text",
     filterFn: "booleanFilter",
-    cell: ({ row }) => (row.original.isActive ? "Active" : "Inactive"),
+    cell: ({ row }) => (
+      <Badge 
+        variant={row.original.isActive ? "default" : "secondary"}
+        className={row.original.isActive ? "bg-green-100 text-green-800 hover:bg-green-200" : "bg-red-100 text-red-800 hover:bg-red-200"}
+      >
+        {row.original.isActive ? "Active" : "Inactive"}
+      </Badge>
+    ),
   },
   {
     accessorKey: "actions",
