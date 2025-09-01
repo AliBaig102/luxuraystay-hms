@@ -62,7 +62,7 @@ import * as XLSX from "xlsx"; // For Excel export (install xlsx)
 import jsPDF from "jspdf"; // For PDF export (install jspdf)
 import autoTable from "jspdf-autotable"; // For PDF tables (install jspdf-autotable)
 import { TableSkeleton } from "./TableSkeleton";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 
 // Filter configuration interface
 interface FilterConfig {
@@ -84,13 +84,14 @@ interface DataTableProps<T> {
   enableRowSelection?: boolean;
   onRowSelect?: (selectedRows: T[]) => void;
   loading?: boolean;
+  exportFileName?: string;
 }
 
 export function DataTable<T extends Record<string, any>>({
   data,
   columns,
   filters = [],
-  enableDateFilter = false,
+  enableDateFilter = true,
   dateFilterColumn = "createdAt",
   enableGlobalSearch = true,
   enableExport = true,
@@ -98,6 +99,7 @@ export function DataTable<T extends Record<string, any>>({
   enableRowSelection = true,
   onRowSelect,
   loading = false,
+  exportFileName = "data",
 }: DataTableProps<T>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -119,6 +121,14 @@ export function DataTable<T extends Record<string, any>>({
   });
 
   const [datePopoverOpen, setDatePopoverOpen] = useState(false);
+
+  // Use ref to store onRowSelect callback to prevent infinite loops
+  const onRowSelectRef = useRef(onRowSelect);
+  
+  // Update ref when onRowSelect changes
+  useEffect(() => {
+    onRowSelectRef.current = onRowSelect;
+  }, [onRowSelect]);
 
   // Add select column if row selection is enabled
   const tableColumns = useMemo(() => {
@@ -172,15 +182,28 @@ export function DataTable<T extends Record<string, any>>({
     },
     onGlobalFilterChange: setGlobalFilter,
     globalFilterFn: "includesString",
-    // Custom filtering for date range
+    // Custom filtering for date range and boolean values
     filterFns: {
       dateRange: (row, id, filterValue) => {
-        const rowValue = row.getValue(id) as Date;
+        const rawValue = row.getValue(id);
+        // Convert string dates to Date objects for comparison
+        const rowValue = rawValue instanceof Date ? rawValue : (typeof rawValue === 'string' || typeof rawValue === 'number') ? new Date(rawValue) : new Date();
         const { from, to } = filterValue;
         if (!from && !to) return true;
-        if (from && rowValue < from) return false;
-        if (to && rowValue > to) return false;
+        
+        // Ensure we're comparing dates properly
+        const rowDate = new Date(rowValue.getFullYear(), rowValue.getMonth(), rowValue.getDate());
+        const fromDate = from ? new Date(from.getFullYear(), from.getMonth(), from.getDate()) : null;
+        const toDate = to ? new Date(to.getFullYear(), to.getMonth(), to.getDate()) : null;
+        
+        if (fromDate && rowDate < fromDate) return false;
+        if (toDate && rowDate > toDate) return false;
         return true;
+      },
+      booleanFilter: (row, id, filterValue) => {
+        const rowValue = row.getValue(id);
+        const boolValue = filterValue === 'true';
+        return rowValue === boolValue;
       },
     },
   });
@@ -202,26 +225,29 @@ export function DataTable<T extends Record<string, any>>({
 
       // Add date range filter if enabled
       if (enableDateFilter && (dateRange.from || dateRange.to)) {
-        newFilters.push({ id: dateFilterColumn, value: dateRange });
+        newFilters.push({ 
+          id: dateFilterColumn, 
+          value: dateRange
+        });
       }
 
       return newFilters;
     });
-  }, [filterValues, dateRange, filters, dateFilterColumn, enableDateFilter]);
+  }, [filterValues, dateRange, filters, dateFilterColumn, enableDateFilter, table]);
 
   // Handle row selection callback - only trigger when rowSelection changes
   useEffect(() => {
-    if (onRowSelect && enableRowSelection) {
+    if (onRowSelectRef.current && enableRowSelection) {
       const selectedRows = data.filter(
         (_, index) => rowSelection[index as keyof typeof rowSelection]
       );
       // Only call onRowSelect if there are actual changes in selection
       const hasSelection = Object.keys(rowSelection).length > 0;
       if (hasSelection || selectedRows.length > 0) {
-        onRowSelect(selectedRows);
+        onRowSelectRef.current(selectedRows);
       }
     }
-  }, [rowSelection]);
+  }, [rowSelection, data, enableRowSelection]);
 
   // Export functions
   const exportToCSV = () => {
@@ -232,7 +258,7 @@ export function DataTable<T extends Record<string, any>>({
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = "data.csv";
+    link.download = `${exportFileName}.csv`;
     link.click();
   };
 
@@ -242,7 +268,7 @@ export function DataTable<T extends Record<string, any>>({
     );
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
-    XLSX.writeFile(wb, "data.xlsx");
+    XLSX.writeFile(wb, `${exportFileName}.xlsx`);
   };
 
   const exportToPDF = () => {
@@ -275,7 +301,7 @@ export function DataTable<T extends Record<string, any>>({
       head: [headers],
       body: bodyData,
     });
-    doc.save("data.pdf");
+    doc.save(`${exportFileName}.pdf`);
   };
 
   // Show skeleton when loading
@@ -368,7 +394,7 @@ export function DataTable<T extends Record<string, any>>({
                   <Button
                     variant={"outline"}
                     className={cn(
-                      "w-full sm:w-auto justify-start text-left font-normal pr-10 min-h-[40px]",
+                      "w-full sm:w-auto justify-start text-left font-normal pr-10! min-h-[40px]",
                       !dateRange && "text-muted-foreground"
                     )}
                   >
