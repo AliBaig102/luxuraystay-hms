@@ -35,4 +35,16 @@ export const ENDPOINT_URLS = {
 
     GET_BY_ROLE: (role: string) => `${ENDPOINT_URL}/users/role/${role}`,
   },
+  ROOMS: {
+    ALL: `${ENDPOINT_URL}/rooms`,
+    AVAILABILITY: `${ENDPOINT_URL}/rooms/availability`,
+    GET_BY_NUMBER: (roomNumber: string) => `${ENDPOINT_URL}/rooms/number/${roomNumber}`,
+
+    // dynamic generators
+    GET_BY_ID: (id: string | number) => `${ENDPOINT_URL}/rooms/${id}`,
+    CREATE: `${ENDPOINT_URL}/rooms`,
+    UPDATE: (id: string | number) => `${ENDPOINT_URL}/rooms/${id}`,
+    DELETE: (id: string | number) => `${ENDPOINT_URL}/rooms/${id}`,
+    UPDATE_STATUS: (id: string | number) => `${ENDPOINT_URL}/rooms/${id}/status`,
+  },
 };

@@ -15,31 +15,29 @@ import { useApi } from "@/hooks/useApi";
 import { ENDPOINT_URLS } from "@/constants/endpoints";
 import { useState } from "react";
 
-interface ConfirmUserDeleteDialogProps {
+interface ConfirmRoomDeleteDialogProps {
   id: string;
-  title: string;
-  description: string;
+  roomNumber: string;
   children: ReactNode;
 }
 
-export function ConfirmUserDeleteDialog({
+export function ConfirmRoomDeleteDialog({
   id,
-  title,
-  description,
+  roomNumber,
   children,
-}: ConfirmUserDeleteDialogProps) {
+}: ConfirmRoomDeleteDialogProps) {
   const [open, setOpen] = useState(false);
   const {
     delete: del,
     isMutating,
     invalidate,
-  } = useApi(ENDPOINT_URLS.USERS.DELETE(id), { immediate: false });
+  } = useApi(ENDPOINT_URLS.ROOMS.DELETE(id), { immediate: false });
 
   const handleConfirm = async () => {
-    await del(ENDPOINT_URLS.USERS.DELETE(id));
-    await invalidate(ENDPOINT_URLS.USERS.ALL);
+    await del(ENDPOINT_URLS.ROOMS.DELETE(id));
+    await invalidate(ENDPOINT_URLS.ROOMS.ALL);
     setOpen(false);
-    console.log("Delete user");
+    console.log("Delete room");
   };
 
   return (
@@ -51,10 +49,10 @@ export function ConfirmUserDeleteDialog({
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-destructive/10">
               <Trash2 className="h-4 w-4 text-destructive" />
             </div>
-            {title}
+            Delete Room {roomNumber}
           </AlertDialogTitle>
           <AlertDialogDescription className="text-sm text-muted-foreground">
-            {description}
+            Are you sure you want to delete room {roomNumber}? This action cannot be undone and will permanently remove the room from the system.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

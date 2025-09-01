@@ -11,6 +11,7 @@ import { NotFound } from "@/pages/NotFound";
 import { Reservations } from "@/pages/dashboard/Reservations";
 import { USER_ROLES } from "@/types/models";
 import { Users } from "@/pages/users/Users";
+import { Rooms } from "@/pages/rooms/Rooms";
 
 export const AppRoutes = () => {
   return (
@@ -55,6 +56,20 @@ export const AppRoutes = () => {
               ]}
             >
               <Users />
+            </RoleProtectedRoute>
+          }
+        />
+        <Route
+          path="rooms"
+          element={
+            <RoleProtectedRoute
+              allowedRoles={[
+                USER_ROLES.ADMIN,
+                USER_ROLES.MANAGER,
+                USER_ROLES.RECEPTIONIST,
+              ]}
+            >
+              <Rooms />
             </RoleProtectedRoute>
           }
         />

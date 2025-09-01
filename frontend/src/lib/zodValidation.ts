@@ -1,4 +1,4 @@
-import { USER_ROLES } from "@/types/models";
+import { USER_ROLES, ROOM_TYPES, ROOM_STATUSES } from "@/types/models";
 import z from "zod";
 
 // Login form validation schema
@@ -69,4 +69,65 @@ export const createUserSchema = z.object({
   isActive: z.boolean().default(true),
 });
 
+export const updateUserSchema = createUserSchema.partial().omit({ password: true }).extend({
+  _id: z.string().optional(),
+});
+
 export type CreateUserFormData = z.infer<typeof createUserSchema>;
+export type UpdateUserFormData = z.infer<typeof updateUserSchema>;
+
+// Room validation schemas
+export const createRoomSchema = z.object({
+  roomNumber: z
+    .string()
+    .min(1, "Room number is required")
+    .max(10, "Room number cannot exceed 10 characters"),
+  roomType: z.enum([
+    ROOM_TYPES.STANDARD,
+    ROOM_TYPES.DELUXE,
+    ROOM_TYPES.SUITE,
+    ROOM_TYPES.PRESIDENTIAL,
+  ] as const),
+  floor: z
+    .number()
+    .int("Floor must be a whole number")
+    .min(1, "Floor must be at least 1")
+    .max(50, "Floor cannot exceed 50"),
+  capacity: z
+    .number()
+    .int("Capacity must be a whole number")
+    .min(1, "Capacity must be at least 1")
+    .max(10, "Capacity cannot exceed 10 guests"),
+  pricePerNight: z
+    .number()
+    .min(0, "Price must be a positive number")
+    .max(10000, "Price cannot exceed $10,000 per night"),
+  status: z.enum([
+    ROOM_STATUSES.AVAILABLE,
+    ROOM_STATUSES.OCCUPIED,
+    ROOM_STATUSES.MAINTENANCE,
+    ROOM_STATUSES.OUT_OF_SERVICE,
+    ROOM_STATUSES.CLEANING,
+    ROOM_STATUSES.RESERVED,
+  ] as const),
+  amenities: z
+    .array(z.string())
+    .optional()
+    .default([]),
+  description: z
+    .string()
+    .max(500, "Description cannot exceed 500 characters")
+    .optional(),
+  images: z
+    .array(z.string().url("Please enter valid image URLs"))
+    .optional()
+    .default([]),
+  isActive: z.boolean().default(true),
+});
+
+export const updateRoomSchema = createRoomSchema.partial().extend({
+  _id: z.string().optional(),
+});
+
+export type CreateRoomFormData = z.infer<typeof createRoomSchema>;
+export type UpdateRoomFormData = z.infer<typeof updateRoomSchema>;

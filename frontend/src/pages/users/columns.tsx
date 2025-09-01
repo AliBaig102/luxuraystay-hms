@@ -1,7 +1,6 @@
 import { format } from "date-fns";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { User, UserRole } from "@/types/models";
-import { ConfirmDeleteDialog } from "@/components/dialogs/ConfirmUserDeleteDialog";
 import { Button, Badge } from "@/components/ui";
 import { Edit, Trash2 } from "lucide-react";
 import { UserSheet } from "@/components/sheets";

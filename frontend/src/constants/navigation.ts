@@ -125,6 +125,11 @@ export const DASHBOARD_MENU_ITEMS: DashboardMenuItems = {
       icon: BarChart,
     },
     {
+      title: "Rooms",
+      href: "/dashboard/rooms",
+      icon: Package,
+    },
+    {
       title: "Reservations",
       href: "/dashboard/reservations",
       icon: Box,
