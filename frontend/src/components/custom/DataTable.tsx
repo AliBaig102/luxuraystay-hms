@@ -299,18 +299,18 @@ export function DataTable<T extends Record<string, any>>({
   }
 
   return (
-    <div className="space-y-4 p-4">
+    <div className="space-y-4 p-2 sm:p-4">
       {/* Filters */}
-      <div className="flex items-center justify-between gap-4 mb-8">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6 sm:mb-8">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2">
           {/* Global Search */}
           {enableGlobalSearch && (
-            <div className="relative">
+            <div className="relative w-full sm:w-auto">
               <Input
                 placeholder="Search..."
                 value={globalFilter ?? ""}
                 onChange={(event) => setGlobalFilter(event.target.value)}
-                className="grow pr-8"
+                className="w-full sm:min-w-[200px] pr-8"
               />
               {globalFilter && (
                 <Button
@@ -327,7 +327,7 @@ export function DataTable<T extends Record<string, any>>({
 
           {/* Dynamic Filters */}
           {filters.map((filter) => (
-            <div key={filter.id} className="relative">
+            <div key={filter.id} className="relative w-full sm:w-auto">
               <Select
                 key={filterValues[filter.id] || 'empty'}
                 value={filterValues[filter.id] || ""}
@@ -335,7 +335,7 @@ export function DataTable<T extends Record<string, any>>({
                   setFilterValues((prev) => ({ ...prev, [filter.id]: value }))
                 }
               >
-                <SelectTrigger className="min-w-[150px]">
+                <SelectTrigger className="w-full sm:min-w-[120px] md:min-w-[150px]">
                   <SelectValue placeholder={filter.label} />
                 </SelectTrigger>
                 <SelectContent>
@@ -362,32 +362,45 @@ export function DataTable<T extends Record<string, any>>({
           ))}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2">
           {/* Date Range Filter */}
           {enableDateFilter && (
-            <div className="relative">
+            <div className="relative w-full sm:w-auto">
               <Popover open={datePopoverOpen} onOpenChange={setDatePopoverOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant={"outline"}
                     className={cn(
-                      "justify-start text-left font-normal pr-10!",
+                      "w-full sm:w-auto justify-start text-left font-normal pr-10 min-h-[40px]",
                       !dateRange && "text-muted-foreground"
                     )}
                   >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dateRange?.from ? (
-                      dateRange.to ? (
-                        <>
-                          {format(dateRange.from, "LLL dd, y")} -{" "}
-                          {format(dateRange.to, "LLL dd, y")}
-                        </>
+                    <CalendarIcon className="mr-2 h-4 w-4 flex-shrink-0" />
+                    <span className="truncate">
+                      {dateRange?.from ? (
+                        dateRange.to ? (
+                          <>
+                            <span className="hidden sm:inline">
+                              {format(dateRange.from, "LLL dd, y")} -{" "}
+                              {format(dateRange.to, "LLL dd, y")}
+                            </span>
+                            <span className="sm:hidden">
+                              {format(dateRange.from, "MMM dd")} - {format(dateRange.to, "MMM dd")}
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <span className="hidden sm:inline">{format(dateRange.from, "LLL dd, y")}</span>
+                            <span className="sm:hidden">{format(dateRange.from, "MMM dd")}</span>
+                          </>
+                        )
                       ) : (
-                        format(dateRange.from, "LLL dd, y")
-                      )
-                    ) : (
-                      <span>Pick a date range</span>
-                    )}
+                        <span className="hidden sm:inline">Pick a date range</span>
+                      )}
+                      {!dateRange?.from && (
+                        <span className="sm:hidden">Date range</span>
+                      )}
+                    </span>
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -406,7 +419,7 @@ export function DataTable<T extends Record<string, any>>({
                         setDatePopoverOpen(false);
                       }
                     }}
-                    numberOfMonths={2}
+                    numberOfMonths={window.innerWidth < 768 ? 1 : 2}
                   />
                 </PopoverContent>
               </Popover>
@@ -427,9 +440,10 @@ export function DataTable<T extends Record<string, any>>({
           {enableColumnVisibility && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="gap-2">
+                <Button variant="outline" className="w-full sm:w-auto gap-2 min-h-[40px]">
                   <Columns3 className="h-4 w-4" />
-                  Columns
+                  <span className="hidden sm:inline">Columns</span>
+                  <span className="sm:hidden">Cols</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
@@ -475,8 +489,10 @@ export function DataTable<T extends Record<string, any>>({
           {enableExport && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline">
-                  <Download className="mr-2 h-4 w-4" /> Export
+                <Button variant="outline" className="w-full sm:w-auto min-h-[40px]">
+                  <Download className="mr-2 h-4 w-4" /> 
+                  <span className="hidden sm:inline">Export</span>
+                  <span className="sm:hidden">Export</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -496,8 +512,8 @@ export function DataTable<T extends Record<string, any>>({
       </div>
 
       {/* Table */}
-      <div className="rounded-md border">
-        <Table>
+      <div className="rounded-md border overflow-x-auto">
+        <Table className="min-w-full">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -572,16 +588,24 @@ export function DataTable<T extends Record<string, any>>({
       </div>
 
       {/* Advanced Pagination */}
-      <div className="flex items-center justify-between space-x-2 py-4">
-        <div className="flex items-center space-x-2">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 py-4">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
           {enableRowSelection && (
-            <div className="text-sm text-muted-foreground">
-              {table.getFilteredSelectedRowModel().rows.length} of{" "}
-              {table.getFilteredRowModel().rows.length} row(s) selected.
+            <div className="text-sm text-muted-foreground order-2 sm:order-1">
+              <span className="hidden sm:inline">
+                {table.getFilteredSelectedRowModel().rows.length} of{" "}
+                {table.getFilteredRowModel().rows.length} row(s) selected.
+              </span>
+              <span className="sm:hidden">
+                {table.getFilteredSelectedRowModel().rows.length}/{table.getFilteredRowModel().rows.length} selected
+              </span>
             </div>
           )}
-          <div className="flex items-center space-x-2">
-            <p className="text-sm font-medium">Rows per page</p>
+          <div className="flex items-center gap-2 order-1 sm:order-2">
+            <p className="text-sm font-medium whitespace-nowrap">
+              <span className="hidden sm:inline">Rows per page</span>
+              <span className="sm:hidden">Per page</span>
+            </p>
             <Select
               value={`${table.getState().pagination.pageSize}`}
               onValueChange={(value) => {
@@ -604,15 +628,19 @@ export function DataTable<T extends Record<string, any>>({
           </div>
         </div>
 
-        <div className="flex items-center space-x-6 lg:space-x-8">
-          <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-            Page {table.getState().pagination.pageIndex + 1} of{" "}
-            {table.getPageCount()}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+          <div className="flex items-center justify-center text-sm font-medium order-2 sm:order-1">
+            <span className="hidden sm:inline">
+              Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+            </span>
+            <span className="sm:hidden">
+              {table.getState().pagination.pageIndex + 1}/{table.getPageCount()}
+            </span>
           </div>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center justify-center gap-1 sm:gap-2 order-1 sm:order-2">
             <Button
               variant="outline"
-              className="hidden h-8 w-8 p-0 lg:flex"
+              className="hidden h-8 w-8 p-0 sm:flex"
               onClick={() => table.setPageIndex(0)}
               disabled={!table.getCanPreviousPage()}
             >
@@ -621,7 +649,7 @@ export function DataTable<T extends Record<string, any>>({
             </Button>
             <Button
               variant="outline"
-              className="h-8 w-8 p-0"
+              className="h-8 w-8 p-0 touch-manipulation"
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
             >
@@ -630,7 +658,7 @@ export function DataTable<T extends Record<string, any>>({
             </Button>
             <Button
               variant="outline"
-              className="h-8 w-8 p-0"
+              className="h-8 w-8 p-0 touch-manipulation"
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
             >
@@ -639,7 +667,7 @@ export function DataTable<T extends Record<string, any>>({
             </Button>
             <Button
               variant="outline"
-              className="hidden h-8 w-8 p-0 lg:flex"
+              className="hidden h-8 w-8 p-0 sm:flex"
               onClick={() => table.setPageIndex(table.getPageCount() - 1)}
               disabled={!table.getCanNextPage()}
             >
