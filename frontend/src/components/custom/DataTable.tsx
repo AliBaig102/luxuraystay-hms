@@ -1,6 +1,3 @@
-"use client";
-
-import * as React from "react";
 import type {
   ColumnDef,
   ColumnFiltersState,
@@ -52,11 +49,23 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { CalendarIcon, Download, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
+import {
+  CalendarIcon,
+  Download,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+} from "lucide-react";
 import Papa from "papaparse"; // For CSV export (install papaparse)
 import * as XLSX from "xlsx"; // For Excel export (install xlsx)
 import jsPDF from "jspdf"; // For PDF export (install jspdf)
 import autoTable from "jspdf-autotable"; // For PDF tables (install jspdf-autotable)
+import { TableSkeleton } from "./TableSkeleton";
+import { useEffect, useMemo, useState } from "react";
 
 // Filter configuration interface
 interface FilterConfig {
@@ -77,6 +86,7 @@ interface DataTableProps<T> {
   enableColumnVisibility?: boolean;
   enableRowSelection?: boolean;
   onRowSelect?: (selectedRows: T[]) => void;
+  loading?: boolean;
 }
 
 export function DataTable<T extends Record<string, any>>({
@@ -90,22 +100,20 @@ export function DataTable<T extends Record<string, any>>({
   enableColumnVisibility = true,
   enableRowSelection = true,
   onRowSelect,
+  loading = false,
 }: DataTableProps<T>) {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
-  const [globalFilter, setGlobalFilter] = React.useState("");
-  
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = useState({});
+  const [globalFilter, setGlobalFilter] = useState("");
+
   // Dynamic filter states
-  const [filterValues, setFilterValues] = React.useState<Record<string, string | undefined>>(
-    filters.reduce((acc, filter) => ({ ...acc, [filter.id]: undefined }), {})
-  );
-  
-  const [dateRange, setDateRange] = React.useState<{
+  const [filterValues, setFilterValues] = useState<
+    Record<string, string | undefined>
+  >(filters.reduce((acc, filter) => ({ ...acc, [filter.id]: undefined }), {}));
+
+  const [dateRange, setDateRange] = useState<{
     from: Date | undefined;
     to: Date | undefined;
   }>({
@@ -114,9 +122,9 @@ export function DataTable<T extends Record<string, any>>({
   });
 
   // Add select column if row selection is enabled
-  const tableColumns = React.useMemo(() => {
+  const tableColumns = useMemo(() => {
     if (!enableRowSelection) return columns;
-    
+
     const selectColumn: ColumnDef<T> = {
       id: "select",
       header: ({ table }) => (
@@ -139,7 +147,7 @@ export function DataTable<T extends Record<string, any>>({
       enableSorting: false,
       enableHiding: false,
     };
-    
+
     return [selectColumn, ...columns];
   }, [columns, enableRowSelection]);
 
@@ -179,33 +187,35 @@ export function DataTable<T extends Record<string, any>>({
   });
 
   // Apply custom filters
-  React.useEffect(() => {
+  useEffect(() => {
     table.setColumnFilters((prev) => {
       // Remove existing custom filters
-      const filterIds = [...filters.map(f => f.id), dateFilterColumn];
+      const filterIds = [...filters.map((f) => f.id), dateFilterColumn];
       const newFilters = prev.filter((f) => !filterIds.includes(f.id));
-      
+
       // Add dynamic filters
-      filters.forEach(filter => {
+      filters.forEach((filter) => {
         const value = filterValues[filter.id];
         if (value) {
           newFilters.push({ id: filter.id, value });
         }
       });
-      
+
       // Add date range filter if enabled
       if (enableDateFilter && (dateRange.from || dateRange.to)) {
         newFilters.push({ id: dateFilterColumn, value: dateRange });
       }
-      
+
       return newFilters;
     });
   }, [filterValues, dateRange, filters, dateFilterColumn, enableDateFilter]);
 
   // Handle row selection callback - only trigger when rowSelection changes
-  React.useEffect(() => {
+  useEffect(() => {
     if (onRowSelect && enableRowSelection) {
-      const selectedRows = data.filter((_, index) => rowSelection[index as keyof typeof rowSelection]);
+      const selectedRows = data.filter(
+        (_, index) => rowSelection[index as keyof typeof rowSelection]
+      );
       // Only call onRowSelect if there are actual changes in selection
       const hasSelection = Object.keys(rowSelection).length > 0;
       if (hasSelection || selectedRows.length > 0) {
@@ -269,6 +279,20 @@ export function DataTable<T extends Record<string, any>>({
     doc.save("data.pdf");
   };
 
+  // Show skeleton when loading
+  if (loading) {
+    return (
+      <TableSkeleton
+        columns={columns.length + (enableRowSelection ? 1 : 0)}
+        rows={10}
+        showSearch={enableGlobalSearch}
+        showFilters={filters.length > 0 || enableDateFilter}
+        showExport={enableExport}
+        showPagination={true}
+      />
+    );
+  }
+
   return (
     <div className="space-y-4 p-4">
       {/* Filters */}
@@ -283,7 +307,7 @@ export function DataTable<T extends Record<string, any>>({
               className="grow"
             />
           )}
-          
+
           {/* Dynamic Filters */}
           {filters.map((filter) => (
             <Select
@@ -306,7 +330,7 @@ export function DataTable<T extends Record<string, any>>({
             </Select>
           ))}
         </div>
-        
+
         <div className="flex items-center gap-2">
           {/* Date Range Filter */}
           {enableDateFilter && (
@@ -351,7 +375,7 @@ export function DataTable<T extends Record<string, any>>({
               </PopoverContent>
             </Popover>
           )}
-          
+
           {/* Column Visibility */}
           {enableColumnVisibility && (
             <DropdownMenu>
@@ -379,7 +403,7 @@ export function DataTable<T extends Record<string, any>>({
               </DropdownMenuContent>
             </DropdownMenu>
           )}
-          
+
           {/* Export */}
           {enableExport && (
             <DropdownMenu>
@@ -410,16 +434,42 @@ export function DataTable<T extends Record<string, any>>({
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
-                ))}
+                {headerGroup.headers.map((header) => {
+                  const canSort = header.column.getCanSort();
+                  const sortDirection = header.column.getIsSorted();
+                  
+                  return (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder ? null : (
+                        <div
+                          className={cn(
+                            "flex items-center space-x-2",
+                            canSort && "cursor-pointer select-none hover:bg-accent hover:text-accent-foreground rounded-md px-2 py-1 -mx-2 -my-1 transition-colors"
+                          )}
+                          onClick={canSort ? header.column.getToggleSortingHandler() : undefined}
+                        >
+                          <span>
+                            {flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                          </span>
+                          {canSort && (
+                            <span className="ml-2">
+                              {sortDirection === "asc" ? (
+                                <ArrowUp className="h-4 w-4" />
+                              ) : sortDirection === "desc" ? (
+                                <ArrowDown className="h-4 w-4" />
+                              ) : (
+                                <ArrowUpDown className="h-4 w-4 opacity-50" />
+                              )}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </TableHead>
+                  );
+                })}
               </TableRow>
             ))}
           </TableHeader>
@@ -472,7 +522,9 @@ export function DataTable<T extends Record<string, any>>({
               }}
             >
               <SelectTrigger className="h-8 w-[70px]">
-                <SelectValue placeholder={table.getState().pagination.pageSize} />
+                <SelectValue
+                  placeholder={table.getState().pagination.pageSize}
+                />
               </SelectTrigger>
               <SelectContent side="top">
                 {[10, 20, 30, 40, 50].map((pageSize) => (
@@ -484,7 +536,7 @@ export function DataTable<T extends Record<string, any>>({
             </Select>
           </div>
         </div>
-        
+
         <div className="flex items-center space-x-6 lg:space-x-8">
           <div className="flex w-[100px] items-center justify-center text-sm font-medium">
             Page {table.getState().pagination.pageIndex + 1} of{" "}
