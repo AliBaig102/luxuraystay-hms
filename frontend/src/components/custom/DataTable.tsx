@@ -22,31 +22,25 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Calendar } from "@/components/ui/calendar";
-import {
+  Button,
+  Checkbox,
+  Input,
+  Calendar,
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from "@/components/ui/";
+
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import {
@@ -329,7 +323,7 @@ export function DataTable<T extends Record<string, any>>({
           {filters.map((filter) => (
             <div key={filter.id} className="relative w-full sm:w-auto">
               <Select
-                key={filterValues[filter.id] || 'empty'}
+                key={filterValues[filter.id] || "empty"}
                 value={filterValues[filter.id] || ""}
                 onValueChange={(value) =>
                   setFilterValues((prev) => ({ ...prev, [filter.id]: value }))
@@ -352,7 +346,10 @@ export function DataTable<T extends Record<string, any>>({
                   size="sm"
                   className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 p-0 bg-background hover:bg-muted rounded-full z-10"
                   onClick={() =>
-                    setFilterValues((prev) => ({ ...prev, [filter.id]: undefined }))
+                    setFilterValues((prev) => ({
+                      ...prev,
+                      [filter.id]: undefined,
+                    }))
                   }
                 >
                   <X className="h-3 w-3" />
@@ -385,17 +382,24 @@ export function DataTable<T extends Record<string, any>>({
                               {format(dateRange.to, "LLL dd, y")}
                             </span>
                             <span className="sm:hidden">
-                              {format(dateRange.from, "MMM dd")} - {format(dateRange.to, "MMM dd")}
+                              {format(dateRange.from, "MMM dd")} -{" "}
+                              {format(dateRange.to, "MMM dd")}
                             </span>
                           </>
                         ) : (
                           <>
-                            <span className="hidden sm:inline">{format(dateRange.from, "LLL dd, y")}</span>
-                            <span className="sm:hidden">{format(dateRange.from, "MMM dd")}</span>
+                            <span className="hidden sm:inline">
+                              {format(dateRange.from, "LLL dd, y")}
+                            </span>
+                            <span className="sm:hidden">
+                              {format(dateRange.from, "MMM dd")}
+                            </span>
                           </>
                         )
                       ) : (
-                        <span className="hidden sm:inline">Pick a date range</span>
+                        <span className="hidden sm:inline">
+                          Pick a date range
+                        </span>
                       )}
                       {!dateRange?.from && (
                         <span className="sm:hidden">Date range</span>
@@ -428,7 +432,9 @@ export function DataTable<T extends Record<string, any>>({
                   variant="ghost"
                   size="sm"
                   className="absolute right-2 top-1/2 -translate-y-1/2 h-5 w-5 p-0 hover:bg-gray-100 rounded-full z-10"
-                  onClick={() => setDateRange({ from: undefined, to: undefined })}
+                  onClick={() =>
+                    setDateRange({ from: undefined, to: undefined })
+                  }
                 >
                   <X className="h-3 w-3" />
                 </Button>
@@ -440,7 +446,10 @@ export function DataTable<T extends Record<string, any>>({
           {enableColumnVisibility && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="w-full sm:w-auto gap-2 min-h-[40px]">
+                <Button
+                  variant="outline"
+                  className="w-full sm:w-auto gap-2 min-h-[40px]"
+                >
                   <Columns3 className="h-4 w-4" />
                   <span className="hidden sm:inline">Columns</span>
                   <span className="sm:hidden">Cols</span>
@@ -489,8 +498,11 @@ export function DataTable<T extends Record<string, any>>({
           {enableExport && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="w-full sm:w-auto min-h-[40px]">
-                  <Download className="mr-2 h-4 w-4" /> 
+                <Button
+                  variant="outline"
+                  className="w-full sm:w-auto min-h-[40px]"
+                >
+                  <Download className="mr-2 h-4 w-4" />
                   <span className="hidden sm:inline">Export</span>
                   <span className="sm:hidden">Export</span>
                 </Button>
@@ -520,16 +532,21 @@ export function DataTable<T extends Record<string, any>>({
                 {headerGroup.headers.map((header) => {
                   const canSort = header.column.getCanSort();
                   const sortDirection = header.column.getIsSorted();
-                  
+
                   return (
                     <TableHead key={header.id}>
                       {header.isPlaceholder ? null : (
                         <div
                           className={cn(
                             "flex items-center space-x-2",
-                            canSort && "cursor-pointer select-none hover:bg-accent hover:text-accent-foreground rounded-md px-2 py-1 -mx-2 -my-1 transition-colors"
+                            canSort &&
+                              "cursor-pointer select-none hover:bg-accent hover:text-accent-foreground rounded-md px-2 py-1 -mx-2 -my-1 transition-colors"
                           )}
-                          onClick={canSort ? header.column.getToggleSortingHandler() : undefined}
+                          onClick={
+                            canSort
+                              ? header.column.getToggleSortingHandler()
+                              : undefined
+                          }
                         >
                           <span>
                             {flexRender(
@@ -597,7 +614,8 @@ export function DataTable<T extends Record<string, any>>({
                 {table.getFilteredRowModel().rows.length} row(s) selected.
               </span>
               <span className="sm:hidden">
-                {table.getFilteredSelectedRowModel().rows.length}/{table.getFilteredRowModel().rows.length} selected
+                {table.getFilteredSelectedRowModel().rows.length}/
+                {table.getFilteredRowModel().rows.length} selected
               </span>
             </div>
           )}
@@ -631,7 +649,8 @@ export function DataTable<T extends Record<string, any>>({
         <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
           <div className="flex items-center justify-center text-sm font-medium order-2 sm:order-1">
             <span className="hidden sm:inline">
-              Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+              Page {table.getState().pagination.pageIndex + 1} of{" "}
+              {table.getPageCount()}
             </span>
             <span className="sm:hidden">
               {table.getState().pagination.pageIndex + 1}/{table.getPageCount()}

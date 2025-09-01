@@ -162,3 +162,4 @@ export {
   TooltipContent,
   TooltipProvider,
 } from "@/components/ui/tooltip";
+export { Calendar } from "@/components/ui/calendar";
