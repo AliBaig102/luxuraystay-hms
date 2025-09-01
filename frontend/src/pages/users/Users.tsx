@@ -2,6 +2,7 @@ import { PageHeader } from "@/components/dashboard/PageHeader";
 import { Button } from "@/components/ui";
 import { UserSheet } from "@/components/sheets";
 import { PlusIcon } from "lucide-react";
+import { UserDataTableExample } from "@/components/custom/DataTableExample";
 
 export const Users = () => {
   return (
@@ -17,6 +18,7 @@ export const Users = () => {
           </Button>
         </UserSheet>
       </PageHeader>
+      <UserDataTableExample />
     </div>
   );
 };
