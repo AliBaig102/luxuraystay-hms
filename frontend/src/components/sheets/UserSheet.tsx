@@ -1,6 +1,3 @@
-"use client";
-
-import * as React from "react";
 import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -8,11 +5,12 @@ import {
   Eye,
   EyeOff,
   RefreshCw,
-  User,
+  User as UserIcon,
   Mail,
   Shield,
   X,
   Plus,
+  Check,
 } from "lucide-react";
 
 import {
@@ -41,15 +39,17 @@ import {
   Separator,
 } from "@/components/ui";
 import { generatePassword } from "@/lib/utils";
-import { USER_ROLES, type UserRole } from "@/types/models";
+import { USER_ROLES } from "@/types/models";
+import type { User, UserRole } from "@/types/models";
 import { LoadingButton } from "../custom/LoadingButton";
 import { createUserSchema, type CreateUserFormData } from "@/lib/zodValidation";
 import { useApi } from "@/hooks/useApi";
 import { ENDPOINT_URLS } from "@/constants/endpoints";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 
 interface UserSheetProps {
   id?: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 const roleDescriptions: Record<UserRole, string> = {
@@ -71,13 +71,16 @@ const roleColors: Record<UserRole, string> = {
 };
 
 export function UserSheet({ id, children }: UserSheetProps) {
-  const { post, isMutating } = useApi(ENDPOINT_URLS.USERS.REGISTER, {
-    immediate: false,
-  });
-  const [open, setOpen] = React.useState(false);
-  const [showPassword, setShowPassword] = React.useState(false);
-  const [passwordCopied, setPasswordCopied] = React.useState(false);
-  const [isGeneratingPassword, setIsGeneratingPassword] = React.useState(false);
+  const { post, isMutating, put, get, invalidate } = useApi(
+    ENDPOINT_URLS.USERS.REGISTER,
+    {
+      immediate: false,
+    }
+  );
+  const [open, setOpen] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [passwordCopied, setPasswordCopied] = useState(false);
+  const [isGeneratingPassword, setIsGeneratingPassword] = useState(false);
 
   const form = useForm<CreateUserFormData>({
     resolver: zodResolver(createUserSchema) as Resolver<CreateUserFormData>,
@@ -91,6 +94,20 @@ export function UserSheet({ id, children }: UserSheetProps) {
       isActive: true,
     },
   });
+
+  const getUser = useCallback(async () => {
+    if (id && open) {
+      const { data } = await get<User>(ENDPOINT_URLS.USERS.GET_BY_ID(id), {
+        silent: true,
+      });
+      form.reset(data);
+      console.log(form.getValues());
+    }
+  }, [id, open]);
+
+  useEffect(() => {
+    getUser();
+  }, [id, open, getUser]);
 
   const watchedRole = form.watch("role");
   const watchedPassword = form.watch("password");
@@ -119,9 +136,14 @@ export function UserSheet({ id, children }: UserSheetProps) {
 
   const handleSubmit = async (data: CreateUserFormData) => {
     try {
-      await post(ENDPOINT_URLS.USERS.REGISTER,data)
+      if (id) {
+        await put(ENDPOINT_URLS.USERS.UPDATE(id), data);
+      } else {
+        await post(ENDPOINT_URLS.USERS.REGISTER, data);
+      }
+      await invalidate(ENDPOINT_URLS.USERS.ALL);
       form.reset();
-      setOpen(false); 
+      setOpen(false);
       setShowPassword(false);
       setPasswordCopied(false);
     } catch (error) {
@@ -139,7 +161,7 @@ export function UserSheet({ id, children }: UserSheetProps) {
   };
 
   // Generate initial password when sheet opens
-  React.useEffect(() => {
+  useEffect(() => {
     if (open && !form.getValues("password")) {
       handleGeneratePassword();
     }
@@ -152,12 +174,14 @@ export function UserSheet({ id, children }: UserSheetProps) {
         <SheetHeader className="space-y-3 pb-6 px-6 pt-6">
           <SheetTitle className="flex items-center gap-2 text-lg">
             <div className="flex h-7 w-7 items-center justify-center rounded-md bg-muted">
-              <User className="h-4 w-4" />
+              <UserIcon className="h-4 w-4" />
             </div>
-            Create New User
+            {id ? "Edit User" : "Create New User"}
           </SheetTitle>
           <SheetDescription className="text-sm text-muted-foreground">
-            Create a new user account with role-based permissions.
+            {id
+              ? "Update existing user account details and permissions."
+              : "Create a new user account with role-based permissions."}
           </SheetDescription>
         </SheetHeader>
 
@@ -171,7 +195,7 @@ export function UserSheet({ id, children }: UserSheetProps) {
               <div className="space-y-4">
                 <div className="flex items-center gap-2 pb-3">
                   <div className="flex h-5 w-5 items-center justify-center rounded bg-muted">
-                    <User className="h-3 w-3" />
+                    <UserIcon className="h-3 w-3" />
                   </div>
                   <h3 className="text-sm font-medium">Personal Information</h3>
                 </div>
@@ -270,7 +294,7 @@ export function UserSheet({ id, children }: UserSheetProps) {
                       <FormLabel>User Role</FormLabel>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger className="w-full">
@@ -325,97 +349,102 @@ export function UserSheet({ id, children }: UserSheetProps) {
                   )}
                 />
               </div>
+              {!id && (
+                <>
+                  <Separator />
 
-              <Separator />
+                  {/* Password Generation */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 pb-3">
+                      <div className="flex h-5 w-5 items-center justify-center rounded bg-muted">
+                        <Shield className="h-3 w-3" />
+                      </div>
+                      <h3 className="text-sm font-medium">Security</h3>
+                    </div>
 
-              {/* Password Generation */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-2 pb-3">
-                  <div className="flex h-5 w-5 items-center justify-center rounded bg-muted">
-                    <Shield className="h-3 w-3" />
-                  </div>
-                  <h3 className="text-sm font-medium">Security</h3>
-                </div>
-
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Password</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Input
-                            type={showPassword ? "text" : "password"}
-                            placeholder="Enter password or generate one"
-                            {...field}
-                            className="pr-20 font-mono text-sm"
-                            disabled={isGeneratingPassword}
-                          />
-                          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
+                    <FormField
+                      control={form.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Password</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <Input
+                                type={showPassword ? "text" : "password"}
+                                placeholder="Enter password or generate one"
+                                {...field}
+                                className="pr-20 font-mono text-sm"
+                                disabled={isGeneratingPassword}
+                              />
+                              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7 hover:bg-muted"
+                                  onClick={() => setShowPassword(!showPassword)}
+                                >
+                                  {showPassword ? (
+                                    <EyeOff className="h-3.5 w-3.5" />
+                                  ) : (
+                                    <Eye className="h-3.5 w-3.5" />
+                                  )}
+                                </Button>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7 hover:bg-muted"
+                                  onClick={handleCopyPassword}
+                                  disabled={!watchedPassword}
+                                >
+                                  <Copy
+                                    className={`h-3.5 w-3.5 ${
+                                      passwordCopied ? "text-green-600" : ""
+                                    }`}
+                                  />
+                                </Button>
+                              </div>
+                            </div>
+                          </FormControl>
+                          <div className="flex items-center justify-between pt-2">
+                            <FormDescription
+                              className={`text-xs transition-colors ${
+                                passwordCopied
+                                  ? "text-green-600 font-medium"
+                                  : "text-muted-foreground"
+                              }`}
+                            >
+                              {passwordCopied
+                                ? "✓ Password copied to clipboard!"
+                                : "You can type your own password or generate one"}
+                            </FormDescription>
                             <Button
                               type="button"
-                              variant="ghost"
-                              size="icon"
-                              className="h-7 w-7 hover:bg-muted"
-                              onClick={() => setShowPassword(!showPassword)}
+                              variant="outline"
+                              size="sm"
+                              onClick={handleGeneratePassword}
+                              disabled={isGeneratingPassword}
+                              className="h-8 text-xs px-3 gap-1.5"
                             >
-                              {showPassword ? (
-                                <EyeOff className="h-3.5 w-3.5" />
-                              ) : (
-                                <Eye className="h-3.5 w-3.5" />
-                              )}
-                            </Button>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              className="h-7 w-7 hover:bg-muted"
-                              onClick={handleCopyPassword}
-                              disabled={!watchedPassword}
-                            >
-                              <Copy
-                                className={`h-3.5 w-3.5 ${
-                                  passwordCopied ? "text-green-600" : ""
+                              <RefreshCw
+                                className={`h-3 w-3 ${
+                                  isGeneratingPassword ? "animate-spin" : ""
                                 }`}
                               />
+                              {isGeneratingPassword
+                                ? "Generating..."
+                                : "Generate"}
                             </Button>
                           </div>
-                        </div>
-                      </FormControl>
-                      <div className="flex items-center justify-between pt-2">
-                        <FormDescription
-                          className={`text-xs transition-colors ${
-                            passwordCopied
-                              ? "text-green-600 font-medium"
-                              : "text-muted-foreground"
-                          }`}
-                        >
-                          {passwordCopied
-                            ? "✓ Password copied to clipboard!"
-                            : "You can type your own password or generate one"}
-                        </FormDescription>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={handleGeneratePassword}
-                          disabled={isGeneratingPassword}
-                          className="h-8 text-xs px-3 gap-1.5"
-                        >
-                          <RefreshCw
-                            className={`h-3 w-3 ${
-                              isGeneratingPassword ? "animate-spin" : ""
-                            }`}
-                          />
-                          {isGeneratingPassword ? "Generating..." : "Generate"}
-                        </Button>
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </>
+              )}
             </form>
           </Form>
         </div>
@@ -435,10 +464,15 @@ export function UserSheet({ id, children }: UserSheetProps) {
               type="submit"
               isLoading={isMutating}
               onClick={form.handleSubmit(handleSubmit)}
+              disabled={!form.formState.isDirty}
               className="w-full flex items-center justify-center gap-2"
             >
-              <Plus className="h-4 w-4" />
-              Create
+              {id ? (
+                <Check className="h-4 w-4" />
+              ) : (
+                <Plus className="h-4 w-4" />
+              )}
+              {id ? "Update" : "Create"}
             </LoadingButton>
           </div>
         </div>
