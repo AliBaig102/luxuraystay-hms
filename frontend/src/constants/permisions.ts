@@ -3,34 +3,51 @@ import { USER_ROLES } from "@/types/models";
 export const ROLE_PERMISSIONS = {
   [USER_ROLES.ADMIN]: [
     "user.view",
-    "user.create",
+    "user.create", 
     "user.update",
     "user.delete",
+    "booking.manage",
+    "room.manage",
+    "payment.manage",
+    "report.view",
+    "settings.manage",
+    "staff.manage"
   ],
   [USER_ROLES.MANAGER]: [
     "user.view",
-    "user.create",
-    "user.update",
+    "booking.manage",
+    "room.manage", 
+    "payment.view",
+    "report.view",
+    "staff.view",
+    "staff.update"
   ],
   [USER_ROLES.RECEPTIONIST]: [
-    "user.view",
-    "user.create",
-    "user.update",
+    "booking.create",
+    "booking.view",
+    "booking.update",
+    "room.view",
+    "payment.create",
+    "payment.view",
+    "guest.manage"
   ],
   [USER_ROLES.HOUSEKEEPING]: [
-    "user.view",
-    "user.create",
-    "user.update",
+    "room.view",
+    "room.status.update",
+    "maintenance.request",
+    "inventory.manage"
   ],
   [USER_ROLES.MAINTENANCE]: [
-    "user.view",
-    "user.create",
-    "user.update",
+    "maintenance.view",
+    "maintenance.update",
+    "room.maintenance",
+    "inventory.view"
   ],
   [USER_ROLES.GUEST]: [
-    "user.view",
-    "user.create",
-    "user.update",
-    "user.delete",
+    "booking.view.own",
+    "booking.create.own",
+    "profile.manage",
+    "review.create",
+    "service.request"
   ],
 }

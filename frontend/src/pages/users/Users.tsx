@@ -6,7 +6,9 @@ import { useApi } from "@/hooks/useApi";
 import { ENDPOINT_URLS } from "@/constants/endpoints";
 import type { User } from "@/types/models";
 import { DataTable } from "@/components/custom/DataTable";
-import { userColumns } from "./columns";
+import { createUserColumns } from "./columns";
+import { useAuth } from "@/hooks/useAuth";
+import { hasPermission } from "@/lib/permissions";
 
 const filters = [
   {
@@ -34,23 +36,23 @@ const filters = [
 
 export const Users = () => {
   const { data, isLoading } = useApi<User[]>(ENDPOINT_URLS.USERS.ALL);
-  console.log(isLoading);
-  console.log(data);
-
+  const { user: currentUser } = useAuth();
+  const userColumns = createUserColumns(currentUser?.role);
   return (
     <div>
       <PageHeader
         title="Users"
         description="Manage user accounts, roles, and permissions"
       >
-        <UserSheet>
-          <Button>
-            <PlusIcon className="h-4 w-4 mr-2" />
-            Create New User
-          </Button>
-        </UserSheet>
+        {currentUser && hasPermission(currentUser.role, "user.create") && (
+          <UserSheet>
+            <Button>
+              <PlusIcon className="h-4 w-4 mr-2" />
+              Create New User
+            </Button>
+          </UserSheet>
+        )}
       </PageHeader>
-      {/* <UserDataTableExample /> */}
       <DataTable
         columns={userColumns}
         data={data || []}

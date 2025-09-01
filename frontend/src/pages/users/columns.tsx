@@ -1,12 +1,14 @@
 import { format } from "date-fns";
 import type { ColumnDef } from "@tanstack/react-table";
-import type { User } from "@/types/models";
+import type { User, UserRole } from "@/types/models";
 import { ConfirmDeleteDialog } from "@/components/dialogs/ConfirmUserDeleteDialog";
 import { Button } from "@/components/ui";
 import { Edit, Trash2 } from "lucide-react";
 import { UserSheet } from "@/components/sheets";
+import { hasPermission } from "@/lib/permissions";
 
-export const userColumns: ColumnDef<User>[] = [
+export const createUserColumns = (currentUserRole?: UserRole): ColumnDef<User>[] => {
+  return [
   {
     accessorKey: "createdAt",
     header: "Date",
@@ -58,21 +60,29 @@ export const userColumns: ColumnDef<User>[] = [
     header: "Actions",
     cell: ({ row }) => (
       <div className="flex items-center gap-2">
-        <ConfirmDeleteDialog
-          id={row.original._id}
-          title="Delete User"
-          description={`Are you sure you want to delete ${row.original.firstName} ${row.original.lastName}? This action cannot be undone.`}
-        >
-          <Button variant="destructive" size="icon">
-            <Trash2 />
-          </Button>
-        </ConfirmDeleteDialog>
-        <UserSheet id={row.original._id}>
-          <Button variant="outline" size="icon">
-            <Edit />
-          </Button>
-        </UserSheet>
+        {currentUserRole && hasPermission(currentUserRole, "user.delete") && (
+          <ConfirmDeleteDialog
+            id={row.original._id}
+            title="Delete User"
+            description={`Are you sure you want to delete ${row.original.firstName} ${row.original.lastName}? This action cannot be undone.`}
+          >
+            <Button variant="destructive" size="icon">
+              <Trash2 />
+            </Button>
+          </ConfirmDeleteDialog>
+        )}
+        {currentUserRole && hasPermission(currentUserRole, "user.update") && (
+          <UserSheet id={row.original._id}>
+            <Button variant="outline" size="icon">
+              <Edit />
+            </Button>
+          </UserSheet>
+        )}
       </div>
     ),
   },
-];
+  ];
+};
+
+// Export the columns for backward compatibility (without permissions)
+export const userColumns = createUserColumns();
