@@ -200,15 +200,19 @@ export function DataTable<T extends Record<string, any>>({
       
       return newFilters;
     });
-  }, [filterValues, dateRange, table, filters, dateFilterColumn, enableDateFilter]);
+  }, [filterValues, dateRange, filters, dateFilterColumn, enableDateFilter]);
 
   // Handle row selection callback - only trigger when rowSelection changes
   React.useEffect(() => {
-    if (onRowSelect && enableRowSelection && Object.keys(rowSelection).length >= 0) {
+    if (onRowSelect && enableRowSelection) {
       const selectedRows = data.filter((_, index) => rowSelection[index as keyof typeof rowSelection]);
-      onRowSelect(selectedRows);
+      // Only call onRowSelect if there are actual changes in selection
+      const hasSelection = Object.keys(rowSelection).length > 0;
+      if (hasSelection || selectedRows.length > 0) {
+        onRowSelect(selectedRows);
+      }
     }
-  }, [rowSelection, onRowSelect, enableRowSelection, data]);
+  }, [rowSelection]);
 
   // Export functions
   const exportToCSV = () => {
