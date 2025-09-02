@@ -56,7 +56,7 @@ export const Sidebar = () => {
       </SidebarContent>
       <SidebarFooter>
         <div className="px-4 py-2 text-xs text-muted-foreground">
-          © 2024 Company Name
+          © 2025 LuxurayStay
         </div>
       </SidebarFooter>
     </SidebarPrimitive>
