@@ -26,16 +26,7 @@ export class InventoryController {
     res: Response
   ): Promise<void> {
     try {
-      const validation = inventoryValidationSchemas.inventoryItem.safeParse(
-        req.body
-      );
-
-      if (!validation.success) {
-        ResponseUtil.error(res, 'Validation failed', 400);
-        return;
-      }
-
-      const itemData = validation.data;
+      const itemData = req.body;
 
       // Check if SKU already exists
       const existingItem = await InventoryItemModel.findOne({
@@ -58,10 +49,12 @@ export class InventoryController {
         transactionType: 'in',
         quantity: itemData.quantity,
         unitPrice: itemData.unitPrice,
-        totalValue: itemData.totalValue,
+        totalAmount: itemData.totalValue,
         reference: 'Initial stock',
         performedBy: req.user!.id,
         notes: 'Item created',
+        previousQuantity: 0,
+        newQuantity: itemData.quantity,
       });
 
       logger.info('Inventory item created', {
@@ -164,8 +157,6 @@ export class InventoryController {
         InventoryItemModel.countDocuments(filter),
       ]);
 
-      const totalPages = Math.ceil(total / limit);
-
       logger.info('Inventory items retrieved', {
         count: items.length,
         total,
@@ -174,19 +165,12 @@ export class InventoryController {
         userId: req.user?.id,
       });
 
-      ResponseUtil.success(
+      ResponseUtil.paginated(
         res,
-        {
-          items,
-          pagination: {
-            page,
-            limit,
-            total,
-            totalPages,
-            hasNext: page < totalPages,
-            hasPrev: page > 1,
-          },
-        },
+        items,
+        total,
+        page,
+        limit,
         'Inventory items retrieved successfully'
       );
     } catch (error: any) {
@@ -257,21 +241,23 @@ export class InventoryController {
     try {
       const { id } = req.params;
 
-      const validation =
-        inventoryValidationSchemas.inventoryItemUpdate.safeParse(req.body);
-
-      if (!validation.success) {
-        ResponseUtil.error(res, 'Validation failed', 400);
-        return;
-      }
-
-      const updateData = validation.data;
+      const updateData = req.body;
 
       // Check if item exists
       const existingItem = await InventoryItemModel.findById(id);
       if (!existingItem) {
         ResponseUtil.error(res, 'Inventory item not found', 404);
         return;
+      }
+
+      // Calculate total value if quantity or unitPrice is being updated
+      if (
+        updateData.quantity !== undefined ||
+        updateData.unitPrice !== undefined
+      ) {
+        const finalQuantity = updateData.quantity ?? existingItem.quantity;
+        const finalUnitPrice = updateData.unitPrice ?? existingItem.unitPrice;
+        updateData.totalValue = finalQuantity * finalUnitPrice;
       }
 
       // If quantity is being updated, create a transaction record
@@ -288,12 +274,14 @@ export class InventoryController {
           transactionType,
           quantity: Math.abs(quantityDifference),
           unitPrice: updateData.unitPrice || existingItem.unitPrice,
-          totalValue:
+          totalAmount:
             Math.abs(quantityDifference) *
             (updateData.unitPrice || existingItem.unitPrice),
           reference: 'Manual adjustment',
           performedBy: req.user!.id,
           notes: `Quantity adjusted from ${existingItem.quantity} to ${updateData.quantity}`,
+          previousQuantity: existingItem.quantity,
+          newQuantity: updateData.quantity,
         });
       }
 

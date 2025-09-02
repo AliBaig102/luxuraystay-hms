@@ -88,7 +88,8 @@ export const inventoryItemSchema = z.object({
   totalValue: z
     .number()
     .min(0, 'Total value cannot be negative')
-    .max(100000000, 'Total value cannot exceed 100000000'),
+    .max(100000000, 'Total value cannot exceed 100000000')
+    .optional(), // totalValue will be calculated automatically
   supplier: z
     .string()
     .max(200, 'Supplier cannot exceed 200 characters')
@@ -114,6 +115,7 @@ export const inventoryItemSchema = z.object({
 // Inventory Item Update Schema
 export const inventoryItemUpdateSchema = inventoryItemSchema.partial().omit({
   sku: true,
+  totalValue: true, // totalValue will be calculated automatically
 });
 
 // Inventory Item Search Schema

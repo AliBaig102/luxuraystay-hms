@@ -131,3 +131,70 @@ export const updateRoomSchema = createRoomSchema.partial().extend({
 
 export type CreateRoomFormData = z.infer<typeof createRoomSchema>;
 export type UpdateRoomFormData = z.infer<typeof updateRoomSchema>;
+
+// Inventory validation schemas
+export const createInventoryItemSchema = z.object({
+  sku: z
+    .string()
+    .min(1, 'SKU is required')
+    .max(100, 'SKU cannot exceed 100 characters')
+    .regex(
+      /^[A-Z0-9-_]+$/,
+      'SKU can only contain uppercase letters, numbers, hyphens, and underscores'
+    ),
+  name: z
+    .string()
+    .min(1, 'Item name is required')
+    .max(200, 'Item name cannot exceed 200 characters'),
+  description: z
+    .string()
+    .max(1000, 'Description cannot exceed 1000 characters')
+    .optional(),
+  category: z
+    .string()
+    .min(1, 'Category is required')
+    .max(100, 'Category cannot exceed 100 characters'),
+  type: z.enum(['food', 'beverage', 'cleaning_supply', 'amenity', 'maintenance', 'office_supply', 'other']),
+  status: z.enum(['in_stock', 'low_stock', 'out_of_stock', 'expired', 'discontinued']).default('in_stock'),
+  quantity: z
+    .number()
+    .int()
+    .min(0, 'Quantity cannot be negative')
+    .max(1000000, 'Quantity cannot exceed 1000000'),
+  unitPrice: z
+    .number()
+    .min(0, 'Unit price cannot be negative')
+    .max(100000, 'Unit price cannot exceed 100000'),
+  minQuantity: z
+    .number()
+    .int()
+    .min(0, 'Minimum quantity cannot be negative')
+    .max(100000, 'Minimum quantity cannot exceed 100000')
+    .default(0),
+  maxQuantity: z
+    .number()
+    .int()
+    .min(0, 'Maximum quantity cannot be negative')
+    .max(1000000, 'Maximum quantity cannot exceed 1000000')
+    .optional(),
+  supplier: z
+    .string()
+    .max(200, 'Supplier cannot exceed 200 characters')
+    .optional(),
+  location: z
+    .string()
+    .max(200, 'Location cannot exceed 200 characters')
+    .optional(),
+  barcode: z
+    .string()
+    .max(100, 'Barcode cannot exceed 100 characters')
+    .optional(),
+  expiryDate: z.date().optional(),
+  lastRestocked: z.date().optional(),
+  isActive: z.boolean().default(true),
+});
+
+export const updateInventoryItemSchema = createInventoryItemSchema.partial();
+
+export type CreateInventoryItemFormData = z.infer<typeof createInventoryItemSchema>;
+export type UpdateInventoryItemFormData = z.infer<typeof updateInventoryItemSchema>;

@@ -47,4 +47,16 @@ export const ENDPOINT_URLS = {
     DELETE: (id: string | number) => `${ENDPOINT_URL}/rooms/${id}`,
     UPDATE_STATUS: (id: string | number) => `${ENDPOINT_URL}/rooms/${id}/status`,
   },
+  INVENTORY: {
+    ALL: `${ENDPOINT_URL}/inventory/items`,
+    SEARCH: `${ENDPOINT_URL}/inventory/items/search`,
+    STATS: `${ENDPOINT_URL}/inventory/stats`,
+    LOW_STOCK_ALERTS: `${ENDPOINT_URL}/inventory/alerts/low-stock`,
+
+    // dynamic generators
+    GET_BY_ID: (id: string | number) => `${ENDPOINT_URL}/inventory/items/${id}`,
+    CREATE: `${ENDPOINT_URL}/inventory/items`,
+    UPDATE: (id: string | number) => `${ENDPOINT_URL}/inventory/items/${id}`,
+    DELETE: (id: string | number) => `${ENDPOINT_URL}/inventory/items/${id}`,
+  },
 };

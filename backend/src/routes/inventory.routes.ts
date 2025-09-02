@@ -5,6 +5,8 @@ import { InventoryController } from '../controllers/inventory.controller';
 import { authMiddleware } from '../middleware/auth.middleware';
 import { roleMiddleware } from '../middleware/role.middleware';
 import { UserRole } from '../types/models';
+import { validate } from '../middleware';
+import { inventoryValidationSchemas } from '../validations/inventory.validation';
 
 const router: Router = Router();
 
@@ -16,6 +18,7 @@ router.use(authMiddleware);
 router.post(
   '/items',
   roleMiddleware([UserRole.MANAGER, UserRole.ADMIN]),
+  validate(inventoryValidationSchemas.inventoryItem),
   InventoryController.createItem
 );
 
@@ -55,6 +58,7 @@ router.get(
 router.put(
   '/items/:id',
   roleMiddleware([UserRole.MANAGER, UserRole.ADMIN]),
+  validate(inventoryValidationSchemas.inventoryItemUpdate),
   InventoryController.updateItem
 );
 
