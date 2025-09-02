@@ -96,4 +96,29 @@ export const ENDPOINT_URLS = {
     GET_BY_GUEST: (guestId: string | number) => `${ENDPOINT_URL}/bills/guest/${guestId}`,
     GET_BY_RESERVATION: (reservationId: string | number) => `${ENDPOINT_URL}/bills/reservation/${reservationId}`,
   },
+  CHECKINS: {
+    ALL: `${ENDPOINT_URL}/checkins`,
+    STATS: `${ENDPOINT_URL}/checkins/stats`,
+    ACTIVE: `${ENDPOINT_URL}/checkins/active`,
+    
+    // dynamic generators
+    GET_BY_ID: (id: string | number) => `${ENDPOINT_URL}/checkins/${id}`,
+    CREATE: `${ENDPOINT_URL}/checkins`,
+    UPDATE: (id: string | number) => `${ENDPOINT_URL}/checkins/${id}`,
+    DELETE: (id: string | number) => `${ENDPOINT_URL}/checkins/${id}`,
+    COMPLETE: (id: string | number) => `${ENDPOINT_URL}/checkins/${id}/complete`,
+  },
+  CHECKOUTS: {
+    ALL: `${ENDPOINT_URL}/checkouts`,
+    STATS: `${ENDPOINT_URL}/checkouts/stats`,
+    PENDING: `${ENDPOINT_URL}/checkouts/pending`,
+    
+    // dynamic generators
+    GET_BY_ID: (id: string | number) => `${ENDPOINT_URL}/checkouts/${id}`,
+    CREATE: `${ENDPOINT_URL}/checkouts`,
+    UPDATE: (id: string | number) => `${ENDPOINT_URL}/checkouts/${id}`,
+    DELETE: (id: string | number) => `${ENDPOINT_URL}/checkouts/${id}`,
+    COMPLETE: (id: string | number) => `${ENDPOINT_URL}/checkouts/${id}/complete`,
+    LATE_FEE: (id: string | number) => `${ENDPOINT_URL}/checkouts/${id}/late-fee`,
+  },
 };

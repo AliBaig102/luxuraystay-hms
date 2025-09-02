@@ -133,6 +133,10 @@ export interface CheckIn extends BaseModel {
   keyIssued: boolean;
   welcomePackDelivered: boolean;
   specialInstructions?: string;
+  // Virtual properties from backend
+  stayDuration?: number;
+  isCheckedOut?: boolean;
+  isActiveStay?: boolean;
 }
 
 export interface CheckOut extends BaseModel {
@@ -145,7 +149,37 @@ export interface CheckOut extends BaseModel {
   paymentStatus: PaymentStatus;
   feedback?: string;
   rating?: number;
+  // Virtual properties from backend
+  checkoutEfficiency?: string;
+  satisfactionLevel?: string;
 }
+
+// Check-in status types
+export type CheckInStatus = 'active' | 'completed';
+
+export const CHECKIN_STATUSES = {
+  ACTIVE: 'active',
+  COMPLETED: 'completed',
+} as const;
+
+// Checkout efficiency types
+export type CheckoutEfficiency = 'fast' | 'standard' | 'slow';
+
+export const CHECKOUT_EFFICIENCIES = {
+  FAST: 'fast',
+  STANDARD: 'standard',
+  SLOW: 'slow',
+} as const;
+
+// Satisfaction level types
+export type SatisfactionLevel = 'high' | 'medium' | 'low' | 'not_rated';
+
+export const SATISFACTION_LEVELS = {
+  HIGH: 'high',
+  MEDIUM: 'medium',
+  LOW: 'low',
+  NOT_RATED: 'not_rated',
+} as const;
 
 // Billing and Invoicing Types
 export interface Bill extends BaseModel {
