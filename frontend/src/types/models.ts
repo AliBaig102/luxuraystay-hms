@@ -90,8 +90,8 @@ export const ROOM_STATUSES = {
 
 // Reservation and Booking Types
 export interface Reservation extends BaseModel {
-  guestId: string;
-  roomId: string;
+  guestId: string | User;
+  roomId: string | Room;
   checkInDate: Date;
   checkOutDate: Date;
   numberOfGuests: number;

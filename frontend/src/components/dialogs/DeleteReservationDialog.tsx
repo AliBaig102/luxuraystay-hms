@@ -61,8 +61,8 @@ export function DeleteReservationDialog({
             <div className="mt-3 p-3 bg-muted rounded-md">
               <div className="text-sm font-medium">Reservation Details:</div>
               <div className="text-xs text-muted-foreground mt-1">
-                Guest: {reservation.guestId}<br />
-                Room: {reservation.roomId}<br />
+                Guest: {typeof reservation.guestId === 'string' ? reservation.guestId : reservation.guestId.firstName} {typeof reservation.guestId === 'string' ? reservation.guestId : reservation.guestId.lastName}<br />
+                Room: {typeof reservation.roomId === 'string' ? reservation.roomId : reservation.roomId.roomNumber}<br />
                 Check-in: {new Date(reservation.checkInDate).toLocaleDateString()}<br />
                 Check-out: {new Date(reservation.checkOutDate).toLocaleDateString()}<br />
                 Total Amount: ${reservation.totalAmount}<br />
