@@ -1,4 +1,4 @@
-import { USER_ROLES, ROOM_TYPES, ROOM_STATUSES } from "@/types/models";
+import { USER_ROLES, ROOM_TYPES, ROOM_STATUSES, BILL_STATUSES, PAYMENT_METHODS } from "@/types/models";
 import z from "zod";
 
 // Login form validation schema
@@ -204,3 +204,133 @@ export type ReservationUpdateFormData = z.infer<typeof reservationUpdateSchema>;
 export type ReservationSearchFormData = z.infer<typeof reservationSearchSchema>;
 export type ReservationAvailabilityFormData = z.infer<typeof reservationAvailabilitySchema>;
 export type ReservationStatusUpdateFormData = z.infer<typeof reservationStatusUpdateSchema>;
+
+// Bill validation schemas
+export const billCreateSchema = z.object({
+  reservationId: z.string().min(1, 'Reservation is required'),
+  guestId: z.string().min(1, 'Guest is required'),
+  roomId: z.string().min(1, 'Room is required'),
+  checkInId: z.string().min(1, 'Check-in ID is required'),
+  checkOutId: z.string().optional(),
+  baseAmount: z.number().min(0, 'Base amount cannot be negative').max(100000, 'Base amount cannot exceed $100,000'),
+  taxAmount: z.number().min(0, 'Tax amount cannot be negative').max(10000, 'Tax amount cannot exceed $10,000'),
+  discountAmount: z.number().min(0, 'Discount amount cannot be negative').max(10000, 'Discount amount cannot exceed $10,000').optional(),
+  serviceCharges: z.number().min(0, 'Service charges cannot be negative').optional(),
+  totalAmount: z.number().min(0, 'Total amount cannot be negative').max(100000, 'Total amount cannot exceed $100,000'),
+  status: z.enum([
+    BILL_STATUSES.DRAFT,
+    BILL_STATUSES.PENDING,
+    BILL_STATUSES.PAID,
+    BILL_STATUSES.OVERDUE,
+    BILL_STATUSES.CANCELLED,
+    BILL_STATUSES.REFUNDED,
+  ] as const).default(BILL_STATUSES.DRAFT),
+  dueDate: z.string().min(1, 'Due date is required'),
+  paymentDate: z.string().optional(),
+  paymentMethod: z.enum([
+    PAYMENT_METHODS.CASH,
+    PAYMENT_METHODS.CREDIT_CARD,
+    PAYMENT_METHODS.DEBIT_CARD,
+    PAYMENT_METHODS.BANK_TRANSFER,
+    PAYMENT_METHODS.DIGITAL_WALLET,
+  ] as const).optional(),
+  notes: z.string().max(500, 'Notes cannot exceed 500 characters').optional(),
+  isActive: z.boolean().default(true),
+});
+
+export const billUpdateSchema = billCreateSchema.partial().omit({
+  reservationId: true,
+  guestId: true,
+  roomId: true,
+  checkInId: true,
+});
+
+export const billSearchSchema = z.object({
+  search: z.string().optional(),
+  status: z.enum([
+    BILL_STATUSES.DRAFT,
+    BILL_STATUSES.PENDING,
+    BILL_STATUSES.PAID,
+    BILL_STATUSES.OVERDUE,
+    BILL_STATUSES.CANCELLED,
+    BILL_STATUSES.REFUNDED,
+  ] as const).optional(),
+  guestId: z.string().optional(),
+  roomId: z.string().optional(),
+  reservationId: z.string().optional(),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+  minAmount: z.number().min(0, 'Minimum amount cannot be negative').optional(),
+  maxAmount: z.number().min(0, 'Maximum amount cannot be negative').optional(),
+  paymentMethod: z.enum([
+    PAYMENT_METHODS.CASH,
+    PAYMENT_METHODS.CREDIT_CARD,
+    PAYMENT_METHODS.DEBIT_CARD,
+    PAYMENT_METHODS.BANK_TRANSFER,
+    PAYMENT_METHODS.DIGITAL_WALLET,
+  ] as const).optional(),
+  page: z.number().min(1).default(1),
+  limit: z.number().min(1).max(100).default(10),
+  sortBy: z.enum(['totalAmount', 'dueDate', 'createdAt', 'status']).default('dueDate'),
+  sortOrder: z.enum(['asc', 'desc']).default('asc'),
+});
+
+export const billFilterSchema = z.object({
+  status: z.enum([
+    BILL_STATUSES.DRAFT,
+    BILL_STATUSES.PENDING,
+    BILL_STATUSES.PAID,
+    BILL_STATUSES.OVERDUE,
+    BILL_STATUSES.CANCELLED,
+    BILL_STATUSES.REFUNDED,
+  ] as const).optional(),
+  guestId: z.string().optional(),
+  roomId: z.string().optional(),
+  reservationId: z.string().optional(),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+  minAmount: z.number().min(0, 'Minimum amount cannot be negative').optional(),
+  maxAmount: z.number().min(0, 'Maximum amount cannot be negative').optional(),
+  paymentMethod: z.enum([
+    PAYMENT_METHODS.CASH,
+    PAYMENT_METHODS.CREDIT_CARD,
+    PAYMENT_METHODS.DEBIT_CARD,
+    PAYMENT_METHODS.BANK_TRANSFER,
+    PAYMENT_METHODS.DIGITAL_WALLET,
+  ] as const).optional(),
+  isActive: z.boolean().optional(),
+  page: z.number().min(1).default(1),
+  limit: z.number().min(1).max(100).default(10),
+  sortBy: z.enum(['totalAmount', 'dueDate', 'createdAt', 'status']).default('dueDate'),
+  sortOrder: z.enum(['asc', 'desc']).default('asc'),
+});
+
+export const billPaymentSchema = z.object({
+  billId: z.string().min(1, 'Bill ID is required'),
+  paymentMethod: z.enum([
+    PAYMENT_METHODS.CASH,
+    PAYMENT_METHODS.CREDIT_CARD,
+    PAYMENT_METHODS.DEBIT_CARD,
+    PAYMENT_METHODS.BANK_TRANSFER,
+    PAYMENT_METHODS.DIGITAL_WALLET,
+  ] as const),
+  paymentAmount: z.number().min(0.01, 'Payment amount must be greater than 0').max(100000, 'Payment amount cannot exceed $100,000'),
+  paymentDate: z.string().min(1, 'Payment date is required'),
+  transactionId: z.string().max(100, 'Transaction ID cannot exceed 100 characters').optional(),
+  notes: z.string().max(500, 'Notes cannot exceed 500 characters').optional(),
+});
+
+export const billRefundSchema = z.object({
+  billId: z.string().min(1, 'Bill ID is required'),
+  refundAmount: z.number().min(0.01, 'Refund amount must be greater than 0').max(100000, 'Refund amount cannot exceed $100,000'),
+  refundReason: z.string().min(1, 'Refund reason is required').max(500, 'Refund reason cannot exceed 500 characters'),
+  notes: z.string().max(500, 'Notes cannot exceed 500 characters').optional(),
+});
+
+// Bill form data types
+export type BillCreateFormData = z.infer<typeof billCreateSchema>;
+export type BillUpdateFormData = z.infer<typeof billUpdateSchema>;
+export type BillSearchFormData = z.infer<typeof billSearchSchema>;
+export type BillFilterFormData = z.infer<typeof billFilterSchema>;
+export type BillPaymentFormData = z.infer<typeof billPaymentSchema>;
+export type BillRefundFormData = z.infer<typeof billRefundSchema>;

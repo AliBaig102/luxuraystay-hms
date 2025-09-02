@@ -156,13 +156,16 @@ export interface Bill extends BaseModel {
   checkOutId?: string;
   baseAmount: number;
   taxAmount: number;
-  serviceCharges: number;
-  additionalServices: AdditionalService[];
+  discountAmount?: number;
+  serviceCharges?: number;
+  additionalServices?: AdditionalService[];
   totalAmount: number;
-  status: PaymentStatus;
+  status: BillStatus;
   dueDate: Date;
-  paidDate?: Date;
+  paymentDate?: Date;
   paymentMethod?: PaymentMethod;
+  notes?: string;
+  isActive: boolean;
 }
 
 export interface AdditionalService extends BaseModel {
@@ -183,6 +186,18 @@ export const PAYMENT_STATUSES = {
   PAID: 'paid',
   OVERDUE: 'overdue',
   CANCELLED: 'cancelled',
+} as const;
+
+// Bill Status (extends PaymentStatus with additional states)
+export type BillStatus = 'draft' | 'pending' | 'paid' | 'overdue' | 'cancelled' | 'refunded';
+
+export const BILL_STATUSES = {
+  DRAFT: 'draft',
+  PENDING: 'pending',
+  PAID: 'paid',
+  OVERDUE: 'overdue',
+  CANCELLED: 'cancelled',
+  REFUNDED: 'refunded',
 } as const;
 
 export type PaymentMethod = 'cash' | 'credit_card' | 'debit_card' | 'bank_transfer' | 'digital_wallet';

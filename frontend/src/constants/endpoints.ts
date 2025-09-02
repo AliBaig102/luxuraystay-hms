@@ -82,4 +82,18 @@ export const ENDPOINT_URLS = {
     CONFIRM: (id: string | number) => `${ENDPOINT_URL}/reservations/${id}/confirm`,
     CANCEL: (id: string | number) => `${ENDPOINT_URL}/reservations/${id}/cancel`,
   },
+  BILLS: {
+    ALL: `${ENDPOINT_URL}/bills`,
+    OVERDUE: `${ENDPOINT_URL}/bills/overdue`,
+    
+    // dynamic generators
+    GET_BY_ID: (id: string | number) => `${ENDPOINT_URL}/bills/${id}`,
+    CREATE: `${ENDPOINT_URL}/bills`,
+    UPDATE: (id: string | number) => `${ENDPOINT_URL}/bills/${id}`,
+    DELETE: (id: string | number) => `${ENDPOINT_URL}/bills/${id}`,
+    PROCESS_PAYMENT: (id: string | number) => `${ENDPOINT_URL}/bills/${id}/payment`,
+    PROCESS_REFUND: (id: string | number) => `${ENDPOINT_URL}/bills/${id}/refund`,
+    GET_BY_GUEST: (guestId: string | number) => `${ENDPOINT_URL}/bills/guest/${guestId}`,
+    GET_BY_RESERVATION: (reservationId: string | number) => `${ENDPOINT_URL}/bills/reservation/${reservationId}`,
+  },
 };

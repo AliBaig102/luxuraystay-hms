@@ -13,6 +13,7 @@ import { USER_ROLES } from "@/types/models";
 import { Users } from "@/pages/users/Users";
 import { Rooms } from "@/pages/rooms/Rooms";
 import { Inventory } from "@/pages/inventory/Inventory";
+import { Bills } from "@/pages/bills/Bills";
 
 export const AppRoutes = () => {
   return (
@@ -86,6 +87,19 @@ export const AppRoutes = () => {
               ]}
             >
               <Reservations />
+            </RoleProtectedRoute>
+          }
+        />
+        <Route
+          path="bills"
+          element={
+            <RoleProtectedRoute
+              allowedRoles={[
+                USER_ROLES.ADMIN,
+                USER_ROLES.MANAGER,
+              ]}
+            >
+              <Bills />
             </RoleProtectedRoute>
           }
         />

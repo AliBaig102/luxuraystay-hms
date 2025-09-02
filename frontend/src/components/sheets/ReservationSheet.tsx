@@ -239,7 +239,7 @@ export function ReservationSheet({ id, children }: ReservationSheetProps) {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent className="max-h-64">
-                            {guests?.map((guest: User) => (
+                            {Array.isArray(guests) && guests.map((guest: User) => (
                               <SelectItem key={guest._id} value={guest._id}>
                                 <div className="flex flex-col">
                                   <span className="font-medium">
@@ -275,7 +275,7 @@ export function ReservationSheet({ id, children }: ReservationSheetProps) {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent className="max-h-64">
-                            {rooms?.map((room) => (
+                            {Array.isArray(rooms) && rooms.map((room) => (
                               <SelectItem key={room._id} value={room._id}>
                                 <div className="flex flex-col">
                                   <span className="font-medium">
