@@ -44,7 +44,7 @@ import {
 import { INVENTORY_ITEM_TYPES, INVENTORY_ITEM_STATUSES } from "@/types/models";
 import type { InventoryItem, InventoryItemType, InventoryItemStatus } from "@/types/models";
 import { LoadingButton } from "../custom/LoadingButton";
-import { createInventoryItemSchema, updateInventoryItemSchema, type CreateInventoryItemFormData, type UpdateInventoryItemFormData } from "@/lib/zodValidation";
+import { inventoryItemCreateSchema, inventoryItemUpdateSchema, type InventoryItemCreateFormData, type InventoryItemUpdateFormData } from "@/lib/zodValidation";
 import { useApi } from "@/hooks/useApi";
 import { ENDPOINT_URLS } from "@/constants/endpoints";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
@@ -102,8 +102,8 @@ export function InventorySheet({ id, children }: InventorySheetProps) {
   );
   const [open, setOpen] = useState(false);
 
-  const form = useForm<CreateInventoryItemFormData | UpdateInventoryItemFormData>({
-    resolver: zodResolver(id ? updateInventoryItemSchema : createInventoryItemSchema) as Resolver<CreateInventoryItemFormData | UpdateInventoryItemFormData>,
+  const form = useForm<InventoryItemCreateFormData | InventoryItemUpdateFormData>({
+    resolver: zodResolver(id ? inventoryItemUpdateSchema : inventoryItemCreateSchema) as Resolver<InventoryItemCreateFormData | InventoryItemUpdateFormData>,
     defaultValues: {
       sku: "",
       name: "",
@@ -144,7 +144,7 @@ export function InventorySheet({ id, children }: InventorySheetProps) {
   const watchedType = form.watch("type");
   const watchedStatus = form.watch("status");
 
-  const handleSubmit = async (data: CreateInventoryItemFormData | UpdateInventoryItemFormData) => {
+  const handleSubmit = async (data: InventoryItemCreateFormData | InventoryItemUpdateFormData) => {
     try {
       const submitData = {
         ...data,

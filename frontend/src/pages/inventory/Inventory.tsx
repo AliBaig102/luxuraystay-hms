@@ -63,7 +63,7 @@ const filters = [
 ];
 
 export const Inventory = () => {
-  const { data, isLoading } = useApi<InventoryItem[]>(ENDPOINT_URLS.INVENTORY.ALL,{auth:true});
+  const { data, isLoading } = useApi<InventoryItem[]>(ENDPOINT_URLS.INVENTORY.ALL);
   const { user: currentUser } = useAuth();
   const inventoryColumns = createInventoryColumns(currentUser?.role);
   

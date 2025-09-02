@@ -59,4 +59,27 @@ export const ENDPOINT_URLS = {
     UPDATE: (id: string | number) => `${ENDPOINT_URL}/inventory/items/${id}`,
     DELETE: (id: string | number) => `${ENDPOINT_URL}/inventory/items/${id}`,
   },
+  GUESTS: {
+    ALL: `${ENDPOINT_URL}/users/role/guest`,
+    SEARCH: `${ENDPOINT_URL}/users/search?query=guest`,
+    
+    // dynamic generators
+    GET_BY_ID: (id: string | number) => `${ENDPOINT_URL}/users/${id}`,
+    CREATE: `${ENDPOINT_URL}/users/register`,
+    UPDATE: (id: string | number) => `${ENDPOINT_URL}/users/${id}`,
+    DELETE: (id: string | number) => `${ENDPOINT_URL}/users/${id}`,
+  },
+  RESERVATIONS: {
+    ALL: `${ENDPOINT_URL}/reservations`,
+    AVAILABILITY: `${ENDPOINT_URL}/reservations/availability`,
+    
+    // dynamic generators
+    GET_BY_ID: (id: string | number) => `${ENDPOINT_URL}/reservations/${id}`,
+    CREATE: `${ENDPOINT_URL}/reservations`,
+    UPDATE: (id: string | number) => `${ENDPOINT_URL}/reservations/${id}`,
+    DELETE: (id: string | number) => `${ENDPOINT_URL}/reservations/${id}`,
+    UPDATE_STATUS: (id: string | number) => `${ENDPOINT_URL}/reservations/${id}/status`,
+    CONFIRM: (id: string | number) => `${ENDPOINT_URL}/reservations/${id}/confirm`,
+    CANCEL: (id: string | number) => `${ENDPOINT_URL}/reservations/${id}/cancel`,
+  },
 };
