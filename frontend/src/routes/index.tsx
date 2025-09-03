@@ -16,6 +16,7 @@ import { Inventory } from "@/pages/inventory/Inventory";
 import { Bills } from "@/pages/bills/Bills";
 import { CheckIns } from "@/pages/checkins/CheckIns";
 import { CheckOuts } from "@/pages/checkouts/CheckOuts";
+import { Feedback } from "@/pages/feedback/Feedback";
 
 export const AppRoutes = () => {
   return (
@@ -143,6 +144,21 @@ export const AppRoutes = () => {
               ]}
             >
               <CheckOuts />
+            </RoleProtectedRoute>
+          }
+        />
+        <Route
+          path="feedback"
+          element={
+            <RoleProtectedRoute
+              allowedRoles={[
+                USER_ROLES.ADMIN,
+                USER_ROLES.MANAGER,
+                USER_ROLES.RECEPTIONIST,
+                USER_ROLES.GUEST,
+              ]}
+            >
+              <Feedback />
             </RoleProtectedRoute>
           }
         />

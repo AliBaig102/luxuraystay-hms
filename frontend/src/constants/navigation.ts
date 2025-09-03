@@ -89,8 +89,8 @@ export const DASHBOARD_MENU_ITEMS: DashboardMenuItems = {
       ],
     },
     {
-      title: "User Feedbacks",
-      href: "/dashboard/feedbacks",
+      title: "Feedback",
+      href: "/dashboard/feedback",
       icon: MessageSquare,
     },
   ],
@@ -138,8 +138,8 @@ export const DASHBOARD_MENU_ITEMS: DashboardMenuItems = {
       ],
     },
     {
-      title: "User Feedbacks",
-      href: "/dashboard/feedbacks",
+      title: "Feedback",
+      href: "/dashboard/feedback",
       icon: MessageSquare,
     },
   ],
@@ -175,6 +175,11 @@ export const DASHBOARD_MENU_ITEMS: DashboardMenuItems = {
           icon: LogOut,
         },
       ],
+    },
+    {
+      title: "Feedback",
+      href: "/dashboard/feedback",
+      icon: MessageSquare,
     },
   ],
   [USER_ROLES.HOUSEKEEPING]: [
@@ -216,6 +221,11 @@ export const DASHBOARD_MENU_ITEMS: DashboardMenuItems = {
       title: "Reservations",
       href: "/dashboard/reservations",
       icon: Box,
+    },
+    {
+      title: "Feedback",
+      href: "/dashboard/feedback",
+      icon: MessageSquare,
     },
   ],
 };

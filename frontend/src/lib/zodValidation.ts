@@ -1,4 +1,4 @@
-import { USER_ROLES, ROOM_TYPES, ROOM_STATUSES, BILL_STATUSES, PAYMENT_METHODS, PAYMENT_STATUSES } from "@/types/models";
+import { USER_ROLES, ROOM_TYPES, ROOM_STATUSES, BILL_STATUSES, PAYMENT_METHODS, PAYMENT_STATUSES, FEEDBACK_CATEGORIES } from "@/types/models";
 import z from "zod";
 
 // Login form validation schema
@@ -502,3 +502,90 @@ export type CheckOutUpdateFormData = z.infer<typeof checkOutUpdateSchema>;
 export type CheckOutSearchFormData = z.infer<typeof checkOutSearchSchema>;
 export type CheckOutFilterFormData = z.infer<typeof checkOutFilterSchema>;
 export type CheckOutCompletionFormData = z.infer<typeof checkOutCompletionSchema>;
+
+// Feedback validation schemas
+export const feedbackCreateSchema = z.object({
+  guestId: z.string().min(1, "Guest is required"),
+  reservationId: z.string().min(1, "Reservation is required"),
+  roomId: z.string().min(1, "Room is required"),
+  rating: z.number().min(1, "Rating must be at least 1").max(5, "Rating cannot exceed 5"),
+  category: z.enum([
+    FEEDBACK_CATEGORIES.ROOM_QUALITY,
+    FEEDBACK_CATEGORIES.SERVICE,
+    FEEDBACK_CATEGORIES.CLEANLINESS,
+    FEEDBACK_CATEGORIES.FOOD,
+    FEEDBACK_CATEGORIES.STAFF,
+    FEEDBACK_CATEGORIES.FACILITIES,
+    FEEDBACK_CATEGORIES.VALUE,
+    FEEDBACK_CATEGORIES.OVERALL,
+  ] as const),
+  comment: z.string().max(2000, "Comment cannot exceed 2000 characters").optional(),
+  isAnonymous: z.boolean().default(false),
+});
+
+export const feedbackUpdateSchema = feedbackCreateSchema.partial().omit({
+  guestId: true,
+  reservationId: true,
+  roomId: true,
+});
+
+export const feedbackSearchSchema = z.object({
+  query: z.string().max(100, "Search query cannot exceed 100 characters").optional(),
+  rating: z.number().min(1).max(5).optional(),
+  category: z.enum([
+    FEEDBACK_CATEGORIES.ROOM_QUALITY,
+    FEEDBACK_CATEGORIES.SERVICE,
+    FEEDBACK_CATEGORIES.CLEANLINESS,
+    FEEDBACK_CATEGORIES.FOOD,
+    FEEDBACK_CATEGORIES.STAFF,
+    FEEDBACK_CATEGORIES.FACILITIES,
+    FEEDBACK_CATEGORIES.VALUE,
+    FEEDBACK_CATEGORIES.OVERALL,
+  ] as const).optional(),
+  guestId: z.string().optional(),
+  roomId: z.string().optional(),
+  startDate: z.date().optional(),
+  endDate: z.date().optional(),
+  page: z.coerce.number().int().min(1, "Page must be at least 1").default(1),
+  limit: z.coerce.number().int().min(1, "Limit must be at least 1").max(100, "Limit cannot exceed 100").default(10),
+  sortBy: z.enum(['rating', 'createdAt', 'category']).default('createdAt'),
+  sortOrder: z.enum(['asc', 'desc']).default('desc'),
+});
+
+export const feedbackFilterSchema = z.object({
+  rating: z.number().min(1).max(5).optional(),
+  category: z.enum([
+    FEEDBACK_CATEGORIES.ROOM_QUALITY,
+    FEEDBACK_CATEGORIES.SERVICE,
+    FEEDBACK_CATEGORIES.CLEANLINESS,
+    FEEDBACK_CATEGORIES.FOOD,
+    FEEDBACK_CATEGORIES.STAFF,
+    FEEDBACK_CATEGORIES.FACILITIES,
+    FEEDBACK_CATEGORIES.VALUE,
+    FEEDBACK_CATEGORIES.OVERALL,
+  ] as const).optional(),
+  guestId: z.string().optional(),
+  roomId: z.string().optional(),
+  reservationId: z.string().optional(),
+  dateFrom: z.string().optional(),
+  dateTo: z.string().optional(),
+  isAnonymous: z.boolean().optional(),
+  hasResponse: z.boolean().optional(),
+  page: z.coerce.number().int().min(1, "Page must be at least 1").default(1),
+  limit: z.coerce.number().int().min(1, "Limit must be at least 1").max(100, "Limit cannot exceed 100").default(10),
+  sortBy: z.enum(['rating', 'createdAt', 'category']).default('createdAt'),
+  sortOrder: z.enum(['asc', 'desc']).default('desc'),
+});
+
+export const feedbackResponseSchema = z.object({
+  feedbackId: z.string().min(1, "Feedback ID is required"),
+  response: z.string().min(1, "Response is required").max(1000, "Response cannot exceed 1000 characters"),
+  responseBy: z.string().min(1, "Responder ID is required"),
+});
+
+// Feedback form data types
+export type FeedbackCreateFormData = z.infer<typeof feedbackCreateSchema>;
+export type FeedbackUpdateFormData = z.infer<typeof feedbackUpdateSchema>;
+export type FeedbackSearchFormData = z.infer<typeof feedbackSearchSchema>;
+export type FeedbackFilterFormData = z.infer<typeof feedbackFilterSchema>;
+export type FeedbackResponseFormData = z.infer<typeof feedbackResponseSchema>;

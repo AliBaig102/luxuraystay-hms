@@ -121,4 +121,16 @@ export const ENDPOINT_URLS = {
     COMPLETE: (id: string | number) => `${ENDPOINT_URL}/checkouts/${id}/complete`,
     LATE_FEE: (id: string | number) => `${ENDPOINT_URL}/checkouts/${id}/late-fee`,
   },
+  FEEDBACK: {
+    ALL: `${ENDPOINT_URL}/feedback`,
+    SEARCH: `${ENDPOINT_URL}/feedback/search`,
+    STATISTICS: `${ENDPOINT_URL}/feedback/statistics`,
+    
+    // dynamic generators
+    GET_BY_ID: (id: string | number) => `${ENDPOINT_URL}/feedback/${id}`,
+    CREATE: `${ENDPOINT_URL}/feedback`,
+    UPDATE: (id: string | number) => `${ENDPOINT_URL}/feedback/${id}`,
+    DELETE: (id: string | number) => `${ENDPOINT_URL}/feedback/${id}`,
+    RESPOND: (id: string | number) => `${ENDPOINT_URL}/feedback/${id}/respond`,
+  },
 };
