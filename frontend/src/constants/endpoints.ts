@@ -195,4 +195,11 @@ export const ENDPOINT_URLS = {
     MARK_AS_READ: `${ENDPOINT_URL}/notifications/mark-as-read`,
     BULK_DELETE: `${ENDPOINT_URL}/notifications/bulk-delete`,
   },
+  REPORTS: {
+    ALL: `${ENDPOINT_URL}/reports`,
+    STATISTICS: `${ENDPOINT_URL}/reports/statistics`,
+    REVENUE_STATISTICS: `${ENDPOINT_URL}/reports/revenue-statistics`,
+    OCCUPANCY_STATISTICS: `${ENDPOINT_URL}/reports/occupancy-statistics`,
+    RECENT_ACTIVITY: `${ENDPOINT_URL}/reports/recent-activity`,
+  },
 };

@@ -5,7 +5,7 @@ import { RoleProtectedRoute } from "@/components/custom/RoleProtectedRoute";
 import { Layout } from "@/components/dashboard/Layout";
 import { Login } from "@/pages/Login";
 import { Signup } from "@/pages/Signup";
-import { Dashboard } from "@/pages/Dashboard";
+import { Dashboard } from "@/pages/dashboard/Dashboard";
 import { Unauthorized } from "@/pages/Unauthorized";
 import { NotFound } from "@/pages/NotFound";
 import { Reservations } from "@/pages/dashboard/Reservations";
