@@ -1,4 +1,4 @@
-import { USER_ROLES, ROOM_TYPES, ROOM_STATUSES, BILL_STATUSES, PAYMENT_METHODS } from "@/types/models";
+import { USER_ROLES, ROOM_TYPES, ROOM_STATUSES, BILL_STATUSES, PAYMENT_METHODS, PAYMENT_STATUSES } from "@/types/models";
 import z from "zod";
 
 // Login form validation schema
@@ -334,3 +334,171 @@ export type BillSearchFormData = z.infer<typeof billSearchSchema>;
 export type BillFilterFormData = z.infer<typeof billFilterSchema>;
 export type BillPaymentFormData = z.infer<typeof billPaymentSchema>;
 export type BillRefundFormData = z.infer<typeof billRefundSchema>;
+
+// Check-in validation schemas
+export const checkInCreateSchema = z.object({
+  reservationId: z.string().min(1, "Reservation is required"),
+  roomId: z.string().min(1, "Room is required"),
+  guestId: z.string().min(1, "Guest is required"),
+  assignedRoomNumber: z.string().min(1, "Room number is required"),
+  checkInTime: z.date({
+    required_error: "Check-in time is required",
+  }),
+  keyIssued: z.boolean().default(false),
+  welcomePackDelivered: z.boolean().default(false),
+  specialInstructions: z.string().optional(),
+});
+
+export const checkInUpdateSchema = checkInCreateSchema.partial().omit({
+  reservationId: true,
+  guestId: true,
+  roomId: true,
+});
+
+export const checkInSearchSchema = z.object({
+  query: z
+    .string()
+    .max(100, "Search query cannot exceed 100 characters")
+    .optional(),
+  status: z.enum(['pending', 'in_progress', 'completed', 'cancelled']).optional(),
+  guestId: z.string().optional(),
+  roomId: z.string().optional(),
+  startDate: z.date().optional(),
+  endDate: z.date().optional(),
+  page: z.coerce.number().int().min(1, "Page must be at least 1").default(1),
+  limit: z.coerce
+    .number()
+    .int()
+    .min(1, "Limit must be at least 1")
+    .max(100, "Limit cannot exceed 100")
+    .default(10),
+  sortBy: z
+    .enum(['checkInTime', 'expectedCheckOutTime', 'createdAt', 'status'])
+    .default('checkInTime'),
+  sortOrder: z.enum(['asc', 'desc']).default('desc'),
+});
+
+export const checkInFilterSchema = z.object({
+  status: z.enum(['pending', 'in_progress', 'completed', 'cancelled']).optional(),
+  guestId: z.string().optional(),
+  roomId: z.string().optional(),
+  startDate: z.date().optional(),
+  endDate: z.date().optional(),
+  isActive: z.boolean().optional(),
+  page: z.coerce.number().int().min(1, "Page must be at least 1").default(1),
+  limit: z.coerce
+    .number()
+    .int()
+    .min(1, "Limit must be at least 1")
+    .max(100, "Limit cannot exceed 100")
+    .default(10),
+  sortBy: z
+    .enum(['checkInTime', 'expectedCheckOutTime', 'createdAt', 'status'])
+    .default('checkInTime'),
+  sortOrder: z.enum(['asc', 'desc']).default('desc'),
+});
+
+export const checkInCompletionSchema = z.object({
+  checkInId: z.string().min(1, "Check-in ID is required"),
+  actualCheckInTime: z
+    .date()
+    .min(new Date(), "Actual check-in time must be in the future"),
+  notes: z.string().max(500, "Notes cannot exceed 500 characters").optional(),
+});
+
+// Check-out validation schemas
+export const checkOutCreateSchema = z.object({
+  checkInId: z.string().min(1, "Check-in is required"),
+  reservationId: z.string().min(1, "Reservation is required"),
+  roomId: z.string().min(1, "Room is required"),
+  guestId: z.string().min(1, "Guest is required"),
+  checkOutTime: z.date({
+    required_error: "Check-out time is required",
+  }),
+  finalBillAmount: z.number().min(0, "Final bill amount must be positive"),
+  paymentStatus: z.enum([
+    PAYMENT_STATUSES.PENDING,
+    PAYMENT_STATUSES.PARTIAL,
+    PAYMENT_STATUSES.PAID,
+    PAYMENT_STATUSES.OVERDUE,
+    PAYMENT_STATUSES.CANCELLED,
+  ]),
+  feedback: z.string().optional(),
+  rating: z.number().min(1).max(5).optional(),
+});
+
+export const checkOutUpdateSchema = checkOutCreateSchema.partial().omit({
+  checkInId: true,
+  guestId: true,
+  roomId: true,
+});
+
+export const checkOutSearchSchema = z.object({
+  query: z
+    .string()
+    .max(100, "Search query cannot exceed 100 characters")
+    .optional(),
+  status: z.enum(['pending', 'in_progress', 'completed', 'cancelled']).optional(),
+  guestId: z.string().optional(),
+  roomId: z.string().optional(),
+  startDate: z.date().optional(),
+  endDate: z.date().optional(),
+  page: z.coerce.number().int().min(1, "Page must be at least 1").default(1),
+  limit: z.coerce
+    .number()
+    .int()
+    .min(1, "Limit must be at least 1")
+    .max(100, "Limit cannot exceed 100")
+    .default(10),
+  sortBy: z
+    .enum(['expectedCheckOutTime', 'actualCheckOutTime', 'createdAt', 'status'])
+    .default('expectedCheckOutTime'),
+  sortOrder: z.enum(['asc', 'desc']).default('desc'),
+});
+
+export const checkOutFilterSchema = z.object({
+  status: z.enum(['pending', 'in_progress', 'completed', 'cancelled']).optional(),
+  guestId: z.string().optional(),
+  roomId: z.string().optional(),
+  startDate: z.date().optional(),
+  endDate: z.date().optional(),
+  lateCheckOut: z.boolean().optional(),
+  isActive: z.boolean().optional(),
+  page: z.coerce.number().int().min(1, "Page must be at least 1").default(1),
+  limit: z.coerce
+    .number()
+    .int()
+    .min(1, "Limit must be at least 1")
+    .max(100, "Limit cannot exceed 100")
+    .default(10),
+  sortBy: z
+    .enum(['expectedCheckOutTime', 'actualCheckOutTime', 'createdAt', 'status'])
+    .default('expectedCheckOutTime'),
+  sortOrder: z.enum(['asc', 'desc']).default('desc'),
+});
+
+export const checkOutCompletionSchema = z.object({
+  checkOutId: z.string().min(1, "Check-out ID is required"),
+  actualCheckOutTime: z
+    .date()
+    .min(new Date(), "Actual check-out time must be in the future"),
+  lateCheckOutFee: z
+    .number()
+    .min(0, "Late check-out fee cannot be negative")
+    .max(1000, "Late check-out fee cannot exceed 1000")
+    .optional(),
+  notes: z.string().max(500, "Notes cannot exceed 500 characters").optional(),
+});
+
+// Check-in/Check-out form data types
+export type CheckInCreateFormData = z.infer<typeof checkInCreateSchema>;
+export type CheckInUpdateFormData = z.infer<typeof checkInUpdateSchema>;
+export type CheckInSearchFormData = z.infer<typeof checkInSearchSchema>;
+export type CheckInFilterFormData = z.infer<typeof checkInFilterSchema>;
+export type CheckInCompletionFormData = z.infer<typeof checkInCompletionSchema>;
+
+export type CheckOutCreateFormData = z.infer<typeof checkOutCreateSchema>;
+export type CheckOutUpdateFormData = z.infer<typeof checkOutUpdateSchema>;
+export type CheckOutSearchFormData = z.infer<typeof checkOutSearchSchema>;
+export type CheckOutFilterFormData = z.infer<typeof checkOutFilterSchema>;
+export type CheckOutCompletionFormData = z.infer<typeof checkOutCompletionSchema>;

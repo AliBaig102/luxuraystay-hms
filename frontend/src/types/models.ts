@@ -124,9 +124,9 @@ export const RESERVATION_SOURCES = {
 } as const;
 
 export interface CheckIn extends BaseModel {
-  reservationId: string;
-  roomId: string;
-  guestId: string;
+  reservationId: string | Reservation;
+  roomId: string | Room;
+  guestId: string | User;
   checkInTime: Date;
   checkOutTime?: Date;
   assignedRoomNumber: string;
@@ -140,10 +140,10 @@ export interface CheckIn extends BaseModel {
 }
 
 export interface CheckOut extends BaseModel {
-  checkInId: string;
-  reservationId: string;
+  checkInId: string | CheckIn;
+  reservationId: string | Reservation;
   roomId: string;
-  guestId: string;
+  guestId: string | User;
   checkOutTime: Date;
   finalBillAmount: number;
   paymentStatus: PaymentStatus;

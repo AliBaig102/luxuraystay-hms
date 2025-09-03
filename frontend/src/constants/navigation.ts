@@ -7,6 +7,7 @@ import {
   Users,
   Clipboard,
   LogIn,
+  LogOut,
   MessageSquare,
   PackageSearch,
 } from "lucide-react";
@@ -72,8 +73,20 @@ export const DASHBOARD_MENU_ITEMS: DashboardMenuItems = {
     },
     {
       title: "Check In/Out",
-      href: "/dashboard/check-in-out",
+      href: "/dashboard/checkins",
       icon: LogIn,
+      submenu: [
+        {
+          title: "Check-ins",
+          href: "/dashboard/checkins",
+          icon: LogIn,
+        },
+        {
+          title: "Check-outs",
+          href: "/dashboard/checkouts",
+          icon: LogOut,
+        },
+      ],
     },
     {
       title: "User Feedbacks",
@@ -109,8 +122,20 @@ export const DASHBOARD_MENU_ITEMS: DashboardMenuItems = {
     },
     {
       title: "Check In/Out",
-      href: "/dashboard/check-in-out",
+      href: "/dashboard/checkins",
       icon: LogIn,
+      submenu: [
+        {
+          title: "Check-ins",
+          href: "/dashboard/checkins",
+          icon: LogIn,
+        },
+        {
+          title: "Check-outs",
+          href: "/dashboard/checkouts",
+          icon: LogOut,
+        },
+      ],
     },
     {
       title: "User Feedbacks",
@@ -133,6 +158,23 @@ export const DASHBOARD_MENU_ITEMS: DashboardMenuItems = {
       title: "Reservations",
       href: "/dashboard/reservations",
       icon: Box,
+    },
+    {
+      title: "Check In/Out",
+      href: "/dashboard/checkins",
+      icon: LogIn,
+      submenu: [
+        {
+          title: "Check-ins",
+          href: "/dashboard/checkins",
+          icon: LogIn,
+        },
+        {
+          title: "Check-outs",
+          href: "/dashboard/checkouts",
+          icon: LogOut,
+        },
+      ],
     },
   ],
   [USER_ROLES.HOUSEKEEPING]: [

@@ -22,6 +22,14 @@ export const ROLE_PERMISSIONS = {
     "bill.update",
     "bill.delete",
     "bill.view",
+    "checkin.create",
+    "checkin.update",
+    "checkin.delete",
+    "checkin.view",
+    "checkout.create",
+    "checkout.update",
+    "checkout.delete",
+    "checkout.view",
     "booking.manage",
     "payment.manage",
     "report.view",
@@ -35,7 +43,15 @@ export const ROLE_PERMISSIONS = {
     "payment.view",
     "report.view",
     "staff.view",
-    "staff.update"
+    "staff.update",
+    "checkin.create",
+    "checkin.update",
+    "checkin.delete",
+    "checkin.view",
+    "checkout.create",
+    "checkout.update",
+    "checkout.delete",
+    "checkout.view"
   ],
   [USER_ROLES.RECEPTIONIST]: [
     "booking.create",
@@ -44,7 +60,13 @@ export const ROLE_PERMISSIONS = {
     "room.view",
     "payment.create",
     "payment.view",
-    "guest.manage"
+    "guest.manage",
+    "checkin.create",
+    "checkin.update",
+    "checkin.view",
+    "checkout.create",
+    "checkout.update",
+    "checkout.view"
   ],
   [USER_ROLES.HOUSEKEEPING]: [
     "room.view",
