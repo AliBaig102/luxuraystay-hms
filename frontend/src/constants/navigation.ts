@@ -71,11 +71,6 @@ export const DASHBOARD_MENU_ITEMS: DashboardMenuItems = {
       icon: PackageSearch,
     },
     {
-      title: "Reports",
-      href: "/dashboard/reports",
-      icon: Clipboard,
-    },
-    {
       title: "Check In/Out",
       href: "/dashboard/checkins",
       icon: LogIn,
