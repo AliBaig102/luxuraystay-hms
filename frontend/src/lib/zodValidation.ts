@@ -672,3 +672,86 @@ export type HousekeepingTaskFilterFormData = z.infer<typeof housekeepingTaskFilt
 export type TaskAssignmentFormData = z.infer<typeof taskAssignmentSchema>;
 export type TaskStatusUpdateFormData = z.infer<typeof taskStatusUpdateSchema>;
 export type TaskCompletionFormData = z.infer<typeof taskCompletionSchema>;
+
+// Maintenance Request validation schemas
+export const maintenanceRequestCreateSchema = z.object({
+  roomId: z.string().min(1, "Room is required"),
+  reportedBy: z.string().min(1, "Reporter is required"),
+  maintenanceType: z.enum([
+    "electrical", "plumbing", "hvac", "appliance", "structural", "general"
+  ] as const),
+  title: z.string().min(1, "Title is required").max(200, "Title cannot exceed 200 characters"),
+  description: z.string().min(1, "Description is required").max(2000, "Description cannot exceed 2000 characters"),
+  priority: z.enum(["low", "medium", "high", "urgent"] as const).default("medium"),
+  status: z.enum(["pending", "assigned", "in_progress", "completed", "cancelled"] as const).default("pending"),
+  assignedTo: z.string().optional(),
+  scheduledDate: z.date().optional(),
+  estimatedCost: z.number().min(0, "Cost cannot be negative").optional(),
+  notes: z.string().max(1000, "Notes cannot exceed 1000 characters").optional(),
+});
+
+export const maintenanceRequestUpdateSchema = maintenanceRequestCreateSchema.partial().omit({ roomId: true, reportedBy: true });
+
+export const maintenanceRequestSearchSchema = z.object({
+  query: z.string().min(1, "Search query is required").max(100, "Search query cannot exceed 100 characters"),
+  status: z.enum(["pending", "assigned", "in_progress", "completed", "cancelled"] as const).optional(),
+  priority: z.enum(["low", "medium", "high", "urgent"] as const).optional(),
+  maintenanceType: z.enum([
+    "electrical", "plumbing", "hvac", "appliance", "structural", "general"
+  ] as const).optional(),
+  assignedTo: z.string().optional(),
+  roomId: z.string().optional(),
+  reportedBy: z.string().optional(),
+  startDate: z.date().optional(),
+  endDate: z.date().optional(),
+  page: z.number().int().min(1, "Page must be at least 1").default(1),
+  limit: z.number().int().min(1, "Limit must be at least 1").max(100, "Limit cannot exceed 100").default(10),
+  sortBy: z.enum(["priority", "createdAt", "status"] as const).default("createdAt"),
+  sortOrder: z.enum(["asc", "desc"] as const).default("desc"),
+});
+
+export const maintenanceRequestFilterSchema = z.object({
+  status: z.enum(["pending", "assigned", "in_progress", "completed", "cancelled"] as const).optional(),
+  priority: z.enum(["low", "medium", "high", "urgent"] as const).optional(),
+  maintenanceType: z.enum([
+    "electrical", "plumbing", "hvac", "appliance", "structural", "general"
+  ] as const).optional(),
+  assignedTo: z.string().optional(),
+  roomId: z.string().optional(),
+  reportedBy: z.string().optional(),
+  startDate: z.date().optional(),
+  endDate: z.date().optional(),
+  page: z.number().int().min(1, "Page must be at least 1").default(1),
+  limit: z.number().int().min(1, "Limit must be at least 1").max(100, "Limit cannot exceed 100").default(10),
+  sortBy: z.enum(["priority", "createdAt", "status"] as const).default("createdAt"),
+  sortOrder: z.enum(["asc", "desc"] as const).default("desc"),
+});
+
+export const maintenanceAssignmentSchema = z.object({
+  requestId: z.string().min(1, "Request ID is required"),
+  assignedTo: z.string().min(1, "Assigned technician ID is required"),
+  scheduledDate: z.date().optional(),
+  notes: z.string().max(500, "Notes cannot exceed 500 characters").optional(),
+});
+
+export const maintenanceStatusUpdateSchema = z.object({
+  requestId: z.string().min(1, "Request ID is required"),
+  status: z.enum(["pending", "assigned", "in_progress", "completed", "cancelled"] as const),
+  notes: z.string().max(500, "Notes cannot exceed 500 characters").optional(),
+});
+
+export const maintenanceCompletionSchema = z.object({
+  requestId: z.string().min(1, "Request ID is required"),
+  actualEndTime: z.date().optional(),
+  actualCost: z.number().min(0, "Actual cost cannot be negative").optional(),
+  completionNotes: z.string().max(1000, "Completion notes cannot exceed 1000 characters").optional(),
+});
+
+// Maintenance Request form data types
+export type MaintenanceRequestCreateFormData = z.infer<typeof maintenanceRequestCreateSchema>;
+export type MaintenanceRequestUpdateFormData = z.infer<typeof maintenanceRequestUpdateSchema>;
+export type MaintenanceRequestSearchFormData = z.infer<typeof maintenanceRequestSearchSchema>;
+export type MaintenanceRequestFilterFormData = z.infer<typeof maintenanceRequestFilterSchema>;
+export type MaintenanceAssignmentFormData = z.infer<typeof maintenanceAssignmentSchema>;
+export type MaintenanceStatusUpdateFormData = z.infer<typeof maintenanceStatusUpdateSchema>;
+export type MaintenanceCompletionFormData = z.infer<typeof maintenanceCompletionSchema>;

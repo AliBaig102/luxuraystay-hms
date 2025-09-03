@@ -279,6 +279,7 @@ export interface MaintenanceRequest extends BaseModel {
   roomId?: string;
   reportedBy: string;
   category: MaintenanceCategory;
+  title: string;
   description: string;
   priority: Priority;
   status: TaskStatus;

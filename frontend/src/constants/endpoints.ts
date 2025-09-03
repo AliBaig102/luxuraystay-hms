@@ -149,4 +149,18 @@ export const ENDPOINT_URLS = {
     COMPLETE: (id: string | number) => `${ENDPOINT_URL}/housekeeping-tasks/${id}/complete`,
     UPDATE_STATUS: (id: string | number) => `${ENDPOINT_URL}/housekeeping-tasks/${id}/status`,
   },
+  MAINTENANCE_REQUESTS: {
+    ALL: `${ENDPOINT_URL}/maintenance-requests`,
+    SEARCH: `${ENDPOINT_URL}/maintenance-requests/search`,
+    STATISTICS: `${ENDPOINT_URL}/maintenance-requests/statistics`,
+    
+    // dynamic generators
+    GET_BY_ID: (id: string | number) => `${ENDPOINT_URL}/maintenance-requests/${id}`,
+    CREATE: `${ENDPOINT_URL}/maintenance-requests`,
+    UPDATE: (id: string | number) => `${ENDPOINT_URL}/maintenance-requests/${id}`,
+    DELETE: (id: string | number) => `${ENDPOINT_URL}/maintenance-requests/${id}`,
+    ASSIGN: (id: string | number) => `${ENDPOINT_URL}/maintenance-requests/${id}/assign`,
+    COMPLETE: (id: string | number) => `${ENDPOINT_URL}/maintenance-requests/${id}/complete`,
+    UPDATE_STATUS: (id: string | number) => `${ENDPOINT_URL}/maintenance-requests/${id}/status`,
+  },
 };

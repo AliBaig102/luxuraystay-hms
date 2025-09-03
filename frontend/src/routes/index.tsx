@@ -18,6 +18,7 @@ import { CheckIns } from "@/pages/checkins/CheckIns";
 import { CheckOuts } from "@/pages/checkouts/CheckOuts";
 import { Feedback } from "@/pages/feedback/Feedback";
 import { HousekeepingTasks } from "@/pages/housekeeping-tasks/HousekeepingTasks";
+import { MaintenanceRequests } from "@/pages/maintenance-requests/MaintenanceRequests";
 
 export const AppRoutes = () => {
   return (
@@ -174,6 +175,20 @@ export const AppRoutes = () => {
               ]}
             >
               <HousekeepingTasks />
+            </RoleProtectedRoute>
+          }
+        />
+        <Route
+          path="maintenance-requests"
+          element={
+            <RoleProtectedRoute
+              allowedRoles={[
+                USER_ROLES.ADMIN,
+                USER_ROLES.MANAGER,
+                USER_ROLES.MAINTENANCE,
+              ]}
+            >
+              <MaintenanceRequests />
             </RoleProtectedRoute>
           }
         />

@@ -31,6 +31,12 @@ const maintenanceRequestSchema = new Schema(
       enum: Object.values(MaintenanceCategory),
       required: true,
     },
+    title: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: [200, 'Title cannot exceed 200 characters'],
+    },
     description: {
       type: String,
       required: true,

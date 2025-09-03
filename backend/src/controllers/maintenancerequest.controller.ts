@@ -76,7 +76,7 @@ export class MaintenanceRequestController {
       sortOptions[sortBy as string] = sortOrder === 'asc' ? 1 : -1;
 
       const requests = await MaintenanceRequestModel.find()
-        .populate('roomId', 'number type')
+        .populate('roomId')
         .populate('reportedBy', 'firstName lastName email')
         .populate('assignedTechnicianId', 'firstName lastName email')
         .sort(sortOptions)
