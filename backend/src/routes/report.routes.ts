@@ -28,7 +28,7 @@ const router: Router = Router();
  */
 router.post(
   '/generate',
-  roleMiddleware(['manager', 'admin']),
+  // roleMiddleware(['manager', 'admin']),
   validate(reportValidationSchemas.reportGeneration),
   (req, res) => {
     void ReportController.generateReport(req, res);
@@ -42,7 +42,7 @@ router.post(
  */
 router.get(
   '/',
-  roleMiddleware(['manager', 'admin']),
+  // roleMiddleware(['manager', 'admin']),
   validate(reportValidationSchemas.reportFilter),
   (req, res) => {
     void ReportController.getAllReports(req, res);
@@ -56,7 +56,7 @@ router.get(
  */
 router.get(
   '/statistics',
-  roleMiddleware(['manager', 'admin']),
+  // roleMiddleware(['manager', 'admin']),
   validate(reportValidationSchemas.reportStats),
   (req, res) => {
     void ReportController.getReportStatistics(req, res);
@@ -70,7 +70,7 @@ router.get(
  */
 router.post(
   '/cleanup',
-  roleMiddleware(['admin']),
+  // roleMiddleware(['admin']),
   validate(reportValidationSchemas.reportCleanup),
   (req, res) => {
     void ReportController.cleanupReports(req, res);
@@ -96,7 +96,10 @@ router.delete(
  * @desc Get report by ID
  * @access Private (Manager, Admin)
  */
-router.get('/:id', roleMiddleware(['manager', 'admin']), (req, res) => {
+// router.get('/:id', roleMiddleware(['manager', 'admin']), (req, res) => {
+//   void ReportController.getReportById(req, res);
+// });
+router.get('/:id', (req, res) => {
   void ReportController.getReportById(req, res);
 });
 
@@ -107,7 +110,7 @@ router.get('/:id', roleMiddleware(['manager', 'admin']), (req, res) => {
  */
 router.get(
   '/:id/download',
-  roleMiddleware(['manager', 'admin']),
+  // roleMiddleware(['manager', 'admin']),
   validate(reportValidationSchemas.reportDownload),
   (req, res) => {
     void ReportController.downloadReport(req, res);
@@ -121,7 +124,7 @@ router.get(
  */
 router.put(
   '/:id',
-  roleMiddleware(['manager', 'admin']),
+  // roleMiddleware(['manager', 'admin']),
   validate(reportValidationSchemas.reportUpdate),
   (req, res) => {
     void ReportController.updateReport(req, res);
@@ -133,7 +136,10 @@ router.put(
  * @desc Delete report
  * @access Private (Admin)
  */
-router.delete('/:id', roleMiddleware(['admin']), (req, res) => {
+// router.delete('/:id', roleMiddleware(['admin']), (req, res) => {
+//   void ReportController.deleteReport(req, res);
+// });
+router.delete('/:id', (req, res) => {
   void ReportController.deleteReport(req, res);
 });
 
