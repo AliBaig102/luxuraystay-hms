@@ -342,7 +342,7 @@ export const checkInCreateSchema = z.object({
   guestId: z.string().min(1, "Guest is required"),
   assignedRoomNumber: z.string().min(1, "Room number is required"),
   checkInTime: z.date({
-    required_error: "Check-in time is required",
+    error: "Check-in time is required",
   }),
   keyIssued: z.boolean().default(false),
   welcomePackDelivered: z.boolean().default(false),
@@ -413,7 +413,7 @@ export const checkOutCreateSchema = z.object({
   roomId: z.string().min(1, "Room is required"),
   guestId: z.string().min(1, "Guest is required"),
   checkOutTime: z.date({
-    required_error: "Check-out time is required",
+    error: "Check-out time is required",
   }),
   finalBillAmount: z.number().min(0, "Final bill amount must be positive"),
   paymentStatus: z.enum([

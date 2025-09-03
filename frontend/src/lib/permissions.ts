@@ -45,7 +45,17 @@ export const getNavigationForRole = (userRole: UserRole) => {
  */
 export const canAccessRoute = (userRole: UserRole, route: string): boolean => {
   const navigation = getNavigationForRole(userRole);
-  return navigation.some((item) => item.href === route);
+  return navigation.some((item) => {
+    // Check main href
+    if (item.href === route) {
+      return true;
+    }
+    // Check submenu items
+    if (item.submenu) {
+      return item.submenu.some((subItem) => subItem.href === route);
+    }
+    return false;
+  });
 };
 
 /**
