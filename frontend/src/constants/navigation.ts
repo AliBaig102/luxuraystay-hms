@@ -10,6 +10,7 @@ import {
   LogOut,
   MessageSquare,
   PackageSearch,
+  ClipboardList,
 } from "lucide-react";
 import { USER_ROLES } from "@/types/models";
 
@@ -93,6 +94,11 @@ export const DASHBOARD_MENU_ITEMS: DashboardMenuItems = {
       href: "/dashboard/feedback",
       icon: MessageSquare,
     },
+    {
+      title: "Housekeeping Tasks",
+      href: "/dashboard/housekeeping-tasks",
+      icon: ClipboardList,
+    },
   ],
   [USER_ROLES.MANAGER]: [
     {
@@ -141,6 +147,11 @@ export const DASHBOARD_MENU_ITEMS: DashboardMenuItems = {
       title: "Feedback",
       href: "/dashboard/feedback",
       icon: MessageSquare,
+    },
+    {
+      title: "Housekeeping Tasks",
+      href: "/dashboard/housekeeping-tasks",
+      icon: ClipboardList,
     },
   ],
   [USER_ROLES.RECEPTIONIST]: [
@@ -191,7 +202,7 @@ export const DASHBOARD_MENU_ITEMS: DashboardMenuItems = {
     {
       title: "Housekeeping Tasks",
       href: "/dashboard/housekeeping-tasks",
-      icon: Box,
+      icon: ClipboardList,
     },
   ],
   [USER_ROLES.MAINTENANCE]: [

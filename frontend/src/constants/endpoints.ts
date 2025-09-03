@@ -133,4 +133,20 @@ export const ENDPOINT_URLS = {
     DELETE: (id: string | number) => `${ENDPOINT_URL}/feedback/${id}`,
     RESPOND: (id: string | number) => `${ENDPOINT_URL}/feedback/${id}/respond`,
   },
+  HOUSEKEEPING_TASKS: {
+    ALL: `${ENDPOINT_URL}/housekeeping-tasks`,
+    STATISTICS: `${ENDPOINT_URL}/housekeeping-tasks/statistics`,
+    OVERDUE: `${ENDPOINT_URL}/housekeeping-tasks/overdue`,
+    BY_ROOM: (roomId: string | number) => `${ENDPOINT_URL}/housekeeping-tasks/room/${roomId}`,
+    BY_STAFF: (staffId: string | number) => `${ENDPOINT_URL}/housekeeping-tasks/staff/${staffId}`,
+    
+    // dynamic generators
+    GET_BY_ID: (id: string | number) => `${ENDPOINT_URL}/housekeeping-tasks/${id}`,
+    CREATE: `${ENDPOINT_URL}/housekeeping-tasks`,
+    UPDATE: (id: string | number) => `${ENDPOINT_URL}/housekeeping-tasks/${id}`,
+    DELETE: (id: string | number) => `${ENDPOINT_URL}/housekeeping-tasks/${id}`,
+    ASSIGN: (id: string | number) => `${ENDPOINT_URL}/housekeeping-tasks/${id}/assign`,
+    COMPLETE: (id: string | number) => `${ENDPOINT_URL}/housekeeping-tasks/${id}/complete`,
+    UPDATE_STATUS: (id: string | number) => `${ENDPOINT_URL}/housekeeping-tasks/${id}/status`,
+  },
 };

@@ -589,3 +589,86 @@ export type FeedbackUpdateFormData = z.infer<typeof feedbackUpdateSchema>;
 export type FeedbackSearchFormData = z.infer<typeof feedbackSearchSchema>;
 export type FeedbackFilterFormData = z.infer<typeof feedbackFilterSchema>;
 export type FeedbackResponseFormData = z.infer<typeof feedbackResponseSchema>;
+
+// Housekeeping Task validation schemas
+export const housekeepingTaskCreateSchema = z.object({
+  roomId: z.string().min(1, "Room is required"),
+  assignedStaffId: z.string().min(1, "Assigned staff is required"),
+  taskType: z.enum([
+    "daily_cleaning", "deep_cleaning", "linen_change", 
+    "amenity_restock", "inspection"
+  ] as const),
+  priority: z.enum(["low", "medium", "high", "urgent"] as const).default("medium"),
+  status: z.enum(["pending", "assigned", "in_progress", "completed", "cancelled"] as const).default("pending"),
+  scheduledDate: z.date({
+    error: "Scheduled date is required",
+  }),
+  notes: z.string().max(1000, "Notes cannot exceed 1000 characters").optional(),
+});
+
+export const housekeepingTaskUpdateSchema = housekeepingTaskCreateSchema.partial().omit({ roomId: true });
+
+export const housekeepingTaskSearchSchema = z.object({
+  query: z.string().min(1, "Search query is required").max(100, "Search query cannot exceed 100 characters"),
+  status: z.enum(["pending", "assigned", "in_progress", "completed", "cancelled"] as const).optional(),
+  priority: z.enum(["low", "medium", "high", "urgent"] as const).optional(),
+  taskType: z.enum([
+    "daily_cleaning", "deep_cleaning", "linen_change", 
+    "amenity_restock", "inspection"
+  ] as const).optional(),
+  assignedTo: z.string().optional(),
+  roomId: z.string().optional(),
+  startDate: z.date().optional(),
+  endDate: z.date().optional(),
+  page: z.number().int().min(1, "Page must be at least 1").default(1),
+  limit: z.number().int().min(1, "Limit must be at least 1").max(100, "Limit cannot exceed 100").default(10),
+  sortBy: z.enum(["scheduledDate", "priority", "status", "createdAt"] as const).default("scheduledDate"),
+  sortOrder: z.enum(["asc", "desc"] as const).default("asc"),
+});
+
+export const housekeepingTaskFilterSchema = z.object({
+  status: z.enum(["pending", "assigned", "in_progress", "completed", "cancelled"] as const).optional(),
+  priority: z.enum(["low", "medium", "high", "urgent"] as const).optional(),
+  taskType: z.enum([
+    "daily_cleaning", "deep_cleaning", "linen_change", 
+    "amenity_restock", "inspection"
+  ] as const).optional(),
+  assignedTo: z.string().optional(),
+  roomId: z.string().optional(),
+  startDate: z.date().optional(),
+  endDate: z.date().optional(),
+  isActive: z.boolean().optional(),
+  page: z.number().int().min(1, "Page must be at least 1").default(1),
+  limit: z.number().int().min(1, "Limit must be at least 1").max(100, "Limit cannot exceed 100").default(10),
+  sortBy: z.enum(["scheduledDate", "priority", "status", "createdAt"] as const).default("scheduledDate"),
+  sortOrder: z.enum(["asc", "desc"] as const).default("asc"),
+});
+
+export const taskAssignmentSchema = z.object({
+  taskId: z.string().min(1, "Task ID is required"),
+  assignedTo: z.string().min(1, "Assigned staff ID is required"),
+  notes: z.string().max(500, "Notes cannot exceed 500 characters").optional(),
+});
+
+export const taskStatusUpdateSchema = z.object({
+  taskId: z.string().min(1, "Task ID is required"),
+  status: z.enum(["pending", "assigned", "in_progress", "completed", "cancelled"] as const),
+  notes: z.string().max(500, "Notes cannot exceed 500 characters").optional(),
+});
+
+export const taskCompletionSchema = z.object({
+  taskId: z.string().min(1, "Task ID is required"),
+  actualEndTime: z.date({
+    error: "Actual end time is required",
+  }),
+  completionNotes: z.string().max(500, "Completion notes cannot exceed 500 characters").optional(),
+});
+
+// Housekeeping Task form data types
+export type HousekeepingTaskCreateFormData = z.infer<typeof housekeepingTaskCreateSchema>;
+export type HousekeepingTaskUpdateFormData = z.infer<typeof housekeepingTaskUpdateSchema>;
+export type HousekeepingTaskSearchFormData = z.infer<typeof housekeepingTaskSearchSchema>;
+export type HousekeepingTaskFilterFormData = z.infer<typeof housekeepingTaskFilterSchema>;
+export type TaskAssignmentFormData = z.infer<typeof taskAssignmentSchema>;
+export type TaskStatusUpdateFormData = z.infer<typeof taskStatusUpdateSchema>;
+export type TaskCompletionFormData = z.infer<typeof taskCompletionSchema>;

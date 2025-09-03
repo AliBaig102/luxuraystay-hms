@@ -17,6 +17,7 @@ import { Bills } from "@/pages/bills/Bills";
 import { CheckIns } from "@/pages/checkins/CheckIns";
 import { CheckOuts } from "@/pages/checkouts/CheckOuts";
 import { Feedback } from "@/pages/feedback/Feedback";
+import { HousekeepingTasks } from "@/pages/housekeeping-tasks/HousekeepingTasks";
 
 export const AppRoutes = () => {
   return (
@@ -159,6 +160,20 @@ export const AppRoutes = () => {
               ]}
             >
               <Feedback />
+            </RoleProtectedRoute>
+          }
+        />
+        <Route
+          path="housekeeping-tasks"
+          element={
+            <RoleProtectedRoute
+              allowedRoles={[
+                USER_ROLES.ADMIN,
+                USER_ROLES.MANAGER,
+                USER_ROLES.HOUSEKEEPING,
+              ]}
+            >
+              <HousekeepingTasks />
             </RoleProtectedRoute>
           }
         />

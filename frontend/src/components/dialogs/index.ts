@@ -4,6 +4,7 @@ export { ConfirmCheckInDeleteDialog } from './ConfirmCheckInDeleteDialog';
 export { ConfirmCheckOutDeleteDialog } from './ConfirmCheckOutDeleteDialog';
 export { ConfirmFeedbackDeleteDialog } from './ConfirmFeedbackDeleteDialog';
 export { FeedbackResponseDialog } from './FeedbackResponseDialog';
+export { ConfirmHousekeepingTaskDeleteDialog } from './ConfirmHousekeepingTaskDeleteDialog';
 export { ProcessPaymentDialog } from './ProcessPaymentDialog';
 export { ProcessRefundDialog } from './ProcessRefundDialog';
 export { DeleteBillDialog } from './DeleteBillDialog';

@@ -34,6 +34,10 @@ export const ROLE_PERMISSIONS = {
     "feedback.update",
     "feedback.delete",
     "feedback.view",
+    "housekeeping_task.create",
+    "housekeeping_task.update",
+    "housekeeping_task.delete",
+    "housekeeping_task.view",
     "booking.manage",
     "payment.manage",
     "report.view",
@@ -59,7 +63,11 @@ export const ROLE_PERMISSIONS = {
     "feedback.create",
     "feedback.update",
     "feedback.delete",
-    "feedback.view"
+    "feedback.view",
+    "housekeeping_task.create",
+    "housekeeping_task.update",
+    "housekeeping_task.delete",
+    "housekeeping_task.view"
   ],
   [USER_ROLES.RECEPTIONIST]: [
     "booking.create",
@@ -83,7 +91,10 @@ export const ROLE_PERMISSIONS = {
     "room.view",
     "room.status.update",
     "maintenance.request",
-    "inventory.manage"
+    "inventory.manage",
+    "housekeeping_task.create",
+    "housekeeping_task.update",
+    "housekeeping_task.view"
   ],
   [USER_ROLES.MAINTENANCE]: [
     "maintenance.view",
