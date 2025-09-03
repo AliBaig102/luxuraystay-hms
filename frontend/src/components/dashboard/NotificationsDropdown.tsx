@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Bell, X, Clock, Check, Trash2, MoreVertical } from 'lucide-react';
+import { Bell, X, Clock, Check, Trash2, MoreVertical, ExternalLink } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,42 +10,11 @@ import {
   ScrollArea,
 } from '@/components/ui';
 import { cn } from '@/lib/utils';
-
-interface Notification {
-  id: string;
-  title: string;
-  message: string;
-  timestamp: Date;
-  read: boolean;
-  priority?: 'low' | 'medium' | 'high';
-}
-
-const mockNotifications: Notification[] = [
-  {
-    id: '1',
-    title: 'New Reservation',
-    message: 'Room 205 has been booked for tonight',
-    timestamp: new Date(Date.now() - 5 * 60 * 1000),
-    read: false,
-    priority: 'high',
-  },
-  {
-    id: '2',
-    title: 'Maintenance Alert',
-    message: 'Room 301 requires immediate attention',
-    timestamp: new Date(Date.now() - 15 * 60 * 1000),
-    read: false,
-    priority: 'medium',
-  },
-  {
-    id: '3',
-    title: 'Payment Received',
-    message: 'Payment confirmed for booking #12345',
-    timestamp: new Date(Date.now() - 30 * 60 * 1000),
-    read: true,
-    priority: 'low',
-  },
-];
+import { useApi } from '@/hooks/useApi';
+import { ENDPOINT_URLS } from '@/constants/endpoints';
+import type { Notification } from '@/types/models';
+import { useAuth } from '@/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 const formatTimestamp = (timestamp: Date) => {
   const now = new Date();
@@ -60,41 +29,99 @@ const formatTimestamp = (timestamp: Date) => {
   return `${days}d ago`;
 };
 
+// Notification type colors
+const notificationTypeColors: Record<string, string> = {
+  booking: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
+  maintenance: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
+  housekeeping: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
+  billing: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+  system: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
+  reminder: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
+};
+
+// Priority colors
+const priorityColors: Record<string, string> = {
+  low: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200",
+  medium: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
+  high: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
+  urgent: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
+};
+
 export function NotificationsDropdown() {
-  const [notifications, setNotifications] = useState<Notification[]>(mockNotifications);
   const [isOpen, setIsOpen] = useState(false);
-
-  const unreadCount = notifications.filter(n => !n.read).length;
-
-  const markAsRead = (id: string) => {
-    setNotifications(prev =>
-      prev.map(notification =>
-        notification.id === id ? { ...notification, read: true } : notification
-      )
-    );
-  };
-
-  const markAllAsRead = () => {
-    setNotifications(prev =>
-      prev.map(notification => ({ ...notification, read: true }))
-    );
-  };
-
-  const removeNotification = (id: string) => {
-    setNotifications(prev => prev.filter(notification => notification.id !== id));
-  };
-
-  const clearAllNotifications = () => {
-    setNotifications([]);
-  };
-
-  const getPriorityColor = (priority?: 'low' | 'medium' | 'high') => {
-    switch (priority) {
-      case 'high': return 'bg-destructive/10 text-destructive dark:bg-destructive/20';
-      case 'medium': return 'bg-chart-4/10 text-chart-4 dark:bg-chart-4/20';
-      case 'low': return 'bg-chart-1/10 text-chart-1 dark:bg-chart-1/20';
-      default: return 'bg-muted text-muted-foreground';
+  const { user: currentUser } = useAuth();
+  const navigate = useNavigate();
+  
+  // Fetch notifications for the current user
+  const notificationsUrl = currentUser 
+    ? `${ENDPOINT_URLS.NOTIFICATIONS.ALL}?recipientId=${currentUser._id}`
+    : '';
+  const { data: notificationsData, isLoading, invalidate,patch } = useApi<{notifications: Notification[]}>(
+    notificationsUrl,{
+      auth: true,
+      swrConfig:{
+        refreshInterval: 1000 * 60 * 1, // Refresh notifications every 1 minutes
+      }
     }
+  );
+
+  const notifications = notificationsData?.notifications || [];
+  const unreadCount = notifications.filter(n => !n.isRead).length;
+
+  // API hooks for notification actions
+  const { put: markAsReadApi } = useApi(ENDPOINT_URLS.NOTIFICATIONS.UPDATE(''), { immediate: false });
+  const { delete: deleteNotificationApi } = useApi(ENDPOINT_URLS.NOTIFICATIONS.DELETE(''), { immediate: false });
+  const { post: bulkDeleteApi } = useApi(ENDPOINT_URLS.NOTIFICATIONS.BULK_DELETE, { immediate: false });
+
+  const markAsRead = async (id: string) => {
+    try {
+      await markAsReadApi(ENDPOINT_URLS.NOTIFICATIONS.UPDATE(id), {
+        isRead: true,
+        readDate: new Date()
+      },{silent: true});
+      await invalidate(ENDPOINT_URLS.NOTIFICATIONS.ALL);
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+    }
+  };
+
+  const markAllAsRead = async () => {
+    if (!currentUser) return;
+    try {
+      await patch(ENDPOINT_URLS.NOTIFICATIONS.MARK_ALL_READ(currentUser._id),{});
+      await invalidate(ENDPOINT_URLS.NOTIFICATIONS.ALL);
+    } catch (error) {
+      console.error('Error marking all notifications as read:', error);
+    }
+  };
+
+  const removeNotification = async (id: string) => {
+    try {
+      await deleteNotificationApi(ENDPOINT_URLS.NOTIFICATIONS.DELETE(id));
+      await invalidate();
+    } catch (error) {
+      console.error('Error deleting notification:', error);
+    }
+  };
+
+  const clearAllNotifications = async () => {
+    try {
+      const notificationIds = notifications.map(n => n._id);
+      await bulkDeleteApi(ENDPOINT_URLS.NOTIFICATIONS.BULK_DELETE, {
+        notificationIds
+      },{silent: true});
+      await invalidate(ENDPOINT_URLS.NOTIFICATIONS.ALL);
+    } catch (error) {
+      console.error('Error clearing all notifications:', error);
+    }
+  };
+
+  const getPriorityColor = (priority: string) => {
+    return priorityColors[priority] || 'bg-muted text-muted-foreground';
+  };
+
+  const getTypeColor = (type: string) => {
+    return notificationTypeColors[type] || 'bg-muted text-muted-foreground';
   };
 
   return (
@@ -114,7 +141,20 @@ export function NotificationsDropdown() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-80 p-0">
         <div className="p-3 border-b border-border flex items-center justify-between">
-          <h3 className="text-sm font-medium text-foreground">Notifications</h3>
+          <div className="flex items-center gap-2">
+            <h3 className="text-sm font-medium text-foreground">Notifications</h3>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                navigate('/dashboard/notifications');
+                setIsOpen(false);
+              }}
+              className="text-xs h-6 w-6 p-0"
+            >
+              <ExternalLink className="h-3 w-3" />
+            </Button>
+          </div>
           <div className="flex gap-2">
             {unreadCount > 0 && (
               <Button
@@ -144,7 +184,11 @@ export function NotificationsDropdown() {
         </div>
         
         <ScrollArea className="max-h-[400px]">
-          {notifications.length === 0 ? (
+          {isLoading ? (
+            <div className="p-4 text-center text-sm text-muted-foreground">
+              Loading notifications...
+            </div>
+          ) : notifications.length === 0 ? (
             <div className="p-4 text-center text-sm text-muted-foreground">
               No notifications
             </div>
@@ -152,29 +196,32 @@ export function NotificationsDropdown() {
             <div>
               {notifications.map((notification) => (
                 <div
-                  key={notification.id}
+                  key={notification._id}
                   className={cn(
                     "p-3 hover:bg-accent cursor-pointer border-b border-border last:border-b-0",
-                    !notification.read && "bg-accent/50"
+                    !notification.isRead && "bg-accent/50"
                   )}
-                  onClick={() => markAsRead(notification.id)}
+                  onClick={() => markAsRead(notification._id)}
                 >
                   <div className="flex justify-between gap-2">
                     <div className="flex-1">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <p className="text-sm font-medium">{notification.title}</p>
+                        <span className={cn("text-xs px-2 py-0.5 rounded-full", getTypeColor(notification.type))}>
+                          {notification.type.charAt(0).toUpperCase() + notification.type.slice(1)}
+                        </span>
                         <span className={cn("text-xs px-2 py-0.5 rounded-full", getPriorityColor(notification.priority))}>
-                          {notification.priority}
+                          {notification.priority.charAt(0).toUpperCase() + notification.priority.slice(1)}
                         </span>
                       </div>
-                      <p className="text-xs text-muted-foreground mt-1">{notification.message}</p>
+                      <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{notification.message}</p>
                     </div>
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={(e) => {
                         e.stopPropagation();
-                        removeNotification(notification.id);
+                        removeNotification(notification._id);
                       }}
                       className="h-6 w-6 p-0 opacity-0 hover:opacity-100"
                     >
@@ -185,10 +232,10 @@ export function NotificationsDropdown() {
                     <div className="flex items-center gap-1">
                       <Clock className="h-3 w-3 text-muted-foreground" />
                       <span className="text-xs text-muted-foreground">
-                        {formatTimestamp(notification.timestamp)}
+                        {formatTimestamp(new Date(notification.createdAt))}
                       </span>
                     </div>
-                    {!notification.read && (
+                    {!notification.isRead && (
                       <Badge variant="secondary" className="text-xs">New</Badge>
                     )}
                   </div>
@@ -197,6 +244,23 @@ export function NotificationsDropdown() {
             </div>
           )}
         </ScrollArea>
+        
+        {notifications.length > 0 && (
+          <div className="p-3 border-t border-border">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                navigate('/dashboard/notifications');
+                setIsOpen(false);
+              }}
+              className="w-full text-xs h-8"
+            >
+              <ExternalLink className="h-3 w-3 mr-2" />
+              View All Notifications
+            </Button>
+          </div>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

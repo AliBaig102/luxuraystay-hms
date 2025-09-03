@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import { NotificationController } from '../controllers/notification.controller';
 import { validate } from '../middleware/validation.middleware';
-import { roleMiddleware } from '../middleware/role.middleware';
 import { notificationValidationSchemas } from '../validations/notification.validation';
 import type { Router as ExpressRouter } from 'express';
 
@@ -52,7 +51,7 @@ router.get('/unread-count/:recipientId', (req, res) => {
 // Mark all notifications as read for specific recipient
 router.patch(
   '/mark-all-read/:recipientId',
-  roleMiddleware(['user', 'manager', 'admin']),
+  // roleMiddleware(['user', 'manager', 'admin']),
   (req, res) => {
     void NotificationController.markAllAsRead(req, res);
   }
@@ -62,7 +61,7 @@ router.patch(
 router.patch('/mark-as-read', (req, res) => {
   void NotificationController.markAsRead(req, res);
 });
-router.delete('/bulk-delete', (req, res) => {
+router.post('/bulk-delete', (req, res) => {
   void NotificationController.bulkDelete(req, res);
 });
 
