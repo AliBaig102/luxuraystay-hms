@@ -12,6 +12,7 @@ import {
   PackageSearch,
   ClipboardList,
   Wrench,
+  Headphones,
 } from "lucide-react";
 import { USER_ROLES } from "@/types/models";
 
@@ -105,6 +106,11 @@ export const DASHBOARD_MENU_ITEMS: DashboardMenuItems = {
       href: "/dashboard/maintenance-requests",
       icon: Wrench,
     },
+    {
+      title: "Service Requests",
+      href: "/dashboard/service-requests",
+      icon: Headphones,
+    },
   ],
   [USER_ROLES.MANAGER]: [
     {
@@ -164,6 +170,11 @@ export const DASHBOARD_MENU_ITEMS: DashboardMenuItems = {
       href: "/dashboard/maintenance-requests",
       icon: Wrench,
     },
+    {
+      title: "Service Requests",
+      href: "/dashboard/service-requests",
+      icon: Headphones,
+    },
   ],
   [USER_ROLES.RECEPTIONIST]: [
     {
@@ -203,6 +214,11 @@ export const DASHBOARD_MENU_ITEMS: DashboardMenuItems = {
       href: "/dashboard/feedback",
       icon: MessageSquare,
     },
+    {
+      title: "Service Requests",
+      href: "/dashboard/service-requests",
+      icon: Headphones,
+    },
   ],
   [USER_ROLES.HOUSEKEEPING]: [
     {
@@ -215,6 +231,11 @@ export const DASHBOARD_MENU_ITEMS: DashboardMenuItems = {
       href: "/dashboard/housekeeping-tasks",
       icon: ClipboardList,
     },
+    {
+      title: "Service Requests",
+      href: "/dashboard/service-requests",
+      icon: Headphones,
+    },
   ],
   [USER_ROLES.MAINTENANCE]: [
     {
@@ -226,6 +247,11 @@ export const DASHBOARD_MENU_ITEMS: DashboardMenuItems = {
       title: "Maintenance Requests",
       href: "/dashboard/maintenance-requests",
       icon: Wrench,
+    },
+    {
+      title: "Service Requests",
+      href: "/dashboard/service-requests",
+      icon: Headphones,
     },
   ],
   [USER_ROLES.GUEST]: [
@@ -248,6 +274,11 @@ export const DASHBOARD_MENU_ITEMS: DashboardMenuItems = {
       title: "Feedback",
       href: "/dashboard/feedback",
       icon: MessageSquare,
+    },
+    {
+      title: "Service Requests",
+      href: "/dashboard/service-requests",
+      icon: Headphones,
     },
   ],
 };

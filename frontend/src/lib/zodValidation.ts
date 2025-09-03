@@ -756,3 +756,91 @@ export type MaintenanceRequestFilterFormData = z.infer<typeof maintenanceRequest
 export type MaintenanceAssignmentFormData = z.infer<typeof maintenanceAssignmentSchema>;
 export type MaintenanceStatusUpdateFormData = z.infer<typeof maintenanceStatusUpdateSchema>;
 export type MaintenanceCompletionFormData = z.infer<typeof maintenanceCompletionSchema>;
+
+// Service Request validation schemas
+export const serviceRequestCreateSchema = z.object({
+  guestId: z.string().min(1, "Guest is required"),
+  roomId: z.string().min(1, "Room is required"),
+  serviceType: z.enum([
+    "room_service", "wake_up_call", "transportation", "laundry", 
+    "housekeeping", "maintenance", "concierge"
+  ] as const),
+  description: z.string().min(1, "Description is required").max(1000, "Description cannot exceed 1000 characters"),
+  priority: z.enum(["low", "medium", "high", "urgent"] as const).default("medium"),
+  status: z.enum(["requested", "in_progress", "completed", "cancelled"] as const).default("requested"),
+  assignedStaffId: z.string().optional(),
+  requestedDate: z.date().default(() => new Date()),
+  completedDate: z.date().optional(),
+  cost: z.number().min(0, "Cost cannot be negative").optional(),
+});
+
+export const serviceRequestUpdateSchema = serviceRequestCreateSchema.partial().omit({ 
+  guestId: true, 
+  roomId: true 
+});
+
+export const serviceRequestSearchSchema = z.object({
+  query: z.string().min(1, "Search query is required").max(100, "Search query cannot exceed 100 characters"),
+  status: z.enum(["requested", "in_progress", "completed", "cancelled"] as const).optional(),
+  priority: z.enum(["low", "medium", "high", "urgent"] as const).optional(),
+  serviceType: z.enum([
+    "room_service", "wake_up_call", "transportation", "laundry", 
+    "housekeeping", "maintenance", "concierge"
+  ] as const).optional(),
+  assignedStaffId: z.string().optional(),
+  guestId: z.string().optional(),
+  roomId: z.string().optional(),
+  startDate: z.date().optional(),
+  endDate: z.date().optional(),
+  page: z.number().int().min(1, "Page must be at least 1").default(1),
+  limit: z.number().int().min(1, "Limit must be at least 1").max(100, "Limit cannot exceed 100").default(10),
+  sortBy: z.enum(["priority", "requestedDate", "status"] as const).default("requestedDate"),
+  sortOrder: z.enum(["asc", "desc"] as const).default("desc"),
+});
+
+export const serviceRequestFilterSchema = z.object({
+  status: z.enum(["requested", "in_progress", "completed", "cancelled"] as const).optional(),
+  priority: z.enum(["low", "medium", "high", "urgent"] as const).optional(),
+  serviceType: z.enum([
+    "room_service", "wake_up_call", "transportation", "laundry", 
+    "housekeeping", "maintenance", "concierge"
+  ] as const).optional(),
+  assignedStaffId: z.string().optional(),
+  guestId: z.string().optional(),
+  roomId: z.string().optional(),
+  startDate: z.date().optional(),
+  endDate: z.date().optional(),
+  page: z.number().int().min(1, "Page must be at least 1").default(1),
+  limit: z.number().int().min(1, "Limit must be at least 1").max(100, "Limit cannot exceed 100").default(10),
+  sortBy: z.enum(["priority", "requestedDate", "status"] as const).default("requestedDate"),
+  sortOrder: z.enum(["asc", "desc"] as const).default("desc"),
+});
+
+export const serviceRequestAssignmentSchema = z.object({
+  requestId: z.string().min(1, "Request ID is required"),
+  assignedTo: z.string().min(1, "Assigned staff ID is required"),
+  scheduledDate: z.date().optional(),
+  notes: z.string().max(500, "Notes cannot exceed 500 characters").optional(),
+});
+
+export const serviceRequestStatusUpdateSchema = z.object({
+  requestId: z.string().min(1, "Request ID is required"),
+  status: z.enum(["requested", "in_progress", "completed", "cancelled"] as const),
+  notes: z.string().max(500, "Notes cannot exceed 500 characters").optional(),
+});
+
+export const serviceRequestCompletionSchema = z.object({
+  requestId: z.string().min(1, "Request ID is required"),
+  actualEndTime: z.date().optional(),
+  actualCost: z.number().min(0, "Actual cost cannot be negative").optional(),
+  completionNotes: z.string().max(1000, "Completion notes cannot exceed 1000 characters").optional(),
+});
+
+// Service Request form data types
+export type ServiceRequestCreateFormData = z.infer<typeof serviceRequestCreateSchema>;
+export type ServiceRequestUpdateFormData = z.infer<typeof serviceRequestUpdateSchema>;
+export type ServiceRequestSearchFormData = z.infer<typeof serviceRequestSearchSchema>;
+export type ServiceRequestFilterFormData = z.infer<typeof serviceRequestFilterSchema>;
+export type ServiceRequestAssignmentFormData = z.infer<typeof serviceRequestAssignmentSchema>;
+export type ServiceRequestStatusUpdateFormData = z.infer<typeof serviceRequestStatusUpdateSchema>;
+export type ServiceRequestCompletionFormData = z.infer<typeof serviceRequestCompletionSchema>;

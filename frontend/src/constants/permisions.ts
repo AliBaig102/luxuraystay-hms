@@ -42,6 +42,10 @@ export const ROLE_PERMISSIONS = {
     "maintenance_request.update",
     "maintenance_request.delete",
     "maintenance_request.view",
+    "service_request.create",
+    "service_request.update",
+    "service_request.delete",
+    "service_request.view",
     "booking.manage",
     "payment.manage",
     "report.view",
@@ -75,7 +79,11 @@ export const ROLE_PERMISSIONS = {
     "maintenance_request.create",
     "maintenance_request.update",
     "maintenance_request.delete",
-    "maintenance_request.view"
+    "maintenance_request.view",
+    "service_request.create",
+    "service_request.update",
+    "service_request.delete",
+    "service_request.view"
   ],
   [USER_ROLES.RECEPTIONIST]: [
     "booking.create",
@@ -93,7 +101,10 @@ export const ROLE_PERMISSIONS = {
     "checkout.view",
     "feedback.create",
     "feedback.update",
-    "feedback.view"
+    "feedback.view",
+    "service_request.create",
+    "service_request.update",
+    "service_request.view"
   ],
   [USER_ROLES.HOUSEKEEPING]: [
     "room.view",
@@ -102,14 +113,20 @@ export const ROLE_PERMISSIONS = {
     "inventory.manage",
     "housekeeping_task.create",
     "housekeeping_task.update",
-    "housekeeping_task.view"
+    "housekeeping_task.view",
+    "service_request.create",
+    "service_request.update",
+    "service_request.view"
   ],
   [USER_ROLES.MAINTENANCE]: [
     "maintenance_request.create",
     "maintenance_request.update",
     "maintenance_request.view",
     "room.maintenance",
-    "inventory.view"
+    "inventory.view",
+    "service_request.create",
+    "service_request.update",
+    "service_request.view"
   ],
   [USER_ROLES.GUEST]: [
     "booking.view.own",
@@ -117,6 +134,8 @@ export const ROLE_PERMISSIONS = {
     "profile.manage",
     "review.create",
     "service.request",
+    "service_request.create",
+    "service_request.view",
     "feedback.create",
     "feedback.view.own"
   ],

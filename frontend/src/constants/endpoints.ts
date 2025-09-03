@@ -163,4 +163,21 @@ export const ENDPOINT_URLS = {
     COMPLETE: (id: string | number) => `${ENDPOINT_URL}/maintenance-requests/${id}/complete`,
     UPDATE_STATUS: (id: string | number) => `${ENDPOINT_URL}/maintenance-requests/${id}/status`,
   },
+  SERVICE_REQUESTS: {
+    ALL: `${ENDPOINT_URL}/service-requests`,
+    STATISTICS: `${ENDPOINT_URL}/service-requests/statistics`,
+    OVERDUE: `${ENDPOINT_URL}/service-requests/overdue`,
+    
+    // dynamic generators
+    GET_BY_ID: (id: string | number) => `${ENDPOINT_URL}/service-requests/${id}`,
+    CREATE: `${ENDPOINT_URL}/service-requests`,
+    UPDATE: (id: string | number) => `${ENDPOINT_URL}/service-requests/${id}`,
+    DELETE: (id: string | number) => `${ENDPOINT_URL}/service-requests/${id}`,
+    ASSIGN: (id: string | number) => `${ENDPOINT_URL}/service-requests/${id}/assign`,
+    COMPLETE: (id: string | number) => `${ENDPOINT_URL}/service-requests/${id}/complete`,
+    UPDATE_STATUS: (id: string | number) => `${ENDPOINT_URL}/service-requests/${id}/status`,
+    GET_BY_GUEST: (guestId: string | number) => `${ENDPOINT_URL}/service-requests/guest/${guestId}`,
+    GET_BY_ROOM: (roomId: string | number) => `${ENDPOINT_URL}/service-requests/room/${roomId}`,
+    GET_BY_STAFF: (staffId: string | number) => `${ENDPOINT_URL}/service-requests/staff/${staffId}`,
+  },
 };
