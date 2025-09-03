@@ -110,8 +110,9 @@ export function MaintenanceRequestSheet({ id, children }: MaintenanceRequestShee
       priority: "medium",
       status: "pending",
       assignedTo: "",
-      scheduledDate: undefined,
-      estimatedCost: undefined,
+      estimatedCompletionDate: undefined,
+      actualCompletionDate: undefined,
+      cost: undefined,
       notes: "",
     },
   });
@@ -129,8 +130,9 @@ export function MaintenanceRequestSheet({ id, children }: MaintenanceRequestShee
         roomId: typeof data.roomId === 'string' ? data.roomId : (data.roomId as any)?._id || data.roomId,
         reportedBy: typeof data.reportedBy === 'string' ? data.reportedBy : (data.reportedBy as any)?._id || data.reportedBy,
         assignedTo: typeof data.assignedTechnicianId === 'string' ? data.assignedTechnicianId : (data.assignedTechnicianId as any)?._id || data.assignedTechnicianId,
-        scheduledDate: data.estimatedCompletionDate ? new Date(data.estimatedCompletionDate) : undefined,
-        estimatedCost: data.cost,
+        estimatedCompletionDate: data.estimatedCompletionDate ? new Date(data.estimatedCompletionDate) : undefined,
+        actualCompletionDate: data.actualCompletionDate ? new Date(data.actualCompletionDate) : undefined,
+        cost: data.cost,
         maintenanceType: data.category,
       });
     }
@@ -152,7 +154,7 @@ export function MaintenanceRequestSheet({ id, children }: MaintenanceRequestShee
       // Transform the data to match backend expectations
       const transformedData = {
         ...data,
-        scheduledDate: data.scheduledDate ? data.scheduledDate.toISOString() : undefined,
+        estimatedCompletionDate: data.estimatedCompletionDate ? data.estimatedCompletionDate.toISOString() : undefined,
       };
 
       if (id) {
@@ -171,8 +173,9 @@ export function MaintenanceRequestSheet({ id, children }: MaintenanceRequestShee
         priority: "medium",
         status: "pending",
         assignedTo: "",
-        scheduledDate: undefined,
-        estimatedCost: undefined,
+        estimatedCompletionDate: undefined,
+        actualCompletionDate: undefined,
+        cost: undefined,
         notes: "",
       });
     } catch (error) {
@@ -523,10 +526,10 @@ export function MaintenanceRequestSheet({ id, children }: MaintenanceRequestShee
 
                   <FormField
                     control={form.control}
-                    name="scheduledDate"
+                    name="estimatedCompletionDate"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Scheduled Date</FormLabel>
+                        <FormLabel>Estimated Completion Date</FormLabel>
                         <Popover>
                           <PopoverTrigger asChild>
                             <FormControl>
@@ -565,11 +568,35 @@ export function MaintenanceRequestSheet({ id, children }: MaintenanceRequestShee
                       </FormItem>
                     )}
                   />
+                  <FormField
+                    control={form.control}
+                    name="actualCompletionDate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Actual Completion Date</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button variant="outline" className="w-full pl-3 text-left font-normal">
+                                {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                                <Calendar className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <ShadcnCalendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date < new Date("1900-01-01")} initialFocus />
+                          </PopoverContent>
+                        </Popover>
+                        <FormDescription>When was this maintenance actually completed?</FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
 
                 <FormField
                   control={form.control}
-                  name="estimatedCost"
+                  name="cost"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Estimated Cost</FormLabel>

@@ -685,8 +685,9 @@ export const maintenanceRequestCreateSchema = z.object({
   priority: z.enum(["low", "medium", "high", "urgent"] as const).default("medium"),
   status: z.enum(["pending", "assigned", "in_progress", "completed", "cancelled"] as const).default("pending"),
   assignedTo: z.string().optional(),
-  scheduledDate: z.date().optional(),
-  estimatedCost: z.number().min(0, "Cost cannot be negative").optional(),
+  estimatedCompletionDate: z.date().optional(),
+  actualCompletionDate: z.date().optional(),
+  cost: z.number().min(0, "Cost cannot be negative").optional(),
   notes: z.string().max(1000, "Notes cannot exceed 1000 characters").optional(),
 });
 
