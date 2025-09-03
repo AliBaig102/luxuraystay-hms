@@ -47,6 +47,8 @@ import type {
   User,
   Room,
   Reservation,
+  CheckIn,
+  CheckOut,
 } from "@/types/models";
 import { LoadingButton } from "../custom/LoadingButton";
 import {
@@ -110,7 +112,9 @@ export function BillSheet({ id, children }: BillSheetProps) {
   );
   const { data: guests } = useApi<User[]>(ENDPOINT_URLS.GUESTS.ALL);
   const { data: rooms } = useApi<Room[]>(ENDPOINT_URLS.ROOMS.ALL);
-  const { data: reservations } = useApi<Reservation[]>(ENDPOINT_URLS.RESERVATIONS.ALL);
+  const { data: reservationsRes } = useApi<{reservations: Reservation[]}>(ENDPOINT_URLS.RESERVATIONS.ALL);
+  const { data: checkIns } = useApi<CheckIn[]>(ENDPOINT_URLS.CHECKINS.ALL);
+  const { data: checkOuts } = useApi<CheckOut[]>(ENDPOINT_URLS.CHECKOUTS.ALL);
   const [open, setOpen] = useState(false);
   const [dueDate, setDueDate] = useState<Date>();
   const [paymentDate, setPaymentDate] = useState<Date>();
@@ -149,6 +153,11 @@ export function BillSheet({ id, children }: BillSheetProps) {
       );
       form.reset({
         ...data,
+        reservationId: typeof data.reservationId === 'string' ? data.reservationId : (data.reservationId as any)?._id || data.reservationId,
+        guestId: typeof data.guestId === 'string' ? data.guestId : (data.guestId as any)?._id || data.guestId,
+        roomId: typeof data.roomId === 'string' ? data.roomId : (data.roomId as any)?._id || data.roomId,
+        checkInId: typeof data.checkInId === 'string' ? data.checkInId : (data.checkInId as any)?._id || data.checkInId,
+        checkOutId: typeof data.checkOutId === 'string' ? data.checkOutId : (data.checkOutId as any)?._id || data.checkOutId || "",
         dueDate: format(new Date(data.dueDate), "yyyy-MM-dd"),
         paymentDate: data.paymentDate ? format(new Date(data.paymentDate), "yyyy-MM-dd") : "",
       });
@@ -157,6 +166,7 @@ export function BillSheet({ id, children }: BillSheetProps) {
         setPaymentDate(new Date(data.paymentDate));
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, open]);
 
   useEffect(() => {
@@ -169,6 +179,7 @@ export function BillSheet({ id, children }: BillSheetProps) {
   const watchedTaxAmount = form.watch("taxAmount");
   const watchedDiscountAmount = form.watch("discountAmount");
   const watchedServiceCharges = form.watch("serviceCharges");
+  const watchedCheckInId = form.watch("checkInId");
 
   // Auto-calculate total amount
   useEffect(() => {
@@ -179,6 +190,18 @@ export function BillSheet({ id, children }: BillSheetProps) {
     const totalAmount = baseAmount + taxAmount + serviceCharges - discountAmount;
     form.setValue("totalAmount", Math.max(0, totalAmount));
   }, [watchedBaseAmount, watchedTaxAmount, watchedDiscountAmount, watchedServiceCharges, form]);
+
+  // Auto-fill related data when check-in is selected
+  useEffect(() => {
+    if (watchedCheckInId && checkIns) {
+      const selectedCheckIn = checkIns.find(checkIn => checkIn._id === watchedCheckInId);
+      if (selectedCheckIn) {
+        form.setValue("reservationId", typeof selectedCheckIn.reservationId === 'string' ? selectedCheckIn.reservationId : (selectedCheckIn.reservationId as any)?._id || "");
+        form.setValue("roomId", typeof selectedCheckIn.roomId === 'string' ? selectedCheckIn.roomId : (selectedCheckIn.roomId as any)?._id || "");
+        form.setValue("guestId", typeof selectedCheckIn.guestId === 'string' ? selectedCheckIn.guestId : (selectedCheckIn.guestId as any)?._id || "");
+      }
+    }
+  }, [watchedCheckInId, checkIns, form]);
 
   const handleSubmit = async (
     data: BillCreateFormData | BillUpdateFormData
@@ -191,7 +214,24 @@ export function BillSheet({ id, children }: BillSheetProps) {
       }
       await invalidate();
       setOpen(false);
-      form.reset();
+      form.reset({
+        reservationId: "",
+        guestId: "",
+        roomId: "",
+        checkInId: "",
+        checkOutId: "",
+        baseAmount: 0,
+        taxAmount: 0,
+        discountAmount: 0,
+        serviceCharges: 0,
+        totalAmount: 0,
+        status: BILL_STATUSES.DRAFT,
+        dueDate: "",
+        paymentDate: "",
+        paymentMethod: undefined,
+        notes: "",
+        isActive: true,
+      });
       setDueDate(undefined);
       setPaymentDate(undefined);
     } catch (error) {
@@ -203,7 +243,24 @@ export function BillSheet({ id, children }: BillSheetProps) {
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);
     if (!newOpen) {
-      form.reset();
+      form.reset({
+        reservationId: "",
+        guestId: "",
+        roomId: "",
+        checkInId: "",
+        checkOutId: "",
+        baseAmount: 0,
+        taxAmount: 0,
+        discountAmount: 0,
+        serviceCharges: 0,
+        totalAmount: 0,
+        status: BILL_STATUSES.DRAFT,
+        dueDate: "",
+        paymentDate: "",
+        paymentMethod: undefined,
+        notes: "",
+        isActive: true,
+      });
       setDueDate(undefined);
       setPaymentDate(undefined);
     }
@@ -212,7 +269,7 @@ export function BillSheet({ id, children }: BillSheetProps) {
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>
       <SheetTrigger asChild>{children}</SheetTrigger>
-      <SheetContent className="w-full sm:max-w-lg flex flex-col h-full">
+      <SheetContent className="w-full sm:max-w-2xl flex flex-col h-full">
         <SheetHeader className="space-y-3 pb-6 px-6 pt-6">
           <SheetTitle className="flex items-center gap-2 text-lg">
             <div className="flex h-7 w-7 items-center justify-center rounded-md bg-muted">
@@ -231,10 +288,10 @@ export function BillSheet({ id, children }: BillSheetProps) {
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(handleSubmit)}
-              className="space-y-6 pb-4"
+              className="space-y-8 pb-6"
             >
               {/* Reservation and Guest Information */}
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div className="flex items-center gap-2 pb-3">
                   <div className="flex h-5 w-5 items-center justify-center rounded bg-muted">
                     <Users className="h-3 w-3" />
@@ -244,7 +301,7 @@ export function BillSheet({ id, children }: BillSheetProps) {
                   </h3>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <FormField
                     control={form.control}
                     name="reservationId"
@@ -262,7 +319,7 @@ export function BillSheet({ id, children }: BillSheetProps) {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent className="max-h-64">
-                            {Array.isArray(reservations) && reservations.map((reservation) => (
+                            {Array.isArray(reservationsRes?.reservations) && reservationsRes.reservations.map((reservation) => (
                               <SelectItem key={reservation._id} value={reservation._id}>
                                 <div className="flex flex-col">
                                   <span className="font-medium">
@@ -318,7 +375,7 @@ export function BillSheet({ id, children }: BillSheetProps) {
                   />
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <FormField
                     control={form.control}
                     name="roomId"
@@ -360,14 +417,31 @@ export function BillSheet({ id, children }: BillSheetProps) {
                     name="checkInId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Check-in ID</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter check-in ID"
-                            {...field}
-                            disabled={!!id}
-                          />
-                        </FormControl>
+                        <FormLabel>Check-in Record</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value} disabled={!!id}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select a check-in record" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {checkIns?.map((checkIn) => (
+                              <SelectItem key={checkIn._id} value={checkIn._id}>
+                                <div className="flex flex-col">
+                                  <span className="font-medium">
+                                    Room {checkIn.assignedRoomNumber}
+                                  </span>
+                                  <span className="text-sm text-muted-foreground">
+                                    Check-in: {new Date(checkIn.checkInTime).toLocaleDateString()}
+                                  </span>
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormDescription className="text-xs">
+                          Select the check-in record for this bill
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -379,13 +453,44 @@ export function BillSheet({ id, children }: BillSheetProps) {
                   name="checkOutId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Check-out ID (Optional)</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Enter check-out ID"
-                          {...field}
-                        />
-                      </FormControl>
+                      <FormLabel>Check-out Record (Optional)</FormLabel>
+                      <div className="flex gap-3">
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="flex-1">
+                              <SelectValue placeholder="Select a check-out record (optional)" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {checkOuts?.map((checkOut) => (
+                              <SelectItem key={checkOut._id} value={checkOut._id}>
+                                <div className="flex flex-col">
+                                  <span className="font-medium">
+                                    Check-out: {new Date(checkOut.checkOutTime).toLocaleDateString()}
+                                  </span>
+                                  <span className="text-sm text-muted-foreground">
+                                    Amount: ${checkOut.finalBillAmount}
+                                  </span>
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        {field.value && (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => field.onChange(undefined)}
+                            className="px-3"
+                          >
+                            Clear
+                          </Button>
+                        )}
+                      </div>
+                      <FormDescription className="text-xs">
+                        Select the check-out record if available (optional)
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -395,7 +500,7 @@ export function BillSheet({ id, children }: BillSheetProps) {
               <Separator />
 
               {/* Amount Information */}
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div className="flex items-center gap-2 pb-3">
                   <div className="flex h-5 w-5 items-center justify-center rounded bg-muted">
                     <DollarSign className="h-3 w-3" />
@@ -403,7 +508,7 @@ export function BillSheet({ id, children }: BillSheetProps) {
                   <h3 className="text-sm font-medium">Amount Details</h3>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <FormField
                     control={form.control}
                     name="baseAmount"
@@ -447,7 +552,7 @@ export function BillSheet({ id, children }: BillSheetProps) {
                   />
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <FormField
                     control={form.control}
                     name="discountAmount"
@@ -520,7 +625,7 @@ export function BillSheet({ id, children }: BillSheetProps) {
               <Separator />
 
               {/* Status and Payment Information */}
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div className="flex items-center gap-2 pb-3">
                   <div className="flex h-5 w-5 items-center justify-center rounded bg-muted">
                     <CreditCard className="h-3 w-3" />
@@ -528,7 +633,7 @@ export function BillSheet({ id, children }: BillSheetProps) {
                   <h3 className="text-sm font-medium">Status & Payment</h3>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <FormField
                     control={form.control}
                     name="status"
@@ -606,7 +711,7 @@ export function BillSheet({ id, children }: BillSheetProps) {
                   />
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <FormField
                     control={form.control}
                     name="dueDate"
@@ -697,7 +802,7 @@ export function BillSheet({ id, children }: BillSheetProps) {
               <Separator />
 
               {/* Additional Information */}
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div className="flex items-center gap-2 pb-3">
                   <div className="flex h-5 w-5 items-center justify-center rounded bg-muted">
                     <FileText className="h-3 w-3" />
@@ -780,8 +885,8 @@ export function BillSheet({ id, children }: BillSheetProps) {
         </div>
 
         {/* Footer with action buttons */}
-        <div className="border-t bg-background px-6 py-4">
-          <div className="flex gap-3">
+        <div className="border-t bg-background px-6 py-6">
+          <div className="flex gap-4">
             <Button
               type="button"
               variant="outline"
@@ -792,7 +897,7 @@ export function BillSheet({ id, children }: BillSheetProps) {
             </Button>
             <LoadingButton
               type="submit"
-              loading={isMutating}
+              isLoading={isMutating}
               onClick={form.handleSubmit(handleSubmit)}
               className="flex-1"
             >

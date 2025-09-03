@@ -33,7 +33,6 @@ const filters = [
       { value: PAYMENT_METHODS.DEBIT_CARD, label: "Debit Card" },
       { value: PAYMENT_METHODS.BANK_TRANSFER, label: "Bank Transfer" },
       { value: PAYMENT_METHODS.DIGITAL_WALLET, label: "Digital Wallet" },
-      { value: PAYMENT_METHODS.CHECK, label: "Check" },
     ],
   },
   {
@@ -47,7 +46,7 @@ const filters = [
 ];
 
 export const Bills = () => {
-  const { data, isLoading } = useApi<{bills: Bill[]}>(
+  const { data, isLoading } = useApi<Bill[]>(
     ENDPOINT_URLS.BILLS.ALL, 
     { auth: true }
   );
@@ -71,7 +70,7 @@ export const Bills = () => {
       </PageHeader>
       <DataTable
         columns={billColumns}
-        data={data?.bills || []}
+        data={data || []}
         filters={filters}
         loading={isLoading}
         exportFileName="bills"
