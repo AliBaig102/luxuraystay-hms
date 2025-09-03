@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { ReportController } from '../controllers/report.controller';
 // import { authMiddleware } from '../middleware/auth.middleware';
-import { roleMiddleware } from '../middleware/role.middleware';
+// import { roleMiddleware } from '../middleware/role.middleware';
 import { reportValidationSchemas } from '../validations/report.validation';
 import { validate } from '../middleware/validation.middleware';
 
@@ -84,7 +84,7 @@ router.post(
  */
 router.delete(
   '/bulk-delete',
-  roleMiddleware(['admin']),
+  // roleMiddleware(['admin']),
   validate(reportValidationSchemas.bulkDelete),
   (req, res) => {
     void ReportController.bulkDeleteReports(req, res);
