@@ -46,6 +46,10 @@ export const ROLE_PERMISSIONS = {
     "service_request.update",
     "service_request.delete",
     "service_request.view",
+    "notification.create",
+    "notification.update",
+    "notification.delete",
+    "notification.view",
     "booking.manage",
     "payment.manage",
     "report.view",
@@ -83,7 +87,11 @@ export const ROLE_PERMISSIONS = {
     "service_request.create",
     "service_request.update",
     "service_request.delete",
-    "service_request.view"
+    "service_request.view",
+    "notification.create",
+    "notification.update",
+    "notification.delete",
+    "notification.view"
   ],
   [USER_ROLES.RECEPTIONIST]: [
     "booking.create",
@@ -104,7 +112,10 @@ export const ROLE_PERMISSIONS = {
     "feedback.view",
     "service_request.create",
     "service_request.update",
-    "service_request.view"
+    "service_request.view",
+    "notification.create",
+    "notification.update",
+    "notification.view"
   ],
   [USER_ROLES.HOUSEKEEPING]: [
     "room.view",
@@ -116,7 +127,10 @@ export const ROLE_PERMISSIONS = {
     "housekeeping_task.view",
     "service_request.create",
     "service_request.update",
-    "service_request.view"
+    "service_request.view",
+    "notification.create",
+    "notification.update",
+    "notification.view"
   ],
   [USER_ROLES.MAINTENANCE]: [
     "maintenance_request.create",
@@ -126,7 +140,10 @@ export const ROLE_PERMISSIONS = {
     "inventory.view",
     "service_request.create",
     "service_request.update",
-    "service_request.view"
+    "service_request.view",
+    "notification.create",
+    "notification.update",
+    "notification.view"
   ],
   [USER_ROLES.GUEST]: [
     "booking.view.own",
@@ -136,6 +153,8 @@ export const ROLE_PERMISSIONS = {
     "service.request",
     "service_request.create",
     "service_request.view",
+    "notification.create",
+    "notification.view",
     "feedback.create",
     "feedback.view.own"
   ],

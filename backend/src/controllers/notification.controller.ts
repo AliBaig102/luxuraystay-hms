@@ -75,6 +75,7 @@ export class NotificationController {
       // Execute query with pagination
       const [notifications, total] = await Promise.all([
         NotificationModel.find(filter)
+          .populate('recipientId')
           .sort(sort)
           .skip(skip)
           .limit(limit)

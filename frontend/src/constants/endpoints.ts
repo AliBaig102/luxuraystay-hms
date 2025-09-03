@@ -180,4 +180,19 @@ export const ENDPOINT_URLS = {
     GET_BY_ROOM: (roomId: string | number) => `${ENDPOINT_URL}/service-requests/room/${roomId}`,
     GET_BY_STAFF: (staffId: string | number) => `${ENDPOINT_URL}/service-requests/staff/${staffId}`,
   },
+  NOTIFICATIONS: {
+    ALL: `${ENDPOINT_URL}/notifications`,
+    SEARCH: `${ENDPOINT_URL}/notifications/search`,
+    STATISTICS: `${ENDPOINT_URL}/notifications/statistics`,
+    
+    // dynamic generators
+    GET_BY_ID: (id: string | number) => `${ENDPOINT_URL}/notifications/${id}`,
+    CREATE: `${ENDPOINT_URL}/notifications`,
+    UPDATE: (id: string | number) => `${ENDPOINT_URL}/notifications/${id}`,
+    DELETE: (id: string | number) => `${ENDPOINT_URL}/notifications/${id}`,
+    GET_UNREAD_COUNT: (recipientId: string | number) => `${ENDPOINT_URL}/notifications/unread-count/${recipientId}`,
+    MARK_ALL_READ: (recipientId: string | number) => `${ENDPOINT_URL}/notifications/mark-all-read/${recipientId}`,
+    MARK_AS_READ: `${ENDPOINT_URL}/notifications/mark-as-read`,
+    BULK_DELETE: `${ENDPOINT_URL}/notifications/bulk-delete`,
+  },
 };

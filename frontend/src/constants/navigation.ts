@@ -13,6 +13,7 @@ import {
   ClipboardList,
   Wrench,
   Headphones,
+  Bell,
 } from "lucide-react";
 import { USER_ROLES } from "@/types/models";
 
@@ -111,6 +112,11 @@ export const DASHBOARD_MENU_ITEMS: DashboardMenuItems = {
       href: "/dashboard/service-requests",
       icon: Headphones,
     },
+    {
+      title: "Notifications",
+      href: "/dashboard/notifications",
+      icon: Bell,
+    },
   ],
   [USER_ROLES.MANAGER]: [
     {
@@ -175,6 +181,11 @@ export const DASHBOARD_MENU_ITEMS: DashboardMenuItems = {
       href: "/dashboard/service-requests",
       icon: Headphones,
     },
+    {
+      title: "Notifications",
+      href: "/dashboard/notifications",
+      icon: Bell,
+    },
   ],
   [USER_ROLES.RECEPTIONIST]: [
     {
@@ -219,6 +230,11 @@ export const DASHBOARD_MENU_ITEMS: DashboardMenuItems = {
       href: "/dashboard/service-requests",
       icon: Headphones,
     },
+    {
+      title: "Notifications",
+      href: "/dashboard/notifications",
+      icon: Bell,
+    },
   ],
   [USER_ROLES.HOUSEKEEPING]: [
     {
@@ -236,6 +252,11 @@ export const DASHBOARD_MENU_ITEMS: DashboardMenuItems = {
       href: "/dashboard/service-requests",
       icon: Headphones,
     },
+    {
+      title: "Notifications",
+      href: "/dashboard/notifications",
+      icon: Bell,
+    },
   ],
   [USER_ROLES.MAINTENANCE]: [
     {
@@ -252,6 +273,11 @@ export const DASHBOARD_MENU_ITEMS: DashboardMenuItems = {
       title: "Service Requests",
       href: "/dashboard/service-requests",
       icon: Headphones,
+    },
+    {
+      title: "Notifications",
+      href: "/dashboard/notifications",
+      icon: Bell,
     },
   ],
   [USER_ROLES.GUEST]: [
@@ -279,6 +305,11 @@ export const DASHBOARD_MENU_ITEMS: DashboardMenuItems = {
       title: "Service Requests",
       href: "/dashboard/service-requests",
       icon: Headphones,
+    },
+    {
+      title: "Notifications",
+      href: "/dashboard/notifications",
+      icon: Bell,
     },
   ],
 };

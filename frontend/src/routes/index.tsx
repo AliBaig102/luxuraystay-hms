@@ -20,6 +20,7 @@ import { Feedback } from "@/pages/feedback/Feedback";
 import { HousekeepingTasks } from "@/pages/housekeeping-tasks/HousekeepingTasks";
 import { MaintenanceRequests } from "@/pages/maintenance-requests/MaintenanceRequests";
 import { ServiceRequests } from "@/pages/service-requests/ServiceRequests";
+import { Notifications } from "@/pages/notifications/Notifications";
 
 export const AppRoutes = () => {
   return (
@@ -207,6 +208,23 @@ export const AppRoutes = () => {
               ]}
             >
               <ServiceRequests />
+            </RoleProtectedRoute>
+          }
+        />
+        <Route
+          path="notifications"
+          element={
+            <RoleProtectedRoute
+              allowedRoles={[
+                USER_ROLES.ADMIN,
+                USER_ROLES.MANAGER,
+                USER_ROLES.RECEPTIONIST,
+                USER_ROLES.HOUSEKEEPING,
+                USER_ROLES.MAINTENANCE,
+                USER_ROLES.GUEST,
+              ]}
+            >
+              <Notifications />
             </RoleProtectedRoute>
           }
         />

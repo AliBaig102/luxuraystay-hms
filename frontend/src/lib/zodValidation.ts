@@ -844,3 +844,79 @@ export type ServiceRequestFilterFormData = z.infer<typeof serviceRequestFilterSc
 export type ServiceRequestAssignmentFormData = z.infer<typeof serviceRequestAssignmentSchema>;
 export type ServiceRequestStatusUpdateFormData = z.infer<typeof serviceRequestStatusUpdateSchema>;
 export type ServiceRequestCompletionFormData = z.infer<typeof serviceRequestCompletionSchema>;
+
+// Notification validation schemas
+export const notificationCreateSchema = z.object({
+  recipientId: z.string().min(1, "Recipient ID is required"),
+  recipientType: z.enum(["user", "guest"] as const),
+  title: z.string().min(1, "Title is required").max(200, "Title cannot exceed 200 characters"),
+  message: z.string().min(1, "Message is required").max(1000, "Message cannot exceed 1000 characters"),
+  type: z.enum(["booking", "maintenance", "housekeeping", "billing", "system", "reminder"] as const),
+  priority: z.enum(["low", "medium", "high", "urgent"] as const).default("medium"),
+  actionUrl: z.string().optional(),
+  isRead: z.boolean().default(false),
+  readDate: z.date().optional().nullable(),
+});
+
+export const notificationUpdateSchema = z.object({
+  title: z.string().min(1, "Title is required").max(200, "Title cannot exceed 200 characters").optional(),
+  message: z.string().min(1, "Message is required").max(1000, "Message cannot exceed 1000 characters").optional(),
+  type: z.enum(["booking", "maintenance", "housekeeping", "billing", "system", "reminder"] as const).optional(),
+  priority: z.enum(["low", "medium", "high", "urgent"] as const).optional(),
+  actionUrl: z.string().optional(),
+  isRead: z.boolean().optional(),
+  readDate: z.date().optional().nullable(),
+});
+
+export const notificationSearchSchema = z.object({
+  query: z.string().min(1, "Search query is required").max(100, "Search query cannot exceed 100 characters"),
+  type: z.enum(["booking", "maintenance", "housekeeping", "billing", "system", "reminder"] as const).optional(),
+  priority: z.enum(["low", "medium", "high", "urgent"] as const).optional(),
+  recipientId: z.string().optional(),
+  isRead: z.boolean().optional(),
+  page: z.number().int().min(1, "Page must be at least 1").default(1),
+  limit: z.number().int().min(1, "Limit must be at least 1").max(100, "Limit cannot exceed 100").default(10),
+  sortBy: z.enum(["createdAt", "priority", "type", "relevance"] as const).default("relevance"),
+  sortOrder: z.enum(["asc", "desc"] as const).default("desc"),
+});
+
+export const notificationFilterSchema = z.object({
+  recipientId: z.string().optional(),
+  recipientType: z.enum(["user", "guest"] as const).optional(),
+  type: z.enum(["booking", "maintenance", "housekeeping", "billing", "system", "reminder"] as const).optional(),
+  priority: z.enum(["low", "medium", "high", "urgent"] as const).optional(),
+  isRead: z.boolean().optional(),
+  dateFrom: z.string().optional(),
+  dateTo: z.string().optional(),
+  page: z.number().int().min(1, "Page must be at least 1").default(1),
+  limit: z.number().int().min(1, "Limit must be at least 1").max(100, "Limit cannot exceed 100").default(10),
+  sortBy: z.enum(["createdAt", "priority", "type", "isRead"] as const).default("createdAt"),
+  sortOrder: z.enum(["asc", "desc"] as const).default("desc"),
+});
+
+export const markAsReadSchema = z.object({
+  notificationIds: z.array(z.string().min(1, "Notification ID is required")).min(1, "At least one notification ID is required"),
+  isRead: z.boolean().default(true),
+});
+
+export const bulkDeleteSchema = z.object({
+  notificationIds: z.array(z.string().min(1, "Notification ID is required")).min(1, "At least one notification ID is required"),
+});
+
+export const notificationStatsFilterSchema = z.object({
+  recipientId: z.string().optional(),
+  recipientType: z.enum(["user", "guest"] as const).optional(),
+  type: z.enum(["booking", "maintenance", "housekeeping", "billing", "system", "reminder"] as const).optional(),
+  priority: z.enum(["low", "medium", "high", "urgent"] as const).optional(),
+  dateFrom: z.string().optional(),
+  dateTo: z.string().optional(),
+});
+
+// Notification form data types
+export type NotificationCreateFormData = z.infer<typeof notificationCreateSchema>;
+export type NotificationUpdateFormData = z.infer<typeof notificationUpdateSchema>;
+export type NotificationSearchFormData = z.infer<typeof notificationSearchSchema>;
+export type NotificationFilterFormData = z.infer<typeof notificationFilterSchema>;
+export type MarkAsReadFormData = z.infer<typeof markAsReadSchema>;
+export type BulkDeleteFormData = z.infer<typeof bulkDeleteSchema>;
+export type NotificationStatsFilterFormData = z.infer<typeof notificationStatsFilterSchema>;
