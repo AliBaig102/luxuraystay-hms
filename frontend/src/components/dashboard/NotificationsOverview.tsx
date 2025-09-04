@@ -1,12 +1,10 @@
-import { useApi } from "@/hooks/useApi";
-import { ENDPOINT_URLS } from "@/constants/endpoints";
 import { 
   Card, 
   CardContent, 
   CardDescription, 
   CardHeader, 
   CardTitle 
-} from "@/components/ui";
+} from "@/components/ui/card";
 import { 
   BarChart, 
   Bar, 
@@ -22,17 +20,10 @@ import {
 import { 
   Bell, 
   AlertTriangle, 
-  CheckCircle, 
-  Clock,
-  Users,
-  TrendingUp,
   Eye,
   EyeOff
 } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { useTheme } from "@/components/theme/ThemeProvider";
-import { useChartTheme } from "./chartUtils";
 
 interface NotificationStats {
   total: number;
@@ -88,110 +79,65 @@ const PRIORITY_COLORS = {
 };
 
 export const NotificationsOverview = () => {
-  const { currentTheme } = useTheme();
-  const { getTooltipStyle, getAxisStyle, getGridStyle } = useChartTheme();
   // Use dummy data instead of API calls
-  const isLoading = false;
 
-  // Dummy notification data
+
+  // Mock data for notifications overview
   const notificationData: NotificationStats = {
     total: 156,
     unread: 23,
     read: 133,
-    urgent: 8,
+    urgent: 5,
     byType: [
-      { type: 'booking', count: 45, unread: 8 },
+      { type: 'system', count: 45, unread: 8 },
+      { type: 'booking', count: 38, unread: 6 },
       { type: 'maintenance', count: 32, unread: 5 },
-      { type: 'housekeeping', count: 28, unread: 4 },
-      { type: 'billing', count: 25, unread: 3 },
-      { type: 'system', count: 18, unread: 2 },
-      { type: 'reminder', count: 8, unread: 1 }
+      { type: 'payment', count: 25, unread: 3 },
+      { type: 'guest', count: 16, unread: 1 }
     ],
     byPriority: [
       { priority: 'low', count: 78 },
-      { priority: 'medium', count: 52 },
-      { priority: 'high', count: 18 },
-      { priority: 'urgent', count: 8 }
+      { priority: 'medium', count: 53 },
+      { priority: 'high', count: 20 },
+      { priority: 'urgent', count: 5 }
     ],
     recentNotifications: [
       {
         id: '1',
-        title: 'New Booking Confirmation',
-        message: 'Guest John Doe has booked Room 101 for 3 nights',
-        type: 'booking',
-        priority: 'medium',
+        title: 'Room 205 Maintenance Required',
+        message: 'Air conditioning unit needs immediate attention',
+        type: 'maintenance',
+        priority: 'urgent',
+        recipientType: 'staff',
         isRead: false,
-        createdAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
-        recipientType: 'user'
+        createdAt: new Date(Date.now() - 30 * 60 * 1000).toISOString()
       },
       {
         id: '2',
-        title: 'Maintenance Request Urgent',
-        message: 'AC repair needed in Room 205 - High priority',
-        type: 'maintenance',
-        priority: 'urgent',
-        isRead: false,
-        createdAt: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
-        recipientType: 'user'
+        title: 'New Booking Confirmation',
+        message: 'Booking #BK-2024-001 has been confirmed',
+        type: 'booking',
+        priority: 'medium',
+        recipientType: 'staff',
+        isRead: true,
+        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
       },
       {
         id: '3',
-        title: 'Housekeeping Task Completed',
-        message: 'Room 156 cleaning completed by Maria Garcia',
-        type: 'housekeeping',
-        priority: 'low',
-        isRead: true,
-        createdAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-        recipientType: 'user'
-      },
-      {
-        id: '4',
         title: 'Payment Received',
-        message: 'Payment of $450 received for Room 203',
-        type: 'billing',
-        priority: 'medium',
-        isRead: true,
-        createdAt: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
-        recipientType: 'user'
-      },
-      {
-        id: '5',
-        title: 'System Maintenance Scheduled',
-        message: 'Scheduled maintenance for tomorrow 2:00 AM',
-        type: 'system',
-        priority: 'high',
+        message: 'Payment of $450 received for booking #BK-2024-002',
+        type: 'payment',
+        priority: 'low',
+        recipientType: 'admin',
         isRead: false,
-        createdAt: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
-        recipientType: 'user'
-      },
-      {
-        id: '6',
-        title: 'Check-out Reminder',
-        message: 'Guest in Room 142 has check-out in 2 hours',
-        type: 'reminder',
-        priority: 'medium',
-        isRead: true,
-        createdAt: new Date(Date.now() - 90 * 60 * 1000).toISOString(),
-        recipientType: 'user'
+        createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString()
       }
     ],
-    readPercentage: 85.3,
+    readPercentage: 85,
     responseRate: 92.1
   };
 
-  if (isLoading) {
-    return (
-      <Card>
-        <CardHeader>
-          <Skeleton className="h-6 w-32" />
-          <Skeleton className="h-4 w-48" />
-        </CardHeader>
-        <CardContent>
-          <Skeleton className="h-64 w-full" />
-        </CardContent>
-      </Card>
-    );
-  }
+
 
   const formatTimestamp = (timestamp: string) => {
     const date = new Date(timestamp);
@@ -273,7 +219,7 @@ export const NotificationsOverview = () => {
                     fill="#8884d8"
                     dataKey="count"
                   >
-                    {(notificationData?.byType || []).map((entry, index) => (
+                    {(notificationData?.byType || []).map((_, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
@@ -283,7 +229,7 @@ export const NotificationsOverview = () => {
                       border: '1px solid hsl(var(--border))',
                       borderRadius: '6px',
                     }}
-                    formatter={(value: number, name: string) => [value, 'Notifications']}
+                    formatter={(value: number) => [value, 'Notifications']}
                   />
                 </PieChart>
               </ResponsiveContainer>

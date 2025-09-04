@@ -1,5 +1,3 @@
-import { useApi } from "@/hooks/useApi";
-import { ENDPOINT_URLS } from "@/constants/endpoints";
 import { 
   Card, 
   CardContent, 
@@ -22,18 +20,11 @@ import {
   Line
 } from "recharts";
 import { 
-  Star, 
-  MessageSquare, 
-  TrendingUp, 
-  Users,
-  ThumbsUp,
-  ThumbsDown,
-  AlertCircle
+  Star
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { useTheme } from "@/components/theme/ThemeProvider";
-import { useChartTheme } from "./chartUtils";
+
 
 interface FeedbackStats {
   total: number;
@@ -80,13 +71,7 @@ const COLORS = [
   'hsl(var(--chart-5))',
 ];
 
-const RATING_COLORS = {
-  1: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
-  2: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
-  3: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-  4: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-  5: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-};
+
 
 const CATEGORY_COLORS = {
   service: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
@@ -98,8 +83,6 @@ const CATEGORY_COLORS = {
 };
 
 export const FeedbackOverview = () => {
-  const { currentTheme } = useTheme();
-  const { getTooltipStyle, getAxisStyle, getGridStyle } = useChartTheme();
   // Use dummy data instead of API calls
   const isLoading = false;
 
@@ -201,9 +184,7 @@ export const FeedbackOverview = () => {
     );
   }
 
-  const getRatingColor = (rating: number) => {
-    return RATING_COLORS[rating as keyof typeof RATING_COLORS] || RATING_COLORS[3];
-  };
+
 
   const getCategoryColor = (category: string) => {
     return CATEGORY_COLORS[category as keyof typeof CATEGORY_COLORS] || CATEGORY_COLORS.service;
@@ -326,7 +307,7 @@ export const FeedbackOverview = () => {
                     fill="#8884d8"
                     dataKey="count"
                   >
-                    {(feedbackData?.byCategory || []).map((entry, index) => (
+                    {(feedbackData?.byCategory || []).map((_, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
@@ -336,7 +317,7 @@ export const FeedbackOverview = () => {
                       border: '1px solid hsl(var(--border))',
                       borderRadius: '6px',
                     }}
-                    formatter={(value: number, name: string) => [value, 'Reviews']}
+                    formatter={(value: number) => [value, 'Reviews']}
                   />
                 </PieChart>
               </ResponsiveContainer>

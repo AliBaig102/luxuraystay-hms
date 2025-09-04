@@ -1,5 +1,3 @@
-import { useApi } from "@/hooks/useApi";
-import { ENDPOINT_URLS } from "@/constants/endpoints";
 import { 
   Card, 
   CardContent, 
@@ -23,14 +21,11 @@ import {
   Wrench, 
   AlertTriangle, 
   CheckCircle, 
-  Clock,
-  DollarSign,
-  TrendingUp
+  Clock
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { useTheme } from "@/components/theme/ThemeProvider";
-import { useChartTheme } from "./chartUtils";
+
 
 interface MaintenanceStats {
   total: number;
@@ -89,8 +84,6 @@ const STATUS_COLORS = {
 };
 
 export const MaintenanceOverview = () => {
-  const { currentTheme } = useTheme();
-  const { getTooltipStyle, getAxisStyle, getGridStyle } = useChartTheme();
   // Use dummy data instead of API calls
   const isLoading = false;
 
@@ -260,13 +253,17 @@ export const MaintenanceOverview = () => {
                     fill="#8884d8"
                     dataKey="count"
                   >
-                    {(maintenanceData?.byStatus || []).map((entry, index) => (
+                    {(maintenanceData?.byStatus || []).map((_, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
                   <Tooltip
-                    contentStyle={getTooltipStyle()}
-                    formatter={(value: number, name: string) => [value, 'Requests']}
+                    contentStyle={{
+                      backgroundColor: 'hsl(var(--card))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '6px',
+                    }}
+                    formatter={(value: number) => [value, 'Requests']}
                   />
                 </PieChart>
               </ResponsiveContainer>
@@ -279,20 +276,22 @@ export const MaintenanceOverview = () => {
             <div className="h-48">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={maintenanceData?.byPriority || []}>
-                  <CartesianGrid strokeDasharray="3 3" {...getGridStyle()} />
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                   <XAxis 
                     dataKey="priority" 
                     className="text-xs"
-                    tick={{ fontSize: 10, ...getAxisStyle().tick }}
-                    {...getAxisStyle()}
+                    tick={{ fontSize: 10 }}
                   />
                   <YAxis 
                     className="text-xs"
-                    tick={{ fontSize: 10, ...getAxisStyle().tick }}
-                    {...getAxisStyle()}
+                    tick={{ fontSize: 10 }}
                   />
                   <Tooltip
-                    contentStyle={getTooltipStyle()}
+                    contentStyle={{
+                      backgroundColor: 'hsl(var(--card))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '6px',
+                    }}
                     formatter={(value: number) => [value, 'Requests']}
                   />
                   <Bar 

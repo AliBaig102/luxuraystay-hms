@@ -131,8 +131,8 @@ export function InventorySheet({ id, children }: InventorySheetProps) {
       });
       form.reset({
         ...data.item,
-        expiryDate: data.item.expiryDate ? new Date(data.item.expiryDate) : undefined,
-        lastRestocked: data.item.lastRestocked ? new Date(data.item.lastRestocked) : undefined,
+        expiryDate: data.item.expiryDate ? (typeof data.item.expiryDate === 'string' ? data.item.expiryDate : data.item.expiryDate.toISOString().split('T')[0]) : undefined,
+        lastRestocked: data.item.lastRestocked ? (typeof data.item.lastRestocked === 'string' ? data.item.lastRestocked : data.item.lastRestocked.toISOString().split('T')[0]) : undefined,
       });
     }
   }, [id, open]);
@@ -148,8 +148,8 @@ export function InventorySheet({ id, children }: InventorySheetProps) {
     try {
       const submitData = {
         ...data,
-        expiryDate: data.expiryDate ? data.expiryDate.toISOString() : undefined,
-        lastRestocked: data.lastRestocked ? data.lastRestocked.toISOString() : undefined,
+        expiryDate: data.expiryDate ? (data.expiryDate as any instanceof Date ? (data.expiryDate as unknown as Date).toISOString() : new Date(data.expiryDate as unknown as string).toISOString()) : undefined,
+        lastRestocked: data.lastRestocked ? (data.lastRestocked as any instanceof Date ? (data.lastRestocked as unknown as Date).toISOString() : new Date(data.lastRestocked as unknown as string).toISOString()) : undefined,
       };
       
       if (id) {
@@ -544,7 +544,7 @@ export function InventorySheet({ id, children }: InventorySheetProps) {
                           <PopoverContent className="w-auto p-0" align="start">
                             <CalendarComponent
                               mode="single"
-                              selected={field.value}
+                              selected={field.value ? (field.value as any instanceof Date ? field.value as unknown as Date : new Date(field.value as unknown as string)) : undefined}
                               onSelect={field.onChange}
                               disabled={(date) =>
                                 date < new Date("1900-01-01")
@@ -585,7 +585,7 @@ export function InventorySheet({ id, children }: InventorySheetProps) {
                           <PopoverContent className="w-auto p-0" align="start">
                             <CalendarComponent
                               mode="single"
-                              selected={field.value}
+                              selected={field.value ? (field.value as any instanceof Date ? field.value as unknown as Date : new Date(field.value as unknown as string)) : undefined}
                               onSelect={field.onChange}
                               disabled={(date) =>
                                 date > new Date() || date < new Date("1900-01-01")

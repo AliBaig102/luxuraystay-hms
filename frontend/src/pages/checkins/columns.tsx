@@ -15,15 +15,13 @@ export const createCheckInColumns = (
       accessorKey: "createdAt",
       header: "Date",
       enableSorting: true,
-      sortingFn: "datetime",
-      filterFn: "dateRange",
       cell: ({ row }) => format(new Date(row.original.createdAt), "MM/dd/yyyy"),
     },
     {
       accessorKey: "assignedRoomNumber",
       header: "Room Number",
       enableSorting: true,
-      sortingFn: "text",
+
       cell: ({ row }) => (
         <div className="font-medium">{row.original.assignedRoomNumber}</div>
       ),
@@ -32,7 +30,7 @@ export const createCheckInColumns = (
       accessorKey: "checkInTime",
       header: "Check-in Time",
       enableSorting: true,
-      sortingFn: "datetime",
+
       cell: ({ row }) => {
         const checkInTime = row.original.checkInTime;
         return (
@@ -46,7 +44,6 @@ export const createCheckInColumns = (
       accessorKey: "checkOutTime",
       header: "Check-out Time",
       enableSorting: true,
-      sortingFn: "datetime",
       cell: ({ row }) => {
         const checkOutTime = row.original.checkOutTime;
         return checkOutTime ? (
@@ -65,7 +62,6 @@ export const createCheckInColumns = (
       accessorKey: "keyIssued",
       header: "Key Status",
       enableSorting: true,
-      sortingFn: "text",
       cell: ({ row }) => (
         <Badge
           variant={row.original.keyIssued ? "default" : "secondary"}
@@ -83,7 +79,6 @@ export const createCheckInColumns = (
       accessorKey: "welcomePackDelivered",
       header: "Welcome Pack",
       enableSorting: true,
-      sortingFn: "text",
       cell: ({ row }) => (
         <Badge
           variant={row.original.welcomePackDelivered ? "default" : "secondary"}
@@ -101,7 +96,6 @@ export const createCheckInColumns = (
       accessorKey: "isActiveStay",
       header: "Status",
       enableSorting: true,
-      sortingFn: "text",
       cell: ({ row }) => {
         const isActive = row.original.isActiveStay;
         return (

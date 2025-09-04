@@ -5,7 +5,7 @@ import { Edit, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { Room, UserRole } from "@/types/models";
-import { ROOM_TYPES, ROOM_STATUSES } from "@/types/models";
+import { ROOM_TYPES } from "@/types/models";
 import { RoomSheet } from "@/components/sheets/RoomSheet";
 import { ConfirmRoomDeleteDialog } from "@/components/dialogs/ConfirmRoomDeleteDialog";
 import { hasPermission } from "@/lib/permissions";
@@ -21,14 +21,7 @@ const roomTypeColors = {
     "bg-yellow-100 text-yellow-800 hover:bg-yellow-200",
 };
 
-// Room status colors mapping
-const roomStatusColors = {
-  [ROOM_STATUSES.AVAILABLE]: "bg-green-100 text-green-800 hover:bg-green-200",
-  [ROOM_STATUSES.OCCUPIED]: "bg-red-100 text-red-800 hover:bg-red-200",
-  [ROOM_STATUSES.MAINTENANCE]:
-    "bg-orange-100 text-orange-800 hover:bg-orange-200",
-  [ROOM_STATUSES.OUT_OF_SERVICE]: "bg-gray-100 text-gray-800 hover:bg-gray-200",
-};
+
 
 export const createRoomColumns = (
   currentUserRole?: UserRole

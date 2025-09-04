@@ -1,12 +1,10 @@
-import { useApi } from "@/hooks/useApi";
-import { ENDPOINT_URLS } from "@/constants/endpoints";
 import { 
   Card, 
   CardContent, 
   CardDescription, 
   CardHeader, 
   CardTitle 
-} from "@/components/ui";
+} from "@/components/ui/card";
 import { 
   LineChart, 
   Line, 
@@ -19,10 +17,8 @@ import {
   Bar
 } from "recharts";
 import { DollarSign, TrendingUp } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useTheme } from "@/components/theme/ThemeProvider";
 
 interface RevenueData {
   date: string;
@@ -41,10 +37,8 @@ interface RevenueStats {
 
 export const RevenueChart = () => {
   const [timeRange, setTimeRange] = useState<'daily' | 'weekly' | 'monthly'>('daily');
-  const { currentTheme } = useTheme();
   
   // Use dummy data instead of API calls
-  const isLoading = false;
 
   // Dummy revenue data
   const revenueData: RevenueStats = {
@@ -70,19 +64,7 @@ export const RevenueChart = () => {
     })),
   };
 
-  if (isLoading) {
-    return (
-      <Card>
-        <CardHeader>
-          <Skeleton className="h-6 w-32" />
-          <Skeleton className="h-4 w-48" />
-        </CardHeader>
-        <CardContent>
-          <Skeleton className="h-64 w-full" />
-        </CardContent>
-      </Card>
-    );
-  }
+
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -186,35 +168,23 @@ export const RevenueChart = () => {
             <LineChart data={chartData}>
               <CartesianGrid 
                 strokeDasharray="3 3" 
-                stroke={currentTheme === 'dark' ? 'hsl(var(--muted-foreground))' : 'hsl(var(--muted))'}
-                opacity={0.3}
+                className="stroke-muted"
               />
               <XAxis 
                 dataKey="date" 
                 className="text-xs"
-                tick={{ 
-                  fontSize: 12, 
-                  fill: currentTheme === 'dark' ? 'hsl(var(--foreground))' : 'hsl(var(--muted-foreground))' 
-                }}
-                axisLine={{ stroke: currentTheme === 'dark' ? 'hsl(var(--border))' : 'hsl(var(--border))' }}
-                tickLine={{ stroke: currentTheme === 'dark' ? 'hsl(var(--border))' : 'hsl(var(--border))' }}
+                tick={{ fontSize: 12 }}
               />
               <YAxis 
                 className="text-xs"
-                tick={{ 
-                  fontSize: 12, 
-                  fill: currentTheme === 'dark' ? 'hsl(var(--foreground))' : 'hsl(var(--muted-foreground))' 
-                }}
+                tick={{ fontSize: 12 }}
                 tickFormatter={(value) => `$${value / 1000}k`}
-                axisLine={{ stroke: currentTheme === 'dark' ? 'hsl(var(--border))' : 'hsl(var(--border))' }}
-                tickLine={{ stroke: currentTheme === 'dark' ? 'hsl(var(--border))' : 'hsl(var(--border))' }}
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: currentTheme === 'dark' ? 'hsl(var(--card))' : 'hsl(var(--card))',
-                  border: `1px solid ${currentTheme === 'dark' ? 'hsl(var(--border))' : 'hsl(var(--border))'}`,
+                  backgroundColor: 'hsl(var(--card))',
+                  border: '1px solid hsl(var(--border))',
                   borderRadius: '6px',
-                  color: currentTheme === 'dark' ? 'hsl(var(--foreground))' : 'hsl(var(--foreground))',
                 }}
                 formatter={(value: number, name: string) => [
                   formatCurrency(value),

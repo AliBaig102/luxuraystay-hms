@@ -1,5 +1,3 @@
-import { useApi } from "@/hooks/useApi";
-import { ENDPOINT_URLS } from "@/constants/endpoints";
 import { 
   Card, 
   CardContent, 
@@ -26,14 +24,11 @@ import {
   CheckCircle, 
   Clock, 
   AlertTriangle,
-  Users,
-  TrendingUp,
-  Calendar
+  Users
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { useTheme } from "@/components/theme/ThemeProvider";
-import { useChartTheme } from "./chartUtils";
+
 
 interface HousekeepingStats {
   total: number;
@@ -107,8 +102,6 @@ const TASK_TYPE_COLORS = {
 };
 
 export const HousekeepingOverview = () => {
-  const { currentTheme } = useTheme();
-  const { getTooltipStyle, getAxisStyle, getGridStyle } = useChartTheme();
   // Use dummy data instead of API calls
   const isLoading = false;
 
@@ -290,7 +283,7 @@ export const HousekeepingOverview = () => {
                     fill="#8884d8"
                     dataKey="count"
                   >
-                    {(housekeepingData?.byType || []).map((entry, index) => (
+                    {(housekeepingData?.byType || []).map((_, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
@@ -300,7 +293,7 @@ export const HousekeepingOverview = () => {
                       border: '1px solid hsl(var(--border))',
                       borderRadius: '6px',
                     }}
-                    formatter={(value: number, name: string) => [value, 'Tasks']}
+                    formatter={(value: number) => [value, 'Tasks']}
                   />
                 </PieChart>
               </ResponsiveContainer>

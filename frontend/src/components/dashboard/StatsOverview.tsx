@@ -1,11 +1,9 @@
-import { useApi } from "@/hooks/useApi";
-import { ENDPOINT_URLS } from "@/constants/endpoints";
 import { 
   Card, 
   CardContent, 
   CardHeader, 
   CardTitle 
-} from "@/components/ui";
+} from "@/components/ui/card";
 import { 
   Users, 
   Bed, 
@@ -16,7 +14,6 @@ import {
   CheckCircle,
   Clock
 } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
 
 interface DashboardStats {
   totalUsers: number;
@@ -31,7 +28,6 @@ interface DashboardStats {
 
 export const StatsOverview = () => {
   // Use dummy data instead of API calls
-  const isLoading = false;
 
   // Dummy statistics data
   const stats: DashboardStats = {
@@ -45,24 +41,7 @@ export const StatsOverview = () => {
     averageRating: 4.2,
   };
 
-  if (isLoading) {
-    return (
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        {Array.from({ length: 8 }).map((_, i) => (
-          <Card key={i}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <Skeleton className="h-4 w-24" />
-              <Skeleton className="h-4 w-4" />
-            </CardHeader>
-            <CardContent>
-              <Skeleton className="h-8 w-16 mb-2" />
-              <Skeleton className="h-3 w-20" />
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    );
-  }
+
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {

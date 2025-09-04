@@ -17,7 +17,6 @@ export const createUserColumns = (
       header: "Date",
       enableSorting: true,
       sortingFn: "datetime",
-      filterFn: "dateRange",
       cell: ({ row }) => format(new Date(row.original.createdAt), "MM/dd/yyyy"),
     },
     {
@@ -74,7 +73,6 @@ export const createUserColumns = (
       header: "Status",
       enableSorting: true,
       sortingFn: "text",
-      filterFn: "booleanFilter",
       cell: ({ row }) => (
         <Badge
           variant={row.original.isActive ? "default" : "secondary"}

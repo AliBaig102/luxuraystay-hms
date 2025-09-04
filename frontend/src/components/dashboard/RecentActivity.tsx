@@ -1,12 +1,10 @@
-import { useApi } from "@/hooks/useApi";
-import { ENDPOINT_URLS } from "@/constants/endpoints";
 import { 
   Card, 
   CardContent, 
   CardDescription, 
   CardHeader, 
   CardTitle 
-} from "@/components/ui";
+} from "@/components/ui/card";
 import { 
   Activity, 
   CheckCircle, 
@@ -20,7 +18,6 @@ import {
   Sparkles,
   Bell
 } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 
 interface ActivityItem {
@@ -73,7 +70,6 @@ const PRIORITY_COLORS = {
 
 export const RecentActivity = () => {
   // Use dummy data instead of API calls
-  const isLoading = false;
 
   // Dummy activity data
   const activities: ActivityItem[] = [
@@ -136,30 +132,7 @@ export const RecentActivity = () => {
     totalCount: activities.length
   };
 
-  if (isLoading) {
-    return (
-      <Card>
-        <CardHeader>
-          <Skeleton className="h-6 w-32" />
-          <Skeleton className="h-4 w-48" />
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="flex items-center space-x-4">
-                <Skeleton className="h-8 w-8 rounded-full" />
-                <div className="flex-1 space-y-2">
-                  <Skeleton className="h-4 w-3/4" />
-                  <Skeleton className="h-3 w-1/2" />
-                </div>
-                <Skeleton className="h-4 w-16" />
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
+
 
   const formatTimestamp = (timestamp: string) => {
     const date = new Date(timestamp);
@@ -175,14 +148,7 @@ export const RecentActivity = () => {
     return `${days}d ago`;
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
+
 
   const getActivityIcon = (type: string) => {
     const IconComponent = ACTIVITY_ICONS[type as keyof typeof ACTIVITY_ICONS] || Activity;
@@ -246,7 +212,7 @@ export const RecentActivity = () => {
                   {activity.amount && (
                     <div className="flex items-center gap-1">
                       <DollarSign className="h-3 w-3" />
-                      <span>{formatCurrency(activity.amount)}</span>
+                      <span>${activity.amount}</span>
                     </div>
                   )}
                   {activity.rating && (

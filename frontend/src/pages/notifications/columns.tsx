@@ -1,7 +1,7 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui";
 import { Button } from "@/components/ui";
-import { Edit, Trash2, User, Bell, Eye, EyeOff } from "lucide-react";
+import { Edit, Trash2, User, Eye, EyeOff } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import type { Notification } from "@/types/models";

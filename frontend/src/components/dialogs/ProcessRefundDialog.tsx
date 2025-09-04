@@ -31,7 +31,7 @@ import { useApi } from "@/hooks/useApi";
 import { ENDPOINT_URLS } from "@/constants/endpoints";
 import { useState } from "react";
 import type { Bill, PaymentMethod } from "@/types/models";
-import { PAYMENT_METHODS } from "@/types/models";
+
 import {
   billRefundSchema,
   type BillRefundFormData,
@@ -67,16 +67,16 @@ export function ProcessRefundDialog({
   const form = useForm<BillRefundFormData>({
     resolver: zodResolver(billRefundSchema),
     defaultValues: {
-      amount: bill.paidAmount || 0,
-      refundMethod: bill.paymentMethod,
-      reason: "",
-      notes: "",
+      billId: bill._id,
+      refundAmount: 0,
+      refundReason: '',
+      notes: '',
     },
   });
 
-  const watchedRefundMethod = form.watch("refundMethod");
-  const watchedAmount = form.watch("amount");
-  const watchedReason = form.watch("reason");
+  // Remove paymentMethod watch as it's not part of the schema
+  const watchedAmount = form.watch("refundAmount");
+  const watchedReason = form.watch("refundReason");
 
   const handleRefund = async (data: BillRefundFormData) => {
     try {
@@ -95,15 +95,14 @@ export function ProcessRefundDialog({
     setOpen(newOpen);
     if (!newOpen) {
       form.reset({
-        amount: bill.paidAmount || 0,
-        refundMethod: bill.paymentMethod,
-        reason: "",
+        refundAmount: bill.totalAmount || 0,
+        refundReason: "",
         notes: "",
       });
     }
   };
 
-  const maxRefundAmount = bill.paidAmount || 0;
+  const maxRefundAmount = bill.totalAmount || 0;
   const isPartialRefund = watchedAmount < maxRefundAmount;
   const canProcessRefund = bill.status === "paid" && maxRefundAmount > 0;
 
@@ -154,7 +153,7 @@ export function ProcessRefundDialog({
               <div className="flex justify-between">
                 <span>Paid Amount:</span>
                 <span className="text-green-600">
-                  ${(bill.paidAmount || 0).toFixed(2)}
+                  ${(bill.totalAmount || 0).toFixed(2)}
                 </span>
               </div>
               <div className="flex justify-between">
@@ -205,7 +204,7 @@ export function ProcessRefundDialog({
                 <div className="grid grid-cols-2 gap-3">
                   <FormField
                     control={form.control}
-                    name="amount"
+                    name="refundAmount"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-xs">Refund Amount</FormLabel>
@@ -229,45 +228,17 @@ export function ProcessRefundDialog({
                     )}
                   />
 
-                  <FormField
-                    control={form.control}
-                    name="refundMethod"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-xs">Refund Method</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
-                          <FormControl>
-                            <SelectTrigger className="text-xs">
-                              <SelectValue placeholder="Select method" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {Object.entries(PAYMENT_METHODS).map(([key, value]) => (
-                              <SelectItem key={value} value={value}>
-                                <div className="flex items-center gap-2">
-                                  <Badge
-                                    variant="secondary"
-                                    className={cn(
-                                      "text-xs",
-                                      paymentMethodColors[value as PaymentMethod]
-                                    )}
-                                  >
-                                    {key.replace('_', ' ')}
-                                  </Badge>
-                                </div>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-green-500" />
+                    <span className="text-sm font-medium">
+                      Cash Refund
+                    </span>
+                  </div>
                 </div>
 
                 <FormField
                   control={form.control}
-                  name="reason"
+                  name="refundReason"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-xs">Refund Reason</FormLabel>
@@ -309,7 +280,7 @@ export function ProcessRefundDialog({
                 />
 
                 {/* Refund Summary */}
-                {watchedRefundMethod && watchedAmount > 0 && watchedReason && (
+                {(watchedAmount as unknown as number) > 0 && watchedReason && (
                   <div className="p-3 bg-orange-50 dark:bg-orange-950 rounded-md border">
                     <div className="text-sm font-medium mb-2 text-orange-800 dark:text-orange-200">
                       Refund Summary:
@@ -317,31 +288,28 @@ export function ProcessRefundDialog({
                     <div className="text-xs space-y-1 text-orange-700 dark:text-orange-300">
                       <div className="flex justify-between">
                         <span>Refund Amount:</span>
-                        <span className="font-semibold">${watchedAmount.toFixed(2)}</span>
+                        <span className="font-semibold">${(watchedAmount as unknown as number).toFixed(2)}</span>
                       </div>
                       <div className="flex justify-between">
                         <span>Refund Method:</span>
                         <Badge
                           variant="secondary"
-                          className={cn(
-                            "text-xs",
-                            paymentMethodColors[watchedRefundMethod as PaymentMethod]
-                          )}
+                          className="text-xs bg-green-100 text-green-800"
                         >
-                          {watchedRefundMethod.replace('_', ' ')}
+                          Cash Refund
                         </Badge>
                       </div>
                       <div className="flex justify-between">
                         <span>Reason:</span>
                         <span className="font-medium">
-                          {watchedReason.replace('_', ' ')}
+                          {(watchedReason as unknown as string).replace('_', ' ')}
                         </span>
                       </div>
                       {isPartialRefund && (
                         <div className="flex justify-between text-blue-600 dark:text-blue-400">
                           <span>Remaining Paid Amount:</span>
                           <span className="font-semibold">
-                            ${(maxRefundAmount - watchedAmount).toFixed(2)}
+                            ${(maxRefundAmount - (watchedAmount as unknown as number)).toFixed(2)}
                           </span>
                         </div>
                       )}
@@ -371,15 +339,14 @@ export function ProcessRefundDialog({
           <AlertDialogCancel disabled={isMutating}>Cancel</AlertDialogCancel>
           <LoadingButton
             isLoading={isMutating}
-            onClick={form.handleSubmit(handleRefund)}
+            onClick={form.handleSubmit(handleRefund as any)}
             variant="destructive"
             className="flex items-center gap-2 bg-orange-600 hover:bg-orange-700"
             disabled={
               !canProcessRefund ||
               isMutating ||
-              !watchedRefundMethod ||
               !watchedAmount ||
-              watchedAmount <= 0 ||
+              (watchedAmount as unknown as number) <= 0 ||
               !watchedReason
             }
           >

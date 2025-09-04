@@ -26,15 +26,13 @@ export const createCheckOutColumns = (
       accessorKey: "createdAt",
       header: "Date",
       enableSorting: true,
-      sortingFn: "datetime",
-      filterFn: "dateRange",
       cell: ({ row }) => format(new Date(row.original.createdAt), "MM/dd/yyyy"),
     },
     {
       accessorKey: "checkOutTime",
       header: "Check-out Time",
       enableSorting: true,
-      sortingFn: "datetime",
+
       cell: ({ row }) => {
         const checkOutTime = row.original.checkOutTime;
         return (
@@ -48,7 +46,7 @@ export const createCheckOutColumns = (
       accessorKey: "finalBillAmount",
       header: "Final Bill",
       enableSorting: true,
-      sortingFn: "number",
+
       cell: ({ row }) => {
         const amount = row.original.finalBillAmount;
         return (
@@ -63,7 +61,7 @@ export const createCheckOutColumns = (
       accessorKey: "paymentStatus",
       header: "Payment Status",
       enableSorting: true,
-      sortingFn: "text",
+
       cell: ({ row }) => {
         const status = row.original.paymentStatus;
         return (
@@ -80,7 +78,6 @@ export const createCheckOutColumns = (
       accessorKey: "rating",
       header: "Rating",
       enableSorting: true,
-      sortingFn: "number",
       cell: ({ row }) => {
         const rating = row.original.rating;
         return rating ? (
@@ -97,7 +94,6 @@ export const createCheckOutColumns = (
       accessorKey: "satisfactionLevel",
       header: "Satisfaction",
       enableSorting: true,
-      sortingFn: "text",
       cell: ({ row }) => {
         const level = row.original.satisfactionLevel;
         if (!level || level === 'not_rated') {

@@ -45,13 +45,7 @@ interface ProcessPaymentDialogProps {
   children: ReactNode;
 }
 
-const paymentMethodDescriptions: Record<PaymentMethod, string> = {
-  cash: "Cash payment",
-  credit_card: "Credit card payment",
-  debit_card: "Debit card payment",
-  bank_transfer: "Bank transfer payment",
-  digital_wallet: "Digital wallet payment",
-};
+
 
 const paymentMethodColors: Record<PaymentMethod, string> = {
   cash: "bg-green-100 text-green-800",
@@ -75,15 +69,17 @@ export function ProcessPaymentDialog({
   const form = useForm<BillPaymentFormData>({
     resolver: zodResolver(billPaymentSchema),
     defaultValues: {
-      amount: bill.totalAmount,
+      billId: bill._id,
+      paymentAmount: bill.totalAmount,
       paymentMethod: undefined,
+      paymentDate: new Date().toISOString().split('T')[0],
       transactionId: "",
       notes: "",
     },
   });
 
   const watchedPaymentMethod = form.watch("paymentMethod");
-  const watchedAmount = form.watch("amount");
+  const watchedAmount = form.watch("paymentAmount");
 
   const handlePayment = async (data: BillPaymentFormData) => {
     try {
@@ -102,8 +98,10 @@ export function ProcessPaymentDialog({
     setOpen(newOpen);
     if (!newOpen) {
       form.reset({
-        amount: bill.totalAmount,
+        billId: bill._id,
+        paymentAmount: bill.totalAmount,
         paymentMethod: undefined,
+        paymentDate: new Date().toISOString().split('T')[0],
         transactionId: "",
         notes: "",
       });
@@ -111,7 +109,7 @@ export function ProcessPaymentDialog({
   };
 
   const remainingAmount = bill.totalAmount - (bill.paidAmount || 0);
-  const isPartialPayment = watchedAmount < remainingAmount;
+  const isPartialPayment = (watchedAmount as unknown as number) < remainingAmount;
 
   return (
     <AlertDialog open={open} onOpenChange={handleOpenChange}>
@@ -183,7 +181,7 @@ export function ProcessPaymentDialog({
               <div className="grid grid-cols-2 gap-3">
                 <FormField
                   control={form.control}
-                  name="amount"
+                  name="paymentAmount"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-xs">Payment Amount</FormLabel>
@@ -278,7 +276,7 @@ export function ProcessPaymentDialog({
               />
 
               {/* Payment Summary */}
-              {watchedPaymentMethod && watchedAmount > 0 && (
+              {watchedPaymentMethod && (watchedAmount as unknown as number) > 0 && (
                 <div className="p-3 bg-blue-50 dark:bg-blue-950 rounded-md border">
                   <div className="text-sm font-medium mb-2 text-blue-800 dark:text-blue-200">
                     Payment Summary:
@@ -286,7 +284,7 @@ export function ProcessPaymentDialog({
                   <div className="text-xs space-y-1 text-blue-700 dark:text-blue-300">
                     <div className="flex justify-between">
                       <span>Payment Amount:</span>
-                      <span className="font-semibold">${watchedAmount.toFixed(2)}</span>
+                      <span className="font-semibold">${(watchedAmount as unknown as number).toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Payment Method:</span>
@@ -294,17 +292,17 @@ export function ProcessPaymentDialog({
                         variant="secondary"
                         className={cn(
                           "text-xs",
-                          paymentMethodColors[watchedPaymentMethod as PaymentMethod]
+                          paymentMethodColors[(watchedPaymentMethod as unknown as PaymentMethod)]
                         )}
                       >
-                        {watchedPaymentMethod.replace('_', ' ')}
+                        {(watchedPaymentMethod as unknown as string).replace('_', ' ')}
                       </Badge>
                     </div>
                     {isPartialPayment && (
                       <div className="flex justify-between text-orange-600 dark:text-orange-400">
                         <span>Remaining After Payment:</span>
                         <span className="font-semibold">
-                          ${(remainingAmount - watchedAmount).toFixed(2)}
+                          ${(remainingAmount - (watchedAmount as unknown as number)).toFixed(2)}
                         </span>
                       </div>
                     )}
@@ -333,10 +331,10 @@ export function ProcessPaymentDialog({
           <AlertDialogCancel disabled={isMutating}>Cancel</AlertDialogCancel>
           <LoadingButton
             isLoading={isMutating}
-            onClick={form.handleSubmit(handlePayment)}
+            onClick={form.handleSubmit(handlePayment as any)}
             variant="default"
             className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
-            disabled={!watchedPaymentMethod || !watchedAmount || watchedAmount <= 0}
+            disabled={!watchedPaymentMethod || !watchedAmount || (watchedAmount as unknown as number) <= 0}
           >
             <CreditCard className="h-4 w-4" />
             Process Payment

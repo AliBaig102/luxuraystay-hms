@@ -52,7 +52,6 @@ export const createHousekeepingTaskColumns = (
       header: "Date",
       enableSorting: true,
       sortingFn: "datetime",
-      filterFn: "dateRange",
       cell: ({ row }) => format(new Date(row.original.createdAt), "MM/dd/yyyy"),
     },
     {
@@ -88,7 +87,6 @@ export const createHousekeepingTaskColumns = (
       header: "Status",
       enableSorting: true,
       sortingFn: "text",
-      filterFn: "booleanFilter",
       cell: ({ row }) => {
         const status = row.getValue("status") as string;
         const StatusIcon = statusIcons[status];
@@ -169,7 +167,6 @@ export const createHousekeepingTaskColumns = (
       header: "Scheduled Date",
       enableSorting: true,
       sortingFn: "datetime",
-      filterFn: "dateRange",
       cell: ({ row }) => {
         const scheduledDate = row.getValue("scheduledDate") as Date;
         const isOverdue = new Date() > new Date(scheduledDate) && row.original.status !== "completed";

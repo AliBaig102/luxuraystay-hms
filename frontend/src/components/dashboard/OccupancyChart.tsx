@@ -1,12 +1,10 @@
-import { useApi } from "@/hooks/useApi";
-import { ENDPOINT_URLS } from "@/constants/endpoints";
 import { 
   Card, 
   CardContent, 
   CardDescription, 
   CardHeader, 
   CardTitle 
-} from "@/components/ui";
+} from "@/components/ui/card";
 import { 
   AreaChart, 
   Area, 
@@ -21,11 +19,9 @@ import {
   BarChart,
   Bar
 } from "recharts";
-import { Bed, TrendingUp, Users } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Bed } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useTheme } from "@/components/theme/ThemeProvider";
 
 interface OccupancyData {
   date: string;
@@ -63,10 +59,9 @@ const COLORS = [
 
 export const OccupancyChart = () => {
   const [timeRange, setTimeRange] = useState<'daily' | 'weekly' | 'monthly'>('daily');
-  const { currentTheme } = useTheme();
   
   // Use dummy data instead of API calls
-  const isLoading = false;
+
 
   // Dummy occupancy data
   const totalRooms = 45;
@@ -105,19 +100,7 @@ export const OccupancyChart = () => {
     ]
   };
 
-  if (isLoading) {
-    return (
-      <Card>
-        <CardHeader>
-          <Skeleton className="h-6 w-32" />
-          <Skeleton className="h-4 w-48" />
-        </CardHeader>
-        <CardContent>
-          <Skeleton className="h-64 w-full" />
-        </CardContent>
-      </Card>
-    );
-  }
+
 
   const formatPercentage = (value: number) => {
     return `${Math.round(value)}%`;
@@ -210,38 +193,23 @@ export const OccupancyChart = () => {
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={chartData}>
-              <CartesianGrid 
-                strokeDasharray="3 3" 
-                stroke={currentTheme === 'dark' ? 'hsl(var(--muted-foreground))' : 'hsl(var(--muted))'}
-                opacity={0.3}
-              />
+              <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
               <XAxis 
                 dataKey="date" 
                 className="text-xs"
-                tick={{ 
-                  fontSize: 12, 
-                  fill: currentTheme === 'dark' ? 'hsl(var(--foreground))' : 'hsl(var(--muted-foreground))' 
-                }}
-                axisLine={{ stroke: currentTheme === 'dark' ? 'hsl(var(--border))' : 'hsl(var(--border))' }}
-                tickLine={{ stroke: currentTheme === 'dark' ? 'hsl(var(--border))' : 'hsl(var(--border))' }}
+                tick={{ fontSize: 12 }}
               />
               <YAxis 
                 className="text-xs"
-                tick={{ 
-                  fontSize: 12, 
-                  fill: currentTheme === 'dark' ? 'hsl(var(--foreground))' : 'hsl(var(--muted-foreground))' 
-                }}
+                tick={{ fontSize: 12 }}
                 tickFormatter={(value) => `${value}%`}
                 domain={[0, 100]}
-                axisLine={{ stroke: currentTheme === 'dark' ? 'hsl(var(--border))' : 'hsl(var(--border))' }}
-                tickLine={{ stroke: currentTheme === 'dark' ? 'hsl(var(--border))' : 'hsl(var(--border))' }}
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: currentTheme === 'dark' ? 'hsl(var(--card))' : 'hsl(var(--card))',
-                  border: `1px solid ${currentTheme === 'dark' ? 'hsl(var(--border))' : 'hsl(var(--border))'}`,
+                  backgroundColor: 'hsl(var(--card))',
+                  border: '1px solid hsl(var(--border))',
                   borderRadius: '6px',
-                  color: currentTheme === 'dark' ? 'hsl(var(--foreground))' : 'hsl(var(--foreground))',
                 }}
                 formatter={(value: number, name: string) => [
                   `${value}%`,
@@ -278,18 +246,17 @@ export const OccupancyChart = () => {
                     fill="#8884d8"
                     dataKey="count"
                   >
-                    {(occupancyData?.roomTypeBreakdown || []).map((entry, index) => (
+                    {(occupancyData?.roomTypeBreakdown || []).map((_, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: currentTheme === 'dark' ? 'hsl(var(--card))' : 'hsl(var(--card))',
-                      border: `1px solid ${currentTheme === 'dark' ? 'hsl(var(--border))' : 'hsl(var(--border))'}`,
+                      backgroundColor: 'hsl(var(--card))',
+                      border: '1px solid hsl(var(--border))',
                       borderRadius: '6px',
-                      color: currentTheme === 'dark' ? 'hsl(var(--foreground))' : 'hsl(var(--foreground))',
                     }}
-                    formatter={(value: number, name: string) => [value, 'Rooms']}
+                    formatter={(value: number) => [value, 'Rooms']}
                   />
                 </PieChart>
               </ResponsiveContainer>
@@ -301,32 +268,18 @@ export const OccupancyChart = () => {
             <div className="h-48">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={occupancyData?.roomTypeBreakdown || []}>
-                  <CartesianGrid 
-                    strokeDasharray="3 3" 
-                    stroke={currentTheme === 'dark' ? 'hsl(var(--muted-foreground))' : 'hsl(var(--muted))'}
-                    opacity={0.3}
-                  />
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                   <XAxis 
                     dataKey="type" 
                     className="text-xs"
-                    tick={{ 
-                      fontSize: 10, 
-                      fill: currentTheme === 'dark' ? 'hsl(var(--foreground))' : 'hsl(var(--muted-foreground))' 
-                    }}
+                    tick={{ fontSize: 10 }}
                     angle={-45}
                     textAnchor="end"
                     height={60}
-                    axisLine={{ stroke: currentTheme === 'dark' ? 'hsl(var(--border))' : 'hsl(var(--border))' }}
-                    tickLine={{ stroke: currentTheme === 'dark' ? 'hsl(var(--border))' : 'hsl(var(--border))' }}
                   />
                   <YAxis 
                     className="text-xs"
-                    tick={{ 
-                      fontSize: 10, 
-                      fill: currentTheme === 'dark' ? 'hsl(var(--foreground))' : 'hsl(var(--muted-foreground))' 
-                    }}
-                    axisLine={{ stroke: currentTheme === 'dark' ? 'hsl(var(--border))' : 'hsl(var(--border))' }}
-                    tickLine={{ stroke: currentTheme === 'dark' ? 'hsl(var(--border))' : 'hsl(var(--border))' }}
+                    tick={{ fontSize: 10 }}
                     tickFormatter={(value) => `${value}%`}
                     domain={[0, 100]}
                   />

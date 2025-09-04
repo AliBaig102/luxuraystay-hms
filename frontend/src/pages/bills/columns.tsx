@@ -28,10 +28,9 @@ const billStatusColors = {
 const paymentMethodColors = {
   [PAYMENT_METHODS.CASH]: "bg-green-100 text-green-800 hover:bg-green-200",
   [PAYMENT_METHODS.CREDIT_CARD]: "bg-blue-100 text-blue-800 hover:bg-blue-200",
-  [PAYMENT_METHODS.DEBIT_CARD]: "bg-indigo-100 text-indigo-800 hover:bg-indigo-200",
-  [PAYMENT_METHODS.BANK_TRANSFER]: "bg-purple-100 text-purple-800 hover:bg-purple-200",
-  [PAYMENT_METHODS.DIGITAL_WALLET]: "bg-pink-100 text-pink-800 hover:bg-pink-200",
-  [PAYMENT_METHODS.CHECK]: "bg-yellow-100 text-yellow-800 hover:bg-yellow-200",
+  [PAYMENT_METHODS.DEBIT_CARD]: "bg-purple-100 text-purple-800 hover:bg-purple-200",
+  [PAYMENT_METHODS.BANK_TRANSFER]: "bg-indigo-100 text-indigo-800 hover:bg-indigo-200",
+  [PAYMENT_METHODS.DIGITAL_WALLET]: "bg-orange-100 text-orange-800 hover:bg-orange-200",
 };
 
 export const createBillColumns = (
@@ -126,7 +125,7 @@ export const createBillColumns = (
       if (!method) return <div className="text-gray-500">-</div>;
       return (
         <Badge className={paymentMethodColors[method] || "bg-gray-100 text-gray-800"}>
-          {method.replace('_', ' ')}
+          {typeof method === 'string' ? method.replace('_', ' ') : method}
         </Badge>
       );
     },
@@ -136,7 +135,7 @@ export const createBillColumns = (
     header: "Due Date",
     cell: ({ row }) => {
       const dueDate = row.getValue("dueDate");
-      if (!dueDate) return <div className="text-gray-500">-</div>;
+      if (!dueDate || typeof dueDate !== 'string' && typeof dueDate !== 'number' && !(dueDate instanceof Date)) return <div className="text-gray-500">-</div>;
       return (
         <div>{format(new Date(dueDate), "MM/dd/yyyy")}</div>
       );
@@ -147,7 +146,7 @@ export const createBillColumns = (
     header: "Payment Date",
     cell: ({ row }) => {
       const paymentDate = row.getValue("paymentDate");
-      if (!paymentDate) return <div className="text-gray-500">-</div>;
+      if (!paymentDate || typeof paymentDate !== 'string' && typeof paymentDate !== 'number' && !(paymentDate instanceof Date)) return <div className="text-gray-500">-</div>;
       return (
         <div>{format(new Date(paymentDate), "MM/dd/yyyy")}</div>
       );
@@ -179,7 +178,7 @@ export const createBillColumns = (
         <div className="flex items-center gap-2">
           {/* View Button */}
           {currentUserRole && hasPermission(currentUserRole, "bill.view") && (
-            <BillSheet id={row.original._id} mode="view">
+            <BillSheet id={row.original._id}>
               <Button variant="outline" size="icon" title="View Bill">
                 <Eye className="h-4 w-4" />
               </Button>
@@ -189,7 +188,7 @@ export const createBillColumns = (
           {/* Pay Button */}
           {currentUserRole && hasPermission(currentUserRole, "bill.update") && canPay && (
             <ProcessPaymentDialog
-              billId={row.original._id}
+              id={row.original._id}
               bill={bill}
             >
               <Button variant="default" size="icon" title="Process Payment" className="bg-green-600 hover:bg-green-700">
@@ -201,7 +200,7 @@ export const createBillColumns = (
           {/* Refund Button */}
           {currentUserRole && hasPermission(currentUserRole, "bill.update") && canRefund && (
             <ProcessRefundDialog
-              billId={row.original._id}
+              id={row.original._id}
               bill={bill}
             >
               <Button variant="destructive" size="icon" title="Process Refund" className="bg-purple-600 hover:bg-purple-700">
@@ -222,7 +221,7 @@ export const createBillColumns = (
           {/* Delete Button */}
           {currentUserRole && hasPermission(currentUserRole, "bill.delete") && canDelete && (
             <DeleteBillDialog
-              billId={row.original._id}
+              id={row.original._id}
               bill={bill}
             >
               <Button variant="destructive" size="icon" title="Delete Bill">

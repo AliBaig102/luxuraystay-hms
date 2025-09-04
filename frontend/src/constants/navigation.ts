@@ -1,19 +1,18 @@
 import type React from "react";
 import {
-  BarChart,
-  Box,
-  Package,
-  ShoppingCart,
   Users,
-  Clipboard,
-  LogIn,
-  LogOut,
   MessageSquare,
-  PackageSearch,
+  BarChart,
+  Package,
   ClipboardList,
-  Wrench,
-  Headphones,
   Bell,
+  Wrench,
+  LogOut,
+  LogIn,
+  Box,
+  ShoppingCart,
+  PackageSearch,
+  Headphones,
 } from "lucide-react";
 import { USER_ROLES } from "@/types/models";
 

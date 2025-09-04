@@ -58,15 +58,12 @@ export const createFeedbackColumns = (
       accessorKey: "createdAt",
       header: "Date",
       enableSorting: true,
-      sortingFn: "datetime",
-      filterFn: "dateRange",
       cell: ({ row }) => format(new Date(row.original.createdAt), "MM/dd/yyyy"),
     },
     {
       accessorKey: "rating",
       header: "Rating",
       enableSorting: true,
-      sortingFn: "number",
       cell: ({ row }) => {
         const rating = row.getValue("rating") as number;
         return (
@@ -193,7 +190,7 @@ export const createFeedbackColumns = (
       header: "Response",
       enableSorting: true,
       sortingFn: "text",
-      filterFn: "booleanFilter",
+
       cell: ({ row }) => {
         const feedback = row.original;
         const hasResponse = feedback.response && feedback.respondedBy;

@@ -22,7 +22,7 @@ import { LoadingButton } from "../custom/LoadingButton";
 import { useApi } from "@/hooks/useApi";
 import { ENDPOINT_URLS } from "@/constants/endpoints";
 import { feedbackResponseSchema, type FeedbackResponseFormData } from "@/lib/zodValidation";
-import { Reply, MessageSquare } from "lucide-react";
+import { Reply } from "lucide-react";
 import { handleApiError } from "@/lib";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -60,7 +60,7 @@ export function FeedbackResponseDialog({
 
   const handleSubmit = async (data: FeedbackResponseFormData) => {
     try {
-      await post(data);
+      await post(ENDPOINT_URLS.FEEDBACK.RESPOND(feedbackId), data);
       await invalidate();
       onClose();
       form.reset({

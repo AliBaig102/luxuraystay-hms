@@ -194,6 +194,7 @@ export interface Bill extends BaseModel {
   serviceCharges?: number;
   additionalServices?: AdditionalService[];
   totalAmount: number;
+  paidAmount?: number;
   status: BillStatus;
   dueDate: Date;
   paymentDate?: Date;
