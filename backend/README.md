@@ -85,6 +85,8 @@ A comprehensive, production-ready Hotel Management System backend API built with
 ### Project Structure
 ```
 backend/
+├── api/                     # Vercel serverless functions
+│   └── index.ts            # Main serverless entry point
 ├── src/
 │   ├── controllers/         # Business logic and request handling
 │   │   ├── user.controller.ts
@@ -129,6 +131,8 @@ backend/
 ├── docs/                    # API documentation
 ├── postman/                 # Postman collections
 ├── .env.example             # Environment variables template
+├── vercel.json              # Vercel deployment configuration
+├── VERCEL_DEPLOYMENT.md     # Vercel deployment guide
 ├── package.json
 ├── tsconfig.json
 └── README.md
@@ -151,8 +155,9 @@ backend/
 
 ### Prerequisites
 - Node.js 22.x or higher
-- MongoDB 8.x or higher
+- MongoDB 8.x or higher (MongoDB Atlas recommended for production)
 - npm or pnpm package manager
+- Vercel CLI (for deployment)
 
 ### Installation
 
@@ -213,8 +218,15 @@ backend/
 ## 📚 API Documentation
 
 ### Base URL
+
+**Local Development:**
 ```
 http://localhost:5000/api/v1
+```
+
+**Production (Vercel):**
+```
+https://your-project-name.vercel.app/api/v1
 ```
 
 ### Authentication
@@ -332,6 +344,7 @@ POST   /api/v1/inventory/transaction # Record transaction
 #### 🏥 Health Check
 ```
 GET    /health                    # System health check
+GET    /api/health               # API health check (Vercel)
 ```
 
 ## 🛠️ Available Scripts
@@ -345,6 +358,8 @@ pnpm run watch            # Alternative watch mode
 # Production
 pnpm run build            # Build TypeScript to JavaScript
 pnpm run start            # Start production server
+pnpm run vercel-build     # Build for Vercel deployment
+pnpm run deploy           # Deploy to Vercel
 
 # Testing
 pnpm run test             # Run test suite
@@ -405,7 +420,73 @@ See `.env.example` for a complete list of configuration options including:
 
 ## 🚀 Deployment
 
-### Production Checklist
+### Vercel Deployment (Recommended)
+
+This backend is optimized for serverless deployment on Vercel. The project includes:
+
+- **Serverless Function**: `api/index.ts` - Main entry point for Vercel
+- **Vercel Configuration**: `vercel.json` - Deployment settings
+- **Environment Setup**: `.env.example` - Required environment variables
+
+#### Quick Deploy to Vercel
+
+1. **Install Vercel CLI**
+   ```bash
+   npm i -g vercel
+   ```
+
+2. **Login to Vercel**
+   ```bash
+   vercel login
+   ```
+
+3. **Deploy**
+   ```bash
+   vercel --prod
+   ```
+
+4. **Configure Environment Variables**
+   - Go to your Vercel dashboard
+   - Navigate to your project settings
+   - Add all required environment variables from `.env.example`
+   - Redeploy after adding variables
+
+#### Required Environment Variables for Vercel
+```env
+# Database (Use MongoDB Atlas)
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/database
+
+# JWT Configuration
+JWT_SECRET=your-super-secret-jwt-key-for-production
+JWT_EXPIRES_IN=24h
+JWT_REFRESH_SECRET=your-refresh-secret-key
+JWT_REFRESH_EXPIRES_IN=7d
+
+# Project Configuration
+NODE_ENV=production
+PROJECT_VERSION=v1
+PROJECT_NAME=LuxuryStay HMS
+
+# Email Configuration (Optional)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your-email@gmail.com
+SMTP_PASS=your-app-password
+```
+
+#### Vercel Deployment Features
+- **Automatic HTTPS**: SSL certificates included
+- **Global CDN**: Fast worldwide access
+- **Serverless Functions**: Auto-scaling backend
+- **Environment Management**: Secure variable storage
+- **Custom Domains**: Easy domain configuration
+- **Analytics**: Built-in performance monitoring
+
+For detailed deployment instructions, see `VERCEL_DEPLOYMENT.md`.
+
+### Traditional Deployment
+
+#### Production Checklist
 - [ ] Set `NODE_ENV=production`
 - [ ] Configure production MongoDB URI
 - [ ] Set secure JWT secrets
@@ -415,7 +496,7 @@ See `.env.example` for a complete list of configuration options including:
 - [ ] Set up monitoring and logging
 - [ ] Configure backup strategy
 
-### Docker Deployment
+#### Docker Deployment
 ```bash
 # Build image
 docker build -t luxuraystay-hms-backend .

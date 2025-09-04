@@ -15,7 +15,9 @@
     "format": "prettier --write src/**/*.ts",
     "format:check": "prettier --check src/**/*.ts",
     "test:logger": "ts-node --esm -e \"import('./src/utils/logger.js').then(l => console.log('Logger loaded successfully'))\"",
-    "test:db": "ts-node src/config/testConnection.ts"
+    "test:db": "ts-node src/config/testConnection.ts",
+    "vercel-build": "tsc",
+    "deploy": "vercel --prod"
   },
   "keywords": [
     "hms",
@@ -29,6 +31,7 @@
   "dependencies": {
     "@types/bcryptjs": "^3.0.0",
     "@types/jsonwebtoken": "^9.0.10",
+    "@vercel/node": "^3.2.29",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
