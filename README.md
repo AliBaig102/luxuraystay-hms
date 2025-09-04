@@ -1,4 +1,6 @@
 # 🏨 LuxurayStay Hotel Management System
+![LuxurayStay Hotel Management System](./images/LuxuryStay.png)
+*LuxurayStay HMS - Complete hotel management solution with modern interface*
 
 [![Node.js](https://img.shields.io/badge/Node.js-22.x-green.svg)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue.svg)](https://www.typescriptlang.org/)
@@ -58,6 +60,100 @@ The application follows industry best practices with a clean MVC architecture, c
 - Accessibility compliance
 - Progressive Web App capabilities
 
+## 📸 Screenshots
+
+### Authentication & Access
+
+<div align="center">
+  <img src="./images/login-light.png" alt="Login Light Theme" width="45%" />
+  <img src="./images/login-dark.png" alt="Login Dark Theme" width="45%" />
+</div>
+
+*Login interface with light and dark theme support*
+
+<div align="center">
+  <img src="./images/signup-light.png" alt="Signup Light Theme" width="45%" />
+  <img src="./images/signup-dark.png" alt="Signup Dark Theme" width="45%" />
+</div>
+
+*User registration with theme customization*
+
+### Dashboard & Analytics
+
+<div align="center">
+  <img src="./images/admin-dashboard-light.png" alt="Admin Dashboard Light" width="45%" />
+  <img src="./images/admin-dashboard-dark.png" alt="Admin Dashboard Dark" width="45%" />
+</div>
+
+*Comprehensive admin dashboard with real-time analytics and metrics*
+
+### User Management
+
+<div align="center">
+  <img src="./images/users-all-light.png" alt="Users List Light" width="45%" />
+  <img src="./images/users-all-dark.png" alt="Users List Dark" width="45%" />
+</div>
+
+*User management interface with advanced filtering and search*
+
+<div align="center">
+  <img src="./images/users-create-light.png" alt="Create User Light" width="45%" />
+  <img src="./images/users-create-dark.png" alt="Create User Dark" width="45%" />
+</div>
+
+*User creation with role-based access control*
+
+<div align="center">
+  <img src="./images/users-edit-light.png" alt="Edit User Light" width="45%" />
+  <img src="./images/users-edit-dark.png" alt="Edit User Dark" width="45%" />
+</div>
+
+*User profile editing with comprehensive form validation*
+
+<div align="center">
+  <img src="./images/users-delete-light.png" alt="Delete User Light" width="45%" />
+  <img src="./images/users-delete-dark.png" alt="Delete User Dark" width="45%" />
+</div>
+
+*Safe user deletion with confirmation dialogs*
+
+### Room Management
+
+![Rooms Overview](./images/rooms-all-light.png)
+*Complete room inventory management with real-time availability*
+
+![Room Creation](./images/rooms-create-light.png)
+*Intuitive room creation with detailed configuration options*
+
+### Reservations & Booking
+
+![Reservations Management](./images/reservations-all-light.png)
+*Advanced reservation system with conflict detection and booking management*
+
+### Operations Management
+
+![Housekeeping Tasks](./images/housekeeping-tasks.png)
+*Housekeeping task management with progress tracking*
+
+![Maintenance Requests](./images/maintenance-requests.png)
+*Maintenance request workflow with priority management*
+
+![Service Requests](./images/service-requests.png)
+*Guest service request management and communication*
+
+### Financial Management
+
+![Bills Management](./images/bills-all-light.png)
+*Comprehensive billing system with automated invoicing*
+
+![Inventory Management](./images/inventory-all-light.png)
+*Stock management with automated alerts and tracking*
+
+### Guest Experience
+
+![Guest Feedback](./images/feedbacks-all.png)
+*Guest feedback collection and analysis system*
+
 ## 🛠️ Installation
 
 ### Prerequisites
@@ -73,7 +169,7 @@ Ensure you have the following installed on your system:
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/yourusername/luxuraystay-hms.git
+   git clone https://github.com/AliBaig102/luxuraystay-hms.git
    cd luxuraystay-hms
    ```
 
@@ -238,7 +334,7 @@ We welcome contributions to LuxurayStay HMS! Please follow these guidelines:
 
 1. **Fork the Repository**
    ```bash
-   git fork https://github.com/yourusername/luxuraystay-hms.git
+   git fork https://github.com/AliBaig102/luxuraystay-hms.git
    ```
 
 2. **Create a Feature Branch**
@@ -300,7 +396,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ```
 MIT License
 
-Copyright (c) 2024 LuxurayStay HMS
+Copyright (c) 2025 LuxurayStay HMS
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -357,16 +453,56 @@ SOFTWARE.
 - **[CORS](https://github.com/expressjs/cors)** - Cross-origin resource sharing
 - **[express-rate-limit](https://github.com/nfriedly/express-rate-limit)** - Rate limiting middleware
 
-### Special Thanks
-- The open-source community for providing excellent tools and libraries
-- Contributors and testers who help improve the system
-- Hotel industry professionals who provided valuable insights
-- The TypeScript and React communities for best practices and patterns
+## 👨‍💻 Author
+
+<div align="center">
+  <img src="https://github.com/AliBaig102.png" alt="Mirza Ali Baig" width="100" height="100" style="border-radius: 50%;">
+  
+  ### **Mirza Ali Baig**
+  
+  *Full Stack Developer & Instructor*
+  
+  [![Email](https://img.shields.io/badge/📧%20Email-mirzaalibaig0714@gmail.com-red?style=for-the-badge)](mailto:mirzaalibaig0714@gmail.com)
+  [![GitHub](https://img.shields.io/badge/🐱%20GitHub-mirzaalibaig-black?style=for-the-badge&logo=github)](https://github.com/AliBaig102)
+  [![LinkedIn](https://img.shields.io/badge/💼%20LinkedIn-Mirza%20Ali%20Baig-blue?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/mirza-alibaig/)  
+  <p><em>"Passionate about creating beautiful, functional, and user-friendly web experiences"</em></p>
+</div>
+
 
 ---
 
-**Built with ❤️ for the hospitality industry**
+<div align="center">
+  
+## 🌟 Show Your Support
 
-For questions, support, or feature requests, please [open an issue](https://github.com/yourusername/luxuraystay-hms/issues) or contact the development team.
+<p><strong>If this project helped you or inspired your work, please consider:</strong></p>
 
-**Happy Coding! 🚀**
+[![⭐ Star this repo](https://img.shields.io/badge/⭐%20Star%20this%20repo-FFD700?style=for-the-badge&logo=github)](https://github.com/AliBaig102/luxuraystay-hms)
+[![🍴 Fork this repo](https://img.shields.io/badge/🍴%20Fork%20this%20repo-32CD32?style=for-the-badge&logo=github)](https://github.com/AliBaig102/luxuraystay-hms/fork)
+[![📢 Share on Twitter](https://img.shields.io/badge/📢%20Share%20on%20Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/intent/tweet?text=Check%20out%20this%20amazing%20hotel%20management%20system%20built%20with%20React%20and%20Node.js!%20🚀&url=https://github.com/AliBaig102/luxuraystay-hms&hashtags=react,nodejs,typescript,webdev,hms)
+
+<br>
+
+[![Made with TypeScript](https://img.shields.io/badge/Made%20with-TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://typescriptlang.org/)
+[![Built with React](https://img.shields.io/badge/Built%20with-React-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactjs.org/)
+[![Powered by Node.js](https://img.shields.io/badge/Powered%20by-Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Styled with Tailwind](https://img.shields.io/badge/Styled%20with-Tailwind%20CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+
+<br>
+
+<img src="https://forthebadge.com/images/badges/built-with-love.svg" alt="Built with Love">
+<img src="https://forthebadge.com/images/badges/powered-by-coffee.svg" alt="Powered by Coffee">
+<img src="https://forthebadge.com/images/badges/makes-people-smile.svg" alt="Makes People Smile">
+
+<br><br>
+
+---
+
+<p><strong>Made with ❤️ by <a href="https://github.com/AliBaig102">Mirza Ali Baig</a></strong></p>
+<p><em>© 2025 LuxurayStay HMS. All rights reserved.</em></p>
+
+<br>
+
+<p><em>"Elevating hotel management through innovative digital solutions"</em></p>
+
+</div>
